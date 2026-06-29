@@ -12,7 +12,7 @@ const validate = new Ajv2020({ allErrors: true, strict: false }).compile(
 );
 
 // Keep in sync with src/lib/reserved.ts and the COLLECTIONS slugs in src/lib/views.ts.
-const RESERVED_TOP = new Set(["index", "about", ".well-known"]);
+const RESERVED_TOP = new Set(["index", "about", "schema", ".well-known"]);
 const RESERVED_VIEW = new Set(["deprecated"]);
 const AUTHORED_COLLECTION_SLUGS = ["cloud-microsoft", "end-user"];
 

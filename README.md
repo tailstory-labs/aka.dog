@@ -101,7 +101,7 @@ Notes:
 ## Layout
 
 ```
-schema/entry.schema.json     canonical entry contract (draft 2020-12)
+schema/entry.schema.json     canonical entry contract (draft 2020-12); served at /schema/entry.json
 scripts/validate-entries.mjs build gate: ajv + semantic checks
 data/entries/*.json          the index dataset (authored)
 data/redirects/*.json        the shortener dataset (authored)
