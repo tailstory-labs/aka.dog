@@ -3,11 +3,11 @@
 aka.dog is two small systems on one domain, built on **Astro 7** + **Cloudflare Workers Static
 Assets**:
 
-1. **A redirect shortener** — `aka.dog/{who}/{slug}` → `302` to an external URL, resolved in the
+1. **A redirect shortener** - `aka.dog/{who}/{slug}` -> `302` to an external URL, resolved in the
    Worker from build-embedded JSON (`data/redirects/*.json`).
-2. **A derived reference index** — `aka.dog/index/*` pages that are *queries* (views) over a single
+2. **A derived reference index** - `aka.dog/index/*` pages that are *queries* (views) over a single
    hand-authored entry dataset (`data/entries/*.json`). You author **entries**; the views (dump,
-   per-provider, `deprecated`, `cloud-microsoft`, `end-user`) are derived — never hand-written.
+   per-provider, `deprecated`, `cloud-microsoft`, `end-user`) are derived - never hand-written.
 
 The seed dataset documents where Microsoft's `*.cloud.microsoft` services live (and what moved
 where). The two systems are parallel and only share provider names.
@@ -15,12 +15,12 @@ where). The two systems are parallel and only share provider names.
 ## Architecture
 
 ```
-Request → Cloudflare
-  ├─ /index/**.json, /sitemap.xml, /robots.txt, /_astro/** → static asset from the edge
-  ├─ /index, /index/{provider}/{view}                      → Worker → Astro renders HTML
-  │                                                           (Accept: application/json → JSON envelope)
-  ├─ /{who}/{slug}                                          → Worker → 302 redirect
-  └─ anything else                                          → Worker → 404
+Request -> Cloudflare
+  |- /index/**.json, /sitemap.xml, /robots.txt, /_astro/** -> static asset from the edge
+  |- /index, /index/{provider}/{view}                      -> Worker -> Astro renders HTML
+  |                                                           (Accept: application/json -> JSON envelope)
+  |- /{who}/{slug}                                          -> Worker -> 302 redirect
+  \- anything else                                          -> Worker -> 404
 ```
 
 - **Index HTML is server-rendered** (not prerendered) so the Worker can content-negotiate the
@@ -58,7 +58,7 @@ and every pull request (`.github/workflows/biome.yaml`).
   `{who}` namespace). Commit + redeploy.
 - **An index entry**: add an object to `data/entries/{provider}.json` following
   `schema/entry.schema.json`. An entry is the durable thing; addresses live under it (`current` /
-  `history`). No `current` ⇒ retired. `npm run validate` enforces structure plus: unique `id`,
+  `history`). No `current` => retired. `npm run validate` enforces structure plus: unique `id`,
   `superseded_by` resolves and implies no `current`, every `became` URL resolves, and no
   reserved-word collisions.
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
@@ -67,15 +67,15 @@ and every pull request (`.github/workflows/biome.yaml`).
 ## Worker config (experimental TypeScript config)
 
 Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`), matching
-[shenanigansd/shenanigans.dog#132](https://github.com/shenanigansd/shenanigans.dog/pull/132) —
+[shenanigansd/shenanigans.dog#132](https://github.com/shenanigansd/shenanigans.dog/pull/132) -
 there is **no `wrangler.jsonc`**:
 
-- **`cloudflare.config.ts`** (`defineWorker`) — runtime settings: name, compatibility date, custom
+- **`cloudflare.config.ts`** (`defineWorker`) - runtime settings: name, compatibility date, custom
   `domains`, the `ASSETS`/`SESSION`/`IMAGES` bindings, `assets.htmlHandling`, and observability.
   Because aka.dog uses the `@astrojs/cloudflare` **server** adapter (unlike shenanigans.dog, which is
-  pure-static), `entrypoint` points at the worker the adapter emits at `dist/server/entry.mjs` — so
+  pure-static), `entrypoint` points at the worker the adapter emits at `dist/server/entry.mjs` - so
   `astro build` must run first (the `deploy`/`cf:dev` scripts do this).
-- **`wrangler.config.ts`** (`defineWranglerConfig`) — tooling: `assetsDirectory: "./dist/client"`
+- **`wrangler.config.ts`** (`defineWranglerConfig`) - tooling: `assetsDirectory: "./dist/client"`
   (the adapter's static-asset output).
 
 ## Deployment
@@ -92,7 +92,7 @@ Notes:
 - The `@astrojs/cloudflare` adapter requires the **`SESSION` KV namespace** and **`IMAGES`**
   bindings (declared in `cloudflare.config.ts`). They're unused here; Cloudflare can auto-provision
   the KV namespace on deploy.
-- `notFoundHandling` is intentionally **unset** — asset-misses must fall through to the Worker, or
+- `notFoundHandling` is intentionally **unset** - asset-misses must fall through to the Worker, or
   redirects break. Don't set it to a static page.
 - `public/.assetsignore` excludes `_worker.js` / `_routes.json` from asset upload (a known
   Astro-on-Workers 404 snag).

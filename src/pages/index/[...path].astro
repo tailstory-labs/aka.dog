@@ -30,11 +30,11 @@ try {
             <code>{r.url}</code>
             {r.became ? (
               <>
-                {' '}→ <code>{r.became}</code>
+                {' '}-> <code>{r.became}</code>
               </>
             ) : null}
-            {r.until ? <> {'·'} retired {r.until}</> : null}
-            {' '}— {r.entry.name}
+            {r.until ? <> {'-'} retired {r.until}</> : null}
+            {' '}- {r.entry.name}
           </li>
         ))}
       </ul>
@@ -47,7 +47,7 @@ try {
             ) : (
               <span>{e.name}</span>
             )}
-            {e.description ? <> — {e.description}</> : null}
+            {e.description ? <> - {e.description}</> : null}
           </li>
         ))}
       </ul>

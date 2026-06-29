@@ -64,7 +64,7 @@
         "url": { "type": "string", "minLength": 1 },
         "environment": {
           "type": "string",
-          "description": "gcc | gcc-high | dod | 21vianet | …"
+          "description": "gcc | gcc-high | dod | 21vianet | ..."
         },
         "note": { "type": "string" }
       }
