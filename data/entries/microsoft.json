@@ -15,7 +15,7 @@
       {
         "url": "office.com",
         "became": "m365.cloud.microsoft",
-        "note": "office.com → cloud.microsoft redirect scheduled mid-Jan 2025 (MC958903)."
+        "note": "office.com -> cloud.microsoft redirect scheduled mid-Jan 2025 (MC958903)."
       }
     ],
     "last_verified": "2026-06"
@@ -125,7 +125,7 @@
       {
         "url": "admin.microsoft.com",
         "became": "admin.cloud.microsoft",
-        "note": "Exchange admin center also moved: admin.exchange.microsoft.com → admin.cloud.microsoft/exchange (MC762506)."
+        "note": "Exchange admin center also moved: admin.exchange.microsoft.com -> admin.cloud.microsoft/exchange (MC762506)."
       }
     ],
     "last_verified": "2026-06"
@@ -290,7 +290,7 @@
       {
         "url": "insights.viva.office.com",
         "became": "insights.cloud.microsoft",
-        "note": "Analyst workbench also moved: analysis.insights.viva.office.com → analysis.insights.cloud.microsoft (MC715686)."
+        "note": "Analyst workbench also moved: analysis.insights.viva.office.com -> analysis.insights.cloud.microsoft (MC715686)."
       }
     ],
     "last_verified": "2026-06"
@@ -390,7 +390,7 @@
       {
         "url": "to-do.office.com",
         "became": "todo.cloud.microsoft",
-        "note": "Hyphen drops on the new URL (to-do → todo) (MC1188995)."
+        "note": "Hyphen drops on the new URL (to-do -> todo) (MC1188995)."
       }
     ],
     "last_verified": "2026-06"
@@ -431,7 +431,7 @@
       {
         "url": "TODO.skypeforbusiness.example",
         "until": "2021",
-        "note": "Service retired; users migrated to Microsoft Teams. (host/date placeholders — confirm.)"
+        "note": "Service retired; users migrated to Microsoft Teams. (host/date placeholders - confirm.)"
       }
     ],
     "last_verified": "2026-06"
