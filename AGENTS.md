@@ -25,9 +25,8 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 
 ## Conventions & invariants
 
-- **Single source of truth for the entry shape**: `schema/entry.schema.json` (JSON Schema draft
-  2020-12). `src/lib/types.ts` is **generated** - never edit it by hand; change the schema and run
-  `gen:types`.
+- **Single source of truth for the entry shape**: `schema/entry.schema.json` (draft 2020-12).
+  `src/lib/types.ts` is **generated** - never hand-edit; change the schema and run `gen:types`.
 - **Don't author derived views.** Add data, not view output.
 - **Validation must pass.** `npm run validate` enforces: unique `id`, `superseded_by` resolves and
   implies no `current`, every `became` URL resolves, and no reserved-word collisions.
@@ -37,7 +36,7 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   (`cloudflare.config.ts` + `wrangler.config.ts`, deployed with `--x-new-config`).
 - **`notFoundHandling` stays unset** - asset-misses must fall through to the Worker or redirects
   break.
-- Data is embedded at build time (no KV/runtime store), so any data change is a **commit + redeploy**.
+- Data is embedded at build (no KV/runtime store), so any data change is a **commit + redeploy**.
 
 ## Where things live
 
