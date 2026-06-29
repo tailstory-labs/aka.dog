@@ -1,10 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
 import {
   deprecationRows,
   type ResolvedView,
   resolveViewByPath,
-} from "../../lib/views";
+} from "@/lib/views";
 
 const segments = (Astro.params.path ?? "").split("/");
 let view: ResolvedView;

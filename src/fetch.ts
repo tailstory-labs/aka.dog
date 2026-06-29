@@ -1,7 +1,7 @@
 import { astro, FetchState } from "astro/fetch";
-import { redirects } from "./lib/redirects";
-import { RESERVED_TOP } from "./lib/reserved";
-import { buildEnvelope, resolveViewByPath } from "./lib/views";
+import { redirects } from "@/lib/redirects";
+import { RESERVED_TOP } from "@/lib/reserved";
+import { buildEnvelope, resolveViewByPath } from "@/lib/views";
 
 const INDEX_CACHE = "public, max-age=600";
 

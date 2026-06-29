@@ -1,6 +1,6 @@
-import { entries } from "./entries";
-import { RESERVED_VIEW } from "./reserved";
-import type { Entry } from "./types";
+import { entries } from "@/lib/entries";
+import { RESERVED_VIEW } from "@/lib/reserved";
+import type { Entry } from "@/lib/types";
 
 const host = (url: string) => url.split("/")[0];
 const isRetired = (e: Entry) => !e.current?.length;

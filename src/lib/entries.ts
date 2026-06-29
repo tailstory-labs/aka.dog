@@ -1,4 +1,4 @@
-import type { Entry } from "./types";
+import type { Entry } from "@/lib/types";
 
 const files = import.meta.glob("../../data/entries/*.json", {
   import: "default",

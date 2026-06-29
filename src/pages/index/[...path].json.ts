@@ -5,7 +5,7 @@ import {
   buildEnvelope,
   indexViewPaths,
   resolveViewByPath,
-} from "../../lib/views";
+} from "@/lib/views";
 
 export function getStaticPaths() {
   return indexViewPaths().map((path) => ({ params: { path } }));
