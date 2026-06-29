@@ -15,7 +15,8 @@
     "astro": "astro",
     "validate": "node scripts/validate-entries.mjs",
     "gen:types": "json2ts -i schema/entry.schema.json -o src/lib/types.ts --unreachableDefinitions",
-    "deploy": "npm run build && wrangler deploy"
+    "cf:dev": "npm run build && wrangler dev --x-new-config",
+    "deploy": "npm run build && wrangler deploy --x-new-config"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.0.1",

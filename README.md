@@ -39,9 +39,10 @@ Request → Cloudflare
 | `npm run validate` | ajv structural validation + the 5 semantic checks over `data/entries/*.json` |
 | `npm run gen:types` | regenerate `src/lib/types.ts` from the schema |
 | `npm run preview` | preview the production build locally |
-| `npm run deploy` | `build` then `wrangler deploy` |
+| `npm run cf:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
+| `npm run deploy` | `build` then `wrangler deploy --x-new-config` |
 
-To exercise the real Worker locally (redirects, negotiation): `npm run build && npx wrangler dev`.
+To exercise the real Worker locally (redirects, negotiation): `npm run cf:dev`.
 
 ## Adding data
 
@@ -55,20 +56,35 @@ To exercise the real Worker locally (redirects, negotiation): `npm run build && 
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
   title + description + predicate). No entry changes.
 
+## Worker config (experimental TypeScript config)
+
+Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`), matching
+[shenanigansd/shenanigans.dog#132](https://github.com/shenanigansd/shenanigans.dog/pull/132) —
+there is **no `wrangler.jsonc`**:
+
+- **`cloudflare.config.ts`** (`defineWorker`) — runtime settings: name, compatibility date, custom
+  `domains`, the `ASSETS`/`SESSION`/`IMAGES` bindings, `assets.htmlHandling`, and observability.
+  Because aka.dog uses the `@astrojs/cloudflare` **server** adapter (unlike shenanigans.dog, which is
+  pure-static), `entrypoint` points at the worker the adapter emits at `dist/server/entry.mjs` — so
+  `astro build` must run first (the `deploy`/`cf:dev` scripts do this).
+- **`wrangler.config.ts`** (`defineWranglerConfig`) — tooling: `assetsDirectory: "./dist/client"`
+  (the adapter's static-asset output).
+
 ## Deployment (your steps)
 
 The repo is build-ready; deploying needs a Cloudflare account:
 
 1. **Authenticate**: `npx wrangler login` (or set `CLOUDFLARE_API_TOKEN`).
-2. **Deploy**: `npm run deploy`. First deploy lands on a `*.workers.dev` subdomain.
-3. **Custom domain**: put `aka.dog` on a Cloudflare zone, then add it as a custom domain / route for
-   the `aka-dog` Worker (dashboard → Workers → Triggers, or `routes` in `wrangler.jsonc`).
+2. **Deploy**: `npm run deploy` (`astro build` then `wrangler deploy --x-new-config`). With
+   `previewUrls: true` you also get a `*.workers.dev` preview URL.
+3. **Custom domain**: `aka.dog` is declared in `cloudflare.config.ts` (`domains`), so once the zone
+   exists on your Cloudflare account the deploy attaches it.
 
 Notes:
-- The `@astrojs/cloudflare` adapter auto-enables a **`SESSION` KV namespace** and an **`IMAGES`**
-  binding. They're unused here; Cloudflare can auto-provision the KV namespace on deploy, or you can
-  remove them later if you want a leaner Worker.
-- `not_found_handling` is intentionally **unset** — asset-misses must fall through to the Worker, or
+- The `@astrojs/cloudflare` adapter requires the **`SESSION` KV namespace** and **`IMAGES`**
+  bindings (declared in `cloudflare.config.ts`). They're unused here; Cloudflare can auto-provision
+  the KV namespace on deploy.
+- `notFoundHandling` is intentionally **unset** — asset-misses must fall through to the Worker, or
   redirects break. Don't set it to a static page.
 - `public/.assetsignore` excludes `_worker.js` / `_routes.json` from asset upload (a known
   Astro-on-Workers 404 snag).
