@@ -24,8 +24,8 @@ Request -> Cloudflare
 ```
 
 - **Index HTML is server-rendered** (not prerendered) so the Worker can content-negotiate the
-  `Accept` header; responses carry `Cache-Control: public, max-age=600` for edge caching. The
-  `.json` twins are prerendered static assets.
+  `Accept` header; responses carry `Cache-Control: public, max-age=600`. The `.json` twins are
+  prerendered static assets.
 - **`src/fetch.ts`** is the Astro 7 advanced-routing entry: it resolves redirects, negotiates
   `/index/*`, and falls through to Astro for everything else.
 - **One source of truth for the entry shape**: `schema/entry.schema.json` (JSON Schema draft
@@ -47,10 +47,10 @@ To exercise the real Worker locally (redirects, negotiation): `npm run cf:dev`.
 
 ## Formatting & linting
 
-[Biome](https://biomejs.dev) handles formatting and linting (config in `biome.json`, mirroring
-shenanigans.dog: 2-space indent, double quotes, organized imports, recommended lint rules). Run
-`npx biome check --write .` to format and fix locally; CI runs `biome ci .` on every push to `main`
-and every pull request (`.github/workflows/biome.yaml`).
+[Biome](https://biomejs.dev) handles formatting and linting (config in `biome.json`: 2-space
+indent, double quotes, organized imports, recommended lint rules). Run `npx biome check --write .`
+to format and fix locally; CI runs `biome ci .` on every push to `main` and every pull request
+(`.github/workflows/biome.yaml`).
 
 ## Adding data
 
@@ -64,17 +64,16 @@ and every pull request (`.github/workflows/biome.yaml`).
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
   title + description + predicate). No entry changes.
 
-## Worker config (experimental TypeScript config)
+## Worker config
 
-Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`), matching
-[shenanigansd/shenanigans.dog#132](https://github.com/shenanigansd/shenanigans.dog/pull/132) -
-there is **no `wrangler.jsonc`**:
+Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`) - there is **no
+`wrangler.jsonc`**:
 
 - **`cloudflare.config.ts`** (`defineWorker`) - runtime settings: name, compatibility date, custom
   `domains`, the `ASSETS`/`SESSION`/`IMAGES` bindings, `assets.htmlHandling`, and observability.
-  Because aka.dog uses the `@astrojs/cloudflare` **server** adapter (unlike shenanigans.dog, which is
-  pure-static), `entrypoint` points at the worker the adapter emits at `dist/server/entry.mjs` - so
-  `astro build` must run first (the `deploy`/`cf:dev` scripts do this).
+  aka.dog uses the `@astrojs/cloudflare` **server** adapter, so `entrypoint` points at the worker
+  the adapter emits at `dist/server/entry.mjs` - `astro build` must run first (the `deploy`/`cf:dev`
+  scripts do this).
 - **`wrangler.config.ts`** (`defineWranglerConfig`) - tooling: `assetsDirectory: "./dist/client"`
   (the adapter's static-asset output).
 
