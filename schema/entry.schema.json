@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aka.dog/schema/entry.json",
+  "title": "aka.dog index entries",
+  "type": "array",
+  "items": { "$ref": "#/$defs/entry" },
+
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$",
+      "description": "ISO 8601, may be year / year-month / full. Use the precision you have."
+    },
+
+    "liveAddress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "since": { "$ref": "#/$defs/date" },
+        "note": { "type": "string" }
+      }
+    },
+
+    "pastAddress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "since": { "$ref": "#/$defs/date" },
+        "deprecated": { "$ref": "#/$defs/date" },
+        "until": { "$ref": "#/$defs/date" },
+        "became": {
+          "type": "string",
+          "description": "url this address moved to"
+        },
+        "note": { "type": "string" }
+      }
+    },
+
+    "pointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "verified": { "$ref": "#/$defs/date" }
+      }
+    },
+
+    "alternate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "environment"],
+      "properties": {
+        "url": { "type": "string", "minLength": 1 },
+        "environment": {
+          "type": "string",
+          "description": "gcc | gcc-high | dod | 21vianet | …"
+        },
+        "note": { "type": "string" }
+      }
+    },
+
+    "entry": {
+      "title": "Entry",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "provider"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string", "minLength": 1 },
+        "provider": { "$ref": "#/$defs/slug" },
+        "description": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        },
+        "current": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/liveAddress" }
+        },
+        "history": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pastAddress" }
+        },
+        "aka_ms": { "type": "array", "items": { "$ref": "#/$defs/pointer" } },
+        "alternates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/alternate" }
+        },
+        "superseded_by": { "$ref": "#/$defs/slug" },
+        "last_verified": { "$ref": "#/$defs/date" }
+      }
+    }
+  }
+}

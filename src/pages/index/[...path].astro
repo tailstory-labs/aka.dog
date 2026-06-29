@@ -1,0 +1,56 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import {
+  deprecationRows,
+  type ResolvedView,
+  resolveViewByPath,
+} from "../../lib/views";
+
+const segments = (Astro.params.path ?? "").split("/");
+let view: ResolvedView;
+try {
+  view = resolveViewByPath(segments);
+} catch {
+  return new Response("Not found", {
+    status: 404,
+    headers: { "content-type": "text/plain" },
+  });
+}
+---
+
+<Layout title={view.title} description={view.description}>
+  <h1>{view.title}</h1>
+  <p>{view.description}</p>
+
+  {
+    view.kind === 'deprecated' ? (
+      <ul>
+        {deprecationRows(view.entries).map((r) => (
+          <li>
+            <code>{r.url}</code>
+            {r.became ? (
+              <>
+                {' '}→ <code>{r.became}</code>
+              </>
+            ) : null}
+            {r.until ? <> {'·'} retired {r.until}</> : null}
+            {' '}— {r.entry.name}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul>
+        {view.entries.map((e) => (
+          <li>
+            {e.current?.[0] ? (
+              <a href={`https://${e.current[0].url}`}>{e.name}</a>
+            ) : (
+              <span>{e.name}</span>
+            )}
+            {e.description ? <> — {e.description}</> : null}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>
