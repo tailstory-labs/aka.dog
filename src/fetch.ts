@@ -3,7 +3,6 @@ import { redirects } from "./lib/redirects";
 import { RESERVED_TOP } from "./lib/reserved";
 import { buildEnvelope, resolveViewByPath } from "./lib/views";
 
-// Index content is derived and changes only on redeploy, so it is safe to cache at the edge.
 const INDEX_CACHE = "public, max-age=600";
 
 const wantsJson = (req: Request) => {
@@ -21,10 +20,6 @@ const withCache = (res: Response) => {
   });
 };
 
-// Astro 7 advanced-routing entry. The index routes are server-rendered (NOT prerendered) so this
-// handler runs for them and can content-negotiate: Accept: application/json → the envelope built
-// from bundled entries; browsers → the rendered HTML. The shortener namespace resolves to a 302;
-// everything else falls through to Astro. The .json twins stay prerendered static assets.
 export default {
   async fetch(request: Request) {
     const state = new FetchState(request);
@@ -58,13 +53,13 @@ export default {
           );
         }
       }
-      return withCache(await astro(state)); // server-rendered HTML, edge-cacheable
+      return withCache(await astro(state));
     }
 
     if (first && !RESERVED_TOP.has(first)) {
-      const target = redirects.get(pathname); // exact {who}/{slug}
-      if (target) return Response.redirect(target, 302); // 302 so a short link stays repointable
+      const target = redirects.get(pathname);
+      if (target) return Response.redirect(target, 302);
     }
-    return astro(state); // Astro pages/endpoints — 404.astro if no route matches
+    return astro(state);
   },
 };

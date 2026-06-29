@@ -7,8 +7,6 @@ import {
   resolveViewByPath,
 } from "../../lib/views";
 
-// <view>.json for every non-dump view (mirror of the HTML [...path] route; the rest param always
-// has >= 1 segment, so there is no empty-rest edge case here).
 export function getStaticPaths() {
   return indexViewPaths().map((path) => ({ params: { path } }));
 }

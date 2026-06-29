@@ -26,13 +26,12 @@ export const COLLECTIONS: Collection[] = [
     description: "Endpoints users hit directly, like myapps and mygroups.",
     match: (e) => (e.tags ?? []).includes("end-user"),
   },
-].filter((c) => !RESERVED_VIEW.has(c.slug)); // guard against reserved collisions
+].filter((c) => !RESERVED_VIEW.has(c.slug));
 
 export const providers = (): string[] => [
   ...new Set(entries.map((e) => e.provider)),
 ];
 
-// enumerate every view path EXCEPT the dump (which is /index, its own route)
 export function indexViewPaths(): string[] {
   const paths = ["deprecated"];
   for (const p of providers()) {
@@ -55,7 +54,6 @@ export interface ResolvedView {
   entries: Entry[];
 }
 
-// segments: [] dump | ['deprecated'] | [provider] | [provider,'deprecated'] | [provider, collection]
 export function resolveViewByPath(segments: string[]): ResolvedView {
   if (segments.length === 0)
     return {
@@ -104,7 +102,6 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   throw new Error(`Unknown view: ${segments.join("/")}`);
 }
 
-// flattened rows for rendering a deprecated page
 export interface DeprecationRow {
   entry: Entry;
   url: string;
@@ -135,7 +132,7 @@ export function buildEnvelope(view: string, list: Entry[]) {
     schema: "https://aka.dog/schema/entry.json",
     version: 1,
     view,
-    generated: new Date().toISOString(), // baked at build time
+    generated: new Date().toISOString(),
     entries: list,
   };
 }

@@ -4,7 +4,6 @@ import type { APIRoute } from "astro";
 import { entries } from "../lib/entries";
 import { indexViewPaths, resolveViewByPath } from "../lib/views";
 
-// newest last_verified in a view → that view's <lastmod>
 const lastmod = (list: { last_verified?: string }[]) =>
   list
     .map((e) => e.last_verified)
@@ -15,7 +14,6 @@ const lastmod = (list: { last_verified?: string }[]) =>
 export const GET: APIRoute = ({ site }) => {
   if (!site) throw new Error("Astro `site` must be configured");
   const base = site.toString().replace(/\/$/, "");
-  // Only index view URLs (+ the dump + root). Shortener links never appear.
   const urls = [
     { loc: `${base}/`, mod: lastmod(entries) },
     { loc: `${base}/index`, mod: lastmod(entries) },

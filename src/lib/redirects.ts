@@ -1,4 +1,3 @@
-// filename = the "who"; file body = { "slug": "targetUrl" }
 const files = import.meta.glob("../../data/redirects/*.json", {
   import: "default",
   eager: true,

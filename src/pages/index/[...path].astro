@@ -1,6 +1,4 @@
 ---
-// Server-rendered (not prerendered) so the Worker can content-negotiate Accept: application/json
-// for /index/* via src/fetch.ts. The .json twin ([...path].json.ts) remains prerendered + static.
 import Layout from "../../layouts/Layout.astro";
 import {
   deprecationRows,

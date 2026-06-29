@@ -1,6 +1,4 @@
 ---
-// Server-rendered (not prerendered) so the Worker can content-negotiate Accept: application/json
-// for /index via src/fetch.ts. The .json twin (index.json.ts) remains a prerendered static asset.
 import Layout from "../../layouts/Layout.astro";
 import { resolveViewByPath } from "../../lib/views";
 
