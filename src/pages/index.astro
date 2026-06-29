@@ -1,22 +1,43 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { providerNav } from "@/lib/views";
+
+const nav = providerNav();
 ---
 
 <Layout
   title="aka.dog"
-  description="A derived reference index of Microsoft cloud.microsoft endpoints (and a link shortener)."
+  description="A derived reference index of vendor cloud and service endpoints across namespaces (and a link shortener)."
 >
   <h1>aka.dog</h1>
   <p>
-    A small reference index of where Microsoft's cloud services actually live - the
-    <code>*.cloud.microsoft</code> endpoints, their old hosts, and what moved where. Entries are the
-    source of truth; every page is a derived view.
+    A small reference index of where vendors' services actually live - current endpoints, their old
+    hosts, and what moved where, organized by namespace. Entries are the source of truth; every page
+    is a derived view.
   </p>
   <p>
-    Start at the <a href="/index">full index</a>, or jump to
-    <a href="/index/microsoft/cloud-microsoft">cloud.microsoft endpoints</a>,
-    <a href="/index/microsoft/end-user">end-user surfaces</a>, or the
-    <a href="/index/deprecated">deprecated</a> list. Append <code>.json</code> to any of these for the
-    machine-readable view.
+    Start at the <a href="/index">full index</a>, browse the <a href="/index/deprecated">deprecated</a> list,
+    or jump to a namespace below. Append <code>.json</code> to any of these for the machine-readable
+    view.
   </p>
+  <ul>
+    {
+      nav.map((p) => (
+        <li>
+          <a href={`/index/${p.provider}`}>{p.provider}</a>
+          {p.collections.length ? (
+            <small>
+              {' - '}
+              {p.collections.map((c, i) => (
+                <>
+                  {i > 0 ? ', ' : ''}
+                  <a href={`/index/${p.provider}/${c.slug}`}>{c.title}</a>
+                </>
+              ))}
+            </small>
+          ) : null}
+        </li>
+      ))
+    }
+  </ul>
 </Layout>

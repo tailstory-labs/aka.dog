@@ -9,8 +9,9 @@ Assets**:
    hand-authored entry dataset (`data/entries/*.json`). You author **entries**; the views (dump,
    per-provider, `deprecated`, `cloud-microsoft`, `end-user`) are derived - never hand-written.
 
-The seed dataset documents where Microsoft's `*.cloud.microsoft` services live (and what moved
-where). The two systems are parallel and only share provider names.
+The dataset is organized by namespace (provider), so any vendor can be added as a new namespace; the
+seed dataset currently covers Microsoft's `*.cloud.microsoft` services (and what moved where). The
+two systems are parallel and only share provider names.
 
 ## Architecture
 

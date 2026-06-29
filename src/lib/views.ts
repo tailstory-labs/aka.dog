@@ -32,6 +32,20 @@ export const providers = (): string[] => [
   ...new Set(entries.map((e) => e.provider)),
 ];
 
+export interface ProviderNav {
+  provider: string;
+  collections: { slug: string; title: string }[];
+}
+
+export function providerNav(): ProviderNav[] {
+  return providers().map((p) => ({
+    provider: p,
+    collections: COLLECTIONS.filter((c) =>
+      entries.some((e) => e.provider === p && c.match(e)),
+    ).map((c) => ({ slug: c.slug, title: c.title })),
+  }));
+}
+
 export function indexViewPaths(): string[] {
   const paths = ["deprecated"];
   for (const p of providers()) {
