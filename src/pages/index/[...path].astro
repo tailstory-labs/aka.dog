@@ -1,15 +1,22 @@
 ---
 // Server-rendered (not prerendered) so the Worker can content-negotiate Accept: application/json
 // for /index/* via src/fetch.ts. The .json twin ([...path].json.ts) remains prerendered + static.
-import Layout from '../../layouts/Layout.astro';
-import { resolveViewByPath, deprecationRows } from '../../lib/views';
+import Layout from "../../layouts/Layout.astro";
+import {
+  deprecationRows,
+  type ResolvedView,
+  resolveViewByPath,
+} from "../../lib/views";
 
-const segments = (Astro.params.path ?? '').split('/');
-let view;
+const segments = (Astro.params.path ?? "").split("/");
+let view: ResolvedView;
 try {
   view = resolveViewByPath(segments);
 } catch {
-  return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain' } });
+  return new Response("Not found", {
+    status: 404,
+    headers: { "content-type": "text/plain" },
+  });
 }
 ---
 

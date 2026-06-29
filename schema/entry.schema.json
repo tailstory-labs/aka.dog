@@ -37,7 +37,10 @@
         "since": { "$ref": "#/$defs/date" },
         "deprecated": { "$ref": "#/$defs/date" },
         "until": { "$ref": "#/$defs/date" },
-        "became": { "type": "string", "description": "url this address moved to" },
+        "became": {
+          "type": "string",
+          "description": "url this address moved to"
+        },
         "note": { "type": "string" }
       }
     },
@@ -59,7 +62,10 @@
       "required": ["url", "environment"],
       "properties": {
         "url": { "type": "string", "minLength": 1 },
-        "environment": { "type": "string", "description": "gcc | gcc-high | dod | 21vianet | …" },
+        "environment": {
+          "type": "string",
+          "description": "gcc | gcc-high | dod | 21vianet | …"
+        },
         "note": { "type": "string" }
       }
     },
@@ -74,11 +80,24 @@
         "name": { "type": "string", "minLength": 1 },
         "provider": { "$ref": "#/$defs/slug" },
         "description": { "type": "string" },
-        "tags": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
-        "current": { "type": "array", "items": { "$ref": "#/$defs/liveAddress" } },
-        "history": { "type": "array", "items": { "$ref": "#/$defs/pastAddress" } },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        },
+        "current": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/liveAddress" }
+        },
+        "history": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pastAddress" }
+        },
         "aka_ms": { "type": "array", "items": { "$ref": "#/$defs/pointer" } },
-        "alternates": { "type": "array", "items": { "$ref": "#/$defs/alternate" } },
+        "alternates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/alternate" }
+        },
         "superseded_by": { "$ref": "#/$defs/slug" },
         "last_verified": { "$ref": "#/$defs/date" }
       }

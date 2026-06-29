@@ -1,9 +1,9 @@
-import type { Entry } from './types';
-import { entries } from './entries';
-import { RESERVED_VIEW } from './reserved';
+import { entries } from "./entries";
+import { RESERVED_VIEW } from "./reserved";
+import type { Entry } from "./types";
 
-const host = (url: string) => url.split('/')[0];
-const isRetired = (e: Entry) => !(e.current && e.current.length);
+const host = (url: string) => url.split("/")[0];
+const isRetired = (e: Entry) => !e.current?.length;
 
 export interface Collection {
   slug: string;
@@ -14,28 +14,32 @@ export interface Collection {
 
 export const COLLECTIONS: Collection[] = [
   {
-    slug: 'cloud-microsoft',
-    title: 'cloud.microsoft endpoints',
-    description: 'Current *.cloud.microsoft hosts.',
-    match: (e) => (e.current ?? []).some((a) => /\.cloud\.microsoft$/.test(host(a.url))),
+    slug: "cloud-microsoft",
+    title: "cloud.microsoft endpoints",
+    description: "Current *.cloud.microsoft hosts.",
+    match: (e) =>
+      (e.current ?? []).some((a) => /\.cloud\.microsoft$/.test(host(a.url))),
   },
   {
-    slug: 'end-user',
-    title: 'End-user surfaces',
-    description: 'Endpoints users hit directly, like myapps and mygroups.',
-    match: (e) => (e.tags ?? []).includes('end-user'),
+    slug: "end-user",
+    title: "End-user surfaces",
+    description: "Endpoints users hit directly, like myapps and mygroups.",
+    match: (e) => (e.tags ?? []).includes("end-user"),
   },
 ].filter((c) => !RESERVED_VIEW.has(c.slug)); // guard against reserved collisions
 
-export const providers = (): string[] => [...new Set(entries.map((e) => e.provider))];
+export const providers = (): string[] => [
+  ...new Set(entries.map((e) => e.provider)),
+];
 
 // enumerate every view path EXCEPT the dump (which is /index, its own route)
 export function indexViewPaths(): string[] {
-  const paths = ['deprecated'];
+  const paths = ["deprecated"];
   for (const p of providers()) {
     paths.push(p, `${p}/deprecated`);
     for (const c of COLLECTIONS) {
-      if (entries.some((e) => e.provider === p && c.match(e))) paths.push(`${p}/${c.slug}`);
+      if (entries.some((e) => e.provider === p && c.match(e)))
+        paths.push(`${p}/${c.slug}`);
     }
   }
   return paths;
@@ -47,20 +51,25 @@ const deprecatedSet = (list: Entry[]) =>
 export interface ResolvedView {
   title: string;
   description: string;
-  kind: 'entries' | 'deprecated';
+  kind: "entries" | "deprecated";
   entries: Entry[];
 }
 
 // segments: [] dump | ['deprecated'] | [provider] | [provider,'deprecated'] | [provider, collection]
 export function resolveViewByPath(segments: string[]): ResolvedView {
   if (segments.length === 0)
-    return { title: 'aka.dog index', description: 'Everything tracked here.', kind: 'entries', entries };
-
-  if (segments.length === 1 && segments[0] === 'deprecated')
     return {
-      title: 'Deprecated',
-      description: 'Link histories across all providers.',
-      kind: 'deprecated',
+      title: "aka.dog index",
+      description: "Everything tracked here.",
+      kind: "entries",
+      entries,
+    };
+
+  if (segments.length === 1 && segments[0] === "deprecated")
+    return {
+      title: "Deprecated",
+      description: "Link histories across all providers.",
+      kind: "deprecated",
       entries: deprecatedSet(entries),
     };
 
@@ -68,13 +77,18 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   const scoped = entries.filter((e) => e.provider === provider);
 
   if (!view)
-    return { title: provider, description: `Everything under ${provider}.`, kind: 'entries', entries: scoped };
+    return {
+      title: provider,
+      description: `Everything under ${provider}.`,
+      kind: "entries",
+      entries: scoped,
+    };
 
-  if (view === 'deprecated')
+  if (view === "deprecated")
     return {
       title: `${provider}: deprecated`,
       description: `Link histories for ${provider}.`,
-      kind: 'deprecated',
+      kind: "deprecated",
       entries: deprecatedSet(scoped),
     };
 
@@ -83,11 +97,11 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
     return {
       title: `${provider}: ${c.title}`,
       description: c.description,
-      kind: 'entries',
+      kind: "entries",
       entries: scoped.filter(c.match),
     };
 
-  throw new Error(`Unknown view: ${segments.join('/')}`);
+  throw new Error(`Unknown view: ${segments.join("/")}`);
 }
 
 // flattened rows for rendering a deprecated page
@@ -108,13 +122,17 @@ export function deprecationRows(list: Entry[]): DeprecationRow[] {
       became: h.became,
       retired,
     }));
-    return rows.length ? rows : retired ? [{ entry: e, url: '(no live address)', retired }] : [];
+    return rows.length
+      ? rows
+      : retired
+        ? [{ entry: e, url: "(no live address)", retired }]
+        : [];
   });
 }
 
 export function buildEnvelope(view: string, list: Entry[]) {
   return {
-    schema: 'https://aka.dog/schema/entry.json',
+    schema: "https://aka.dog/schema/entry.json",
     version: 1,
     view,
     generated: new Date().toISOString(), // baked at build time

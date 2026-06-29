@@ -27,7 +27,13 @@
     "description": "The Copilot chat surface inside the Microsoft 365 Copilot app.",
     "tags": ["end-user", "copilot"],
     "current": [{ "url": "m365.cloud.microsoft/chat", "since": "2024" }],
-    "aka_ms": [{ "url": "aka.ms/copilot", "label": "Microsoft 365 Copilot", "verified": "2026-06" }],
+    "aka_ms": [
+      {
+        "url": "aka.ms/copilot",
+        "label": "Microsoft 365 Copilot",
+        "verified": "2026-06"
+      }
+    ],
     "last_verified": "2026-06"
   },
   {
@@ -132,7 +138,11 @@
     "tags": ["end-user"],
     "current": [{ "url": "loop.cloud.microsoft" }],
     "history": [
-      { "url": "loop.microsoft.com", "became": "loop.cloud.microsoft", "note": "MC699714." }
+      {
+        "url": "loop.microsoft.com",
+        "became": "loop.cloud.microsoft",
+        "note": "MC699714."
+      }
     ],
     "last_verified": "2026-06"
   },
@@ -221,9 +231,7 @@
     "description": "Microsoft Sway.",
     "tags": ["end-user"],
     "current": [{ "url": "sway.cloud.microsoft" }],
-    "history": [
-      { "url": "sway.office.com", "became": "sway.cloud.microsoft" }
-    ],
+    "history": [{ "url": "sway.office.com", "became": "sway.cloud.microsoft" }],
     "last_verified": "2026-06"
   },
   {
@@ -322,7 +330,11 @@
     "tags": ["end-user"],
     "current": [{ "url": "forms.cloud.microsoft" }],
     "history": [
-      { "url": "forms.office.com", "became": "forms.cloud.microsoft", "note": "MC1066944." }
+      {
+        "url": "forms.office.com",
+        "became": "forms.cloud.microsoft",
+        "note": "MC1066944."
+      }
     ],
     "last_verified": "2026-06"
   },

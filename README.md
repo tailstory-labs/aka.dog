@@ -44,6 +44,13 @@ Request → Cloudflare
 
 To exercise the real Worker locally (redirects, negotiation): `npm run cf:dev`.
 
+## Formatting & linting
+
+[Biome](https://biomejs.dev) handles formatting and linting (config in `biome.json`, mirroring
+shenanigans.dog: 2-space indent, double quotes, organized imports, recommended lint rules). Run
+`npx biome check --write .` to format and fix locally; CI runs `biome ci .` on every push to `main`
+and every pull request (`.github/workflows/biome.yaml`).
+
 ## Adding data
 
 - **A redirect**: add `"slug": "https://target"` to `data/redirects/{who}.json` (filename = the
