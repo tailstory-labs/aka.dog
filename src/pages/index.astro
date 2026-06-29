@@ -1,18 +1,25 @@
 ---
-export const prerender = true;
+// Rendered on-demand by the Worker (NOT prerendered) so it does not emit a root index.html
+// asset. That avoids the Cloudflare static-asset collision where a bare /index would otherwise
+// resolve to / instead of serving the dump at index/index.html.
+import Layout from '../layouts/Layout.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>aka.dog</title>
-  </head>
-  <body>
-    <main>
-      <h1>aka.dog</h1>
-      <p>Coming soon.</p>
-    </main>
-  </body>
-</html>
+<Layout
+  title="aka.dog"
+  description="A derived reference index of Microsoft cloud.microsoft endpoints (and a link shortener)."
+>
+  <h1>aka.dog</h1>
+  <p>
+    A small reference index of where Microsoft's cloud services actually live — the
+    <code>*.cloud.microsoft</code> endpoints, their old hosts, and what moved where. Entries are the
+    source of truth; every page is a derived view.
+  </p>
+  <p>
+    Start at the <a href="/index">full index</a>, or jump to
+    <a href="/index/microsoft/cloud-microsoft">cloud.microsoft endpoints</a>,
+    <a href="/index/microsoft/end-user">end-user surfaces</a>, or the
+    <a href="/index/deprecated">deprecated</a> list. Append <code>.json</code> to any of these for the
+    machine-readable view.
+  </p>
+</Layout>

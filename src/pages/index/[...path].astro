@@ -1,0 +1,49 @@
+---
+export const prerender = true;
+import Layout from '../../layouts/Layout.astro';
+import { indexViewPaths, resolveViewByPath, deprecationRows } from '../../lib/views';
+
+export function getStaticPaths() {
+  return indexViewPaths().map((path) => ({ params: { path } }));
+}
+
+const segments = (Astro.params.path ?? '').split('/');
+const view = resolveViewByPath(segments);
+---
+
+<Layout title={view.title} description={view.description}>
+  <h1>{view.title}</h1>
+  <p>{view.description}</p>
+
+  {
+    view.kind === 'deprecated' ? (
+      <ul>
+        {deprecationRows(view.entries).map((r) => (
+          <li>
+            <code>{r.url}</code>
+            {r.became ? (
+              <>
+                {' '}→ <code>{r.became}</code>
+              </>
+            ) : null}
+            {r.until ? <> {'·'} retired {r.until}</> : null}
+            {' '}— {r.entry.name}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul>
+        {view.entries.map((e) => (
+          <li>
+            {e.current?.[0] ? (
+              <a href={`https://${e.current[0].url}`}>{e.name}</a>
+            ) : (
+              <span>{e.name}</span>
+            )}
+            {e.description ? <> — {e.description}</> : null}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>

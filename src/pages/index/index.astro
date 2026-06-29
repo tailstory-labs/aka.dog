@@ -1,0 +1,26 @@
+---
+export const prerender = true;
+import Layout from '../../layouts/Layout.astro';
+import { resolveViewByPath } from '../../lib/views';
+const view = resolveViewByPath([]);
+---
+
+<Layout title={view.title} description={view.description}>
+  <h1>{view.title}</h1>
+  <p>{view.description}</p>
+  <ul>
+    {
+      view.entries.map((e) => (
+        <li>
+          {e.current?.[0] ? (
+            <a href={`https://${e.current[0].url}`}>{e.name}</a>
+          ) : (
+            <span>{e.name}</span>
+          )}
+          {' '}
+          <small>{e.provider}</small>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
