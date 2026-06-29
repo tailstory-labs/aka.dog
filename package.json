@@ -8,9 +8,13 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "predev": "npm run gen:types",
     "build": "astro build",
+    "prebuild": "npm run validate && npm run gen:types",
     "preview": "astro preview",
     "astro": "astro",
+    "validate": "node scripts/validate-entries.mjs",
+    "gen:types": "json2ts -i schema/entry.schema.json -o src/lib/types.ts --unreachableDefinitions",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
