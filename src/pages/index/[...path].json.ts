@@ -1,11 +1,7 @@
 export const prerender = true;
 
 import type { APIRoute } from "astro";
-import {
-  buildEnvelope,
-  indexViewPaths,
-  resolveViewByPath,
-} from "../../lib/views";
+import { buildEnvelope, indexViewPaths, resolveViewByPath } from "@/lib/views";
 
 export function getStaticPaths() {
   return indexViewPaths().map((path) => ({ params: { path } }));

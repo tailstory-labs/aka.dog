@@ -1,8 +1,8 @@
 export const prerender = true;
 
 import type { APIRoute } from "astro";
-import { entries } from "../lib/entries";
-import { indexViewPaths, resolveViewByPath } from "../lib/views";
+import { entries } from "@/lib/entries";
+import { indexViewPaths, resolveViewByPath } from "@/lib/views";
 
 const lastmod = (list: { last_verified?: string }[]) =>
   list
