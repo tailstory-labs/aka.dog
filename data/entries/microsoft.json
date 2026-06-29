@@ -1,0 +1,427 @@
+[
+  {
+    "id": "m365",
+    "name": "Microsoft 365",
+    "provider": "microsoft",
+    "description": "Root Microsoft 365 portal; bare cloud.microsoft redirects here.",
+    "tags": ["end-user"],
+    "current": [{ "url": "m365.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "microsoft365.com",
+        "became": "m365.cloud.microsoft",
+        "note": "Prior portal host (MC921105)."
+      },
+      {
+        "url": "office.com",
+        "became": "m365.cloud.microsoft",
+        "note": "office.com → cloud.microsoft redirect scheduled mid-Jan 2025 (MC958903)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "m365-copilot-chat",
+    "name": "Microsoft 365 Copilot Chat",
+    "provider": "microsoft",
+    "description": "The Copilot chat surface inside the Microsoft 365 Copilot app.",
+    "tags": ["end-user", "copilot"],
+    "current": [{ "url": "m365.cloud.microsoft/chat", "since": "2024" }],
+    "aka_ms": [{ "url": "aka.ms/copilot", "label": "Microsoft 365 Copilot", "verified": "2026-06" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "excel",
+    "name": "Microsoft Excel",
+    "provider": "microsoft",
+    "description": "Excel for the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "excel.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "microsoft365.com/launch/excel",
+        "became": "excel.cloud.microsoft",
+        "note": "Launcher URL m365.cloud.microsoft/launch/excel still coexists (MC878423)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "powerpoint",
+    "name": "Microsoft PowerPoint",
+    "provider": "microsoft",
+    "description": "PowerPoint for the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "powerpoint.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "microsoft365.com/launch/powerpoint",
+        "became": "powerpoint.cloud.microsoft",
+        "note": "Launcher URL still coexists (MC878423)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "word",
+    "name": "Microsoft Word",
+    "provider": "microsoft",
+    "description": "Word for the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "word.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "microsoft365.com/launch/word",
+        "became": "word.cloud.microsoft",
+        "note": "Launcher URL still coexists (MC878423)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "outlook",
+    "name": "Microsoft Outlook",
+    "provider": "microsoft",
+    "description": "Outlook on the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "outlook.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "outlook.office.com",
+        "became": "outlook.cloud.microsoft",
+        "note": "Also previously outlook.office365.com; active redirect re-announced MC1188995 (Nov 2025)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "status",
+    "name": "Microsoft 365 Service Health Status",
+    "provider": "microsoft",
+    "description": "Microsoft 365 service health status page.",
+    "current": [{ "url": "status.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "status.office365.com",
+        "became": "status.cloud.microsoft",
+        "note": "Earliest batch move (MC724837, Feb 2024)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "admin",
+    "name": "Microsoft 365 Admin Center",
+    "provider": "microsoft",
+    "description": "Microsoft 365 admin center.",
+    "current": [{ "url": "admin.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "admin.microsoft.com",
+        "became": "admin.cloud.microsoft",
+        "note": "Exchange admin center also moved: admin.exchange.microsoft.com → admin.cloud.microsoft/exchange (MC762506)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "loop",
+    "name": "Microsoft Loop",
+    "provider": "microsoft",
+    "description": "Microsoft Loop collaborative canvas.",
+    "tags": ["end-user"],
+    "current": [{ "url": "loop.cloud.microsoft" }],
+    "history": [
+      { "url": "loop.microsoft.com", "became": "loop.cloud.microsoft", "note": "MC699714." }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "mesh",
+    "name": "Microsoft Mesh",
+    "provider": "microsoft",
+    "description": "Microsoft Mesh immersive experiences; the web surface has been retired.",
+    "tags": ["end-user"],
+    "history": [
+      {
+        "url": "mesh.cloud.microsoft",
+        "until": "2025-12",
+        "note": "Mesh on the web retired 2025-12-01; launched on cloud.microsoft with no prior public URL."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "onenote",
+    "name": "Microsoft OneNote",
+    "provider": "microsoft",
+    "description": "OneNote for the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "onenote.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "microsoft365.com/launch/onenote",
+        "became": "onenote.cloud.microsoft",
+        "note": "Launcher URL still coexists (MC901821)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "places",
+    "name": "Microsoft Places",
+    "provider": "microsoft",
+    "description": "Microsoft Places workplace coordination.",
+    "tags": ["end-user"],
+    "current": [{ "url": "places.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "outlook.office.com/places",
+        "became": "places.cloud.microsoft",
+        "note": "MC1022524."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "planner",
+    "name": "Microsoft Planner",
+    "provider": "microsoft",
+    "description": "Microsoft Planner; absorbed the former Tasks surface.",
+    "tags": ["end-user"],
+    "current": [{ "url": "planner.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "tasks.cloud.microsoft",
+        "became": "planner.cloud.microsoft",
+        "note": "The Tasks surface folded into Planner; never had its own entry (MC807452)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "setup",
+    "name": "Microsoft 365 Setup",
+    "provider": "microsoft",
+    "description": "Microsoft 365 setup and deployment portal.",
+    "current": [{ "url": "setup.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "setup.microsoft.com",
+        "became": "setup.cloud.microsoft",
+        "note": "Shared batch move with Status (MC724837, Feb 2024)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "sway",
+    "name": "Microsoft Sway",
+    "provider": "microsoft",
+    "description": "Microsoft Sway.",
+    "tags": ["end-user"],
+    "current": [{ "url": "sway.cloud.microsoft" }],
+    "history": [
+      { "url": "sway.office.com", "became": "sway.cloud.microsoft" }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-engage",
+    "name": "Microsoft Viva Engage",
+    "provider": "microsoft",
+    "description": "Viva Engage, the rebrand of Yammer.",
+    "tags": ["end-user"],
+    "current": [{ "url": "engage.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "web.yammer.com",
+        "became": "engage.cloud.microsoft",
+        "note": "Rebranded from Yammer (MC679739)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-goals",
+    "name": "Microsoft Viva Goals",
+    "provider": "microsoft",
+    "description": "Viva Goals OKR tracking; service retired.",
+    "tags": ["end-user"],
+    "history": [
+      {
+        "url": "goals.microsoft.com",
+        "became": "goals.cloud.microsoft",
+        "note": "Prior host before the cloud.microsoft move (MC714515)."
+      },
+      {
+        "url": "goals.cloud.microsoft",
+        "until": "2025-12",
+        "note": "Service retired 2025-12-31."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-home",
+    "name": "Microsoft Viva Home",
+    "provider": "microsoft",
+    "description": "Viva Home dashboard; the marketing site viva.microsoft.com is a separate resource.",
+    "tags": ["end-user"],
+    "current": [{ "url": "viva.cloud.microsoft" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-insights",
+    "name": "Microsoft Viva Insights",
+    "provider": "microsoft",
+    "description": "Viva Insights productivity analytics.",
+    "tags": ["end-user"],
+    "current": [{ "url": "insights.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "insights.viva.office.com",
+        "became": "insights.cloud.microsoft",
+        "note": "Analyst workbench also moved: analysis.insights.viva.office.com → analysis.insights.cloud.microsoft (MC715686)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-learning",
+    "name": "Microsoft Viva Learning",
+    "provider": "microsoft",
+    "description": "Viva Learning.",
+    "tags": ["end-user"],
+    "current": [{ "url": "learning.cloud.microsoft" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-pulse",
+    "name": "Microsoft Viva Pulse",
+    "provider": "microsoft",
+    "description": "Viva Pulse sentiment surveys.",
+    "tags": ["end-user"],
+    "current": [{ "url": "pulse.cloud.microsoft" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "copilot",
+    "name": "Microsoft Copilot",
+    "provider": "microsoft",
+    "description": "Microsoft Copilot; coexists with copilot.microsoft.com as a separate resource (not a redirect).",
+    "tags": ["end-user", "copilot"],
+    "current": [{ "url": "copilot.cloud.microsoft" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "forms",
+    "name": "Microsoft Forms",
+    "provider": "microsoft",
+    "description": "Microsoft Forms.",
+    "tags": ["end-user"],
+    "current": [{ "url": "forms.cloud.microsoft" }],
+    "history": [
+      { "url": "forms.office.com", "became": "forms.cloud.microsoft", "note": "MC1066944." }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "whiteboard",
+    "name": "Microsoft Whiteboard",
+    "provider": "microsoft",
+    "description": "Microsoft Whiteboard.",
+    "tags": ["end-user"],
+    "current": [{ "url": "whiteboard.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "app.whiteboard.microsoft.com",
+        "became": "whiteboard.cloud.microsoft",
+        "note": "MC1084637."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "visio",
+    "name": "Microsoft Visio",
+    "provider": "microsoft",
+    "description": "Visio for the web; previously reached via the Office.com app launcher with no dedicated host.",
+    "tags": ["end-user"],
+    "current": [{ "url": "visio.cloud.microsoft" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "teams",
+    "name": "Microsoft Teams",
+    "provider": "microsoft",
+    "description": "Microsoft Teams.",
+    "tags": ["end-user"],
+    "current": [{ "url": "teams.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "teams.microsoft.com",
+        "became": "teams.cloud.microsoft",
+        "note": "Redirect can be disabled in the Teams admin portal (MC1162275)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "todo",
+    "name": "Microsoft To Do",
+    "provider": "microsoft",
+    "description": "Microsoft To Do.",
+    "tags": ["end-user"],
+    "current": [{ "url": "todo.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "to-do.office.com",
+        "became": "todo.cloud.microsoft",
+        "note": "Hyphen drops on the new URL (to-do → todo) (MC1188995)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "onedrive",
+    "name": "OneDrive",
+    "provider": "microsoft",
+    "description": "OneDrive on the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "onedrive.cloud.microsoft" }],
+    "history": [
+      {
+        "url": "[tenant]-my.sharepoint.com",
+        "became": "onedrive.cloud.microsoft",
+        "note": "Per-tenant URL. Short URL first noted MC796476 (May 2024); formal transition MC1392563 (Jun 2026)."
+      }
+    ],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "viva-skills",
+    "name": "Microsoft Viva Skills",
+    "provider": "microsoft",
+    "description": "Viva Skills; deployed new on cloud.microsoft with no prior public URL.",
+    "tags": ["end-user"],
+    "current": [{ "url": "skills.cloud.microsoft" }],
+    "last_verified": "2026-06"
+  },
+  {
+    "id": "skype-for-business",
+    "name": "Skype for Business",
+    "provider": "microsoft",
+    "description": "Skype for Business Online; retired and superseded by Microsoft Teams.",
+    "tags": ["end-user"],
+    "superseded_by": "teams",
+    "history": [
+      {
+        "url": "TODO.skypeforbusiness.example",
+        "until": "2021",
+        "note": "Service retired; users migrated to Microsoft Teams. (host/date placeholders — confirm.)"
+      }
+    ],
+    "last_verified": "2026-06"
+  }
+]
