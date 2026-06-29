@@ -16,6 +16,18 @@ export default defineWorker({
     IMAGES: bindings.images(),
   },
   observability: {
-    enabled: true,
+    enabled: false,
+    headSamplingRate: 1,
+    logs: {
+      enabled: true,
+      headSamplingRate: 1,
+      persist: true,
+      invocationLogs: true,
+    },
+    traces: {
+      enabled: true,
+      persist: true,
+      headSamplingRate: 1,
+    },
   },
 });
