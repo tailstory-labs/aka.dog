@@ -7,7 +7,8 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "html_handling": "drop-trailing-slash"
-    // Phase 6 adds: "run_worker_first": ["/index/*"]
+    // Index HTML is server-rendered (for Accept negotiation), so it reaches the Worker without
+    // run_worker_first; the prerendered .json twins stay served directly from the edge.
   },
   "observability": { "enabled": true }
   // Never set assets.not_found_handling to a static page — it bypasses the Worker and kills redirects.
