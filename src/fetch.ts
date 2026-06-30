@@ -5,17 +5,20 @@ import { buildEnvelope, resolveViewByPath } from "@/lib/views";
 
 const INDEX_CACHE = "public, max-age=600";
 
-const wantsJson = (req: Request) => {
-  const a = req.headers.get("accept") ?? "";
-  return a.includes("application/json") && !a.includes("text/html");
+const wantsJson = (request: Request) => {
+  const acceptHeader = request.headers.get("accept") ?? "";
+  return (
+    acceptHeader.includes("application/json") &&
+    !acceptHeader.includes("text/html")
+  );
 };
 
-const withCache = (res: Response) => {
-  const headers = new Headers(res.headers);
+const withCache = (response: Response) => {
+  const headers = new Headers(response.headers);
   headers.set("cache-control", INDEX_CACHE);
-  return new Response(res.body, {
-    status: res.status,
-    statusText: res.statusText,
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
     headers,
   });
 };

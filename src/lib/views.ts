@@ -3,13 +3,13 @@ import { RESERVED_VIEW } from "@/lib/reserved";
 import type { Entry } from "@/lib/types";
 
 const host = (url: string) => url.split("/")[0];
-const isRetired = (e: Entry) => !e.current?.length;
+const isRetired = (entry: Entry) => !entry.current?.length;
 
 export interface Collection {
   slug: string;
   title: string;
   description: string;
-  match: (e: Entry) => boolean;
+  match: (entry: Entry) => boolean;
 }
 
 export const COLLECTIONS: Collection[] = [
@@ -17,19 +17,21 @@ export const COLLECTIONS: Collection[] = [
     slug: "cloud-microsoft",
     title: "cloud.microsoft endpoints",
     description: "Current *.cloud.microsoft hosts.",
-    match: (e) =>
-      (e.current ?? []).some((a) => /\.cloud\.microsoft$/.test(host(a.url))),
+    match: (entry) =>
+      (entry.current ?? []).some((address) =>
+        /\.cloud\.microsoft$/.test(host(address.url)),
+      ),
   },
   {
     slug: "end-user",
     title: "End-user surfaces",
     description: "Endpoints users hit directly, like myapps and mygroups.",
-    match: (e) => (e.tags ?? []).includes("end-user"),
+    match: (entry) => (entry.tags ?? []).includes("end-user"),
   },
-].filter((c) => !RESERVED_VIEW.has(c.slug));
+].filter((collection) => !RESERVED_VIEW.has(collection.slug));
 
 export const providers = (): string[] => [
-  ...new Set(entries.map((e) => e.provider)),
+  ...new Set(entries.map((entry) => entry.provider)),
 ];
 
 export interface ProviderNav {
@@ -38,28 +40,34 @@ export interface ProviderNav {
 }
 
 export function providerNav(): ProviderNav[] {
-  return providers().map((p) => ({
-    provider: p,
-    collections: COLLECTIONS.filter((c) =>
-      entries.some((e) => e.provider === p && c.match(e)),
-    ).map((c) => ({ slug: c.slug, title: c.title })),
+  return providers().map((provider) => ({
+    provider,
+    collections: COLLECTIONS.filter((collection) =>
+      entries.some(
+        (entry) => entry.provider === provider && collection.match(entry),
+      ),
+    ).map((collection) => ({ slug: collection.slug, title: collection.title })),
   }));
 }
 
 export function indexViewPaths(): string[] {
   const paths = ["deprecated"];
-  for (const p of providers()) {
-    paths.push(p, `${p}/deprecated`);
-    for (const c of COLLECTIONS) {
-      if (entries.some((e) => e.provider === p && c.match(e)))
-        paths.push(`${p}/${c.slug}`);
+  for (const provider of providers()) {
+    paths.push(provider, `${provider}/deprecated`);
+    for (const collection of COLLECTIONS) {
+      if (
+        entries.some(
+          (entry) => entry.provider === provider && collection.match(entry),
+        )
+      )
+        paths.push(`${provider}/${collection.slug}`);
     }
   }
   return paths;
 }
 
 const deprecatedSet = (list: Entry[]) =>
-  list.filter((e) => isRetired(e) || (e.history?.length ?? 0) > 0);
+  list.filter((entry) => isRetired(entry) || (entry.history?.length ?? 0) > 0);
 
 export interface ResolvedView {
   title: string;
@@ -86,14 +94,14 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
     };
 
   const [provider, view] = segments;
-  const scoped = entries.filter((e) => e.provider === provider);
+  const scopedEntries = entries.filter((entry) => entry.provider === provider);
 
   if (!view)
     return {
       title: provider,
       description: `Everything under ${provider}.`,
       kind: "entries",
-      entries: scoped,
+      entries: scopedEntries,
     };
 
   if (view === "deprecated")
@@ -101,16 +109,16 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
       title: `${provider}: deprecated`,
       description: `Link histories for ${provider}.`,
       kind: "deprecated",
-      entries: deprecatedSet(scoped),
+      entries: deprecatedSet(scopedEntries),
     };
 
-  const c = COLLECTIONS.find((x) => x.slug === view);
-  if (c)
+  const collection = COLLECTIONS.find((candidate) => candidate.slug === view);
+  if (collection)
     return {
-      title: `${provider}: ${c.title}`,
-      description: c.description,
+      title: `${provider}: ${collection.title}`,
+      description: collection.description,
       kind: "entries",
-      entries: scoped.filter(c.match),
+      entries: scopedEntries.filter(collection.match),
     };
 
   throw new Error(`Unknown view: ${segments.join("/")}`);
@@ -124,19 +132,19 @@ export interface DeprecationRow {
   retired: boolean;
 }
 export function deprecationRows(list: Entry[]): DeprecationRow[] {
-  return list.flatMap((e) => {
-    const retired = isRetired(e);
-    const rows = (e.history ?? []).map((h) => ({
-      entry: e,
-      url: h.url,
-      until: h.until,
-      became: h.became,
+  return list.flatMap((entry) => {
+    const retired = isRetired(entry);
+    const rows = (entry.history ?? []).map((historyEntry) => ({
+      entry,
+      url: historyEntry.url,
+      until: historyEntry.until,
+      became: historyEntry.became,
       retired,
     }));
     return rows.length
       ? rows
       : retired
-        ? [{ entry: e, url: "(no live address)", retired }]
+        ? [{ entry, url: "(no live address)", retired }]
         : [];
   });
 }
