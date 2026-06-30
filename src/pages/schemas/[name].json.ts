@@ -4,7 +4,7 @@ import type { APIRoute } from "astro";
 
 // Mirrors the import.meta.glob pattern in src/lib/redirects.ts. Loads the raw
 // bytes of every canonical schema so the build serves them verbatim.
-const files = import.meta.glob("../../../schema/*.schema.json", {
+const files = import.meta.glob("../../../schemas/*.schema.json", {
   query: "?raw",
   import: "default",
   eager: true,

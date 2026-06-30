@@ -1,7 +1,7 @@
 export const RESERVED_TOP = new Set([
   "index",
   "about",
-  "schema",
+  "schemas",
   ".well-known",
 ]);
 

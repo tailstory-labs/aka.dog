@@ -18,14 +18,14 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 - `npm run build` - the build gate: `validate` + `gen:types`, then `astro build`. Run before
   considering work done.
 - `npm run validate` - ajv structural validation + 5 semantic checks over `data/entries/*.json`.
-- `npm run gen:types` - regenerate `src/lib/types.ts` from `schema/entry.schema.json`.
+- `npm run gen:types` - regenerate `src/lib/types.ts` from `schemas/entry.schema.json`.
 - `npm run dev` - Astro dev server.
 - `npm run cf:dev` - run the real Worker locally (redirects + content negotiation).
 - `npx biome check --write .` - format and lint (always run before committing).
 
 ## Conventions & invariants
 
-- **Single source of truth for the entry shape**: `schema/entry.schema.json` (draft 2020-12).
+- **Single source of truth for the entry shape**: `schemas/entry.schema.json` (draft 2020-12).
   `src/lib/types.ts` is **generated** - never hand-edit; change the schema and run `gen:types`.
 - **Don't author derived views.** Add data, not view output.
 - **Validation must pass.** `npm run validate` enforces: unique `id`, `superseded_by` resolves and
@@ -41,7 +41,7 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 ## Where things live
 
 ```
-schema/entry.schema.json     canonical entry contract
+schemas/entry.schema.json     canonical entry contract
 scripts/validate-entries.mjs build gate: ajv + semantic checks
 data/entries/*.json          index dataset (authored)
 data/redirects/*.json        shortener dataset (authored)

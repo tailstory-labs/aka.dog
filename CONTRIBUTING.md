@@ -28,7 +28,7 @@ Request -> Cloudflare
   prerendered static assets.
 - **`src/fetch.ts`** is the Astro 7 advanced-routing entry: it resolves redirects, negotiates
   `/index/*`, and falls through to Astro for everything else.
-- **One source of truth for the entry shape**: `schema/entry.schema.json` (JSON Schema draft
+- **One source of truth for the entry shape**: `schemas/entry.schema.json` (JSON Schema draft
   2020-12). Validated by ajv in the build gate; TypeScript types are generated from it.
 
 ## Commands
@@ -57,7 +57,7 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
 - **A redirect**: add `"slug": "https://target"` to `data/redirects/{who}.json` (filename = the
   `{who}` namespace). Commit + redeploy.
 - **An index entry**: add an object to `data/entries/{provider}.json` following
-  `schema/entry.schema.json`. An entry is the durable thing; addresses live under it (`current` /
+  `schemas/entry.schema.json`. An entry is the durable thing; addresses live under it (`current` /
   `history`). No `current` => retired. `npm run validate` enforces structure plus: unique `id`,
   `superseded_by` resolves and implies no `current`, every `became` URL resolves, and no
   reserved-word collisions.
@@ -101,7 +101,7 @@ Notes:
 ## Layout
 
 ```
-schema/entry.schema.json     canonical entry contract (draft 2020-12)
+schemas/entry.schema.json     canonical entry contract (draft 2020-12)
 scripts/validate-entries.mjs build gate: ajv + semantic checks
 data/entries/*.json          the index dataset (authored)
 data/redirects/*.json        the shortener dataset (authored)

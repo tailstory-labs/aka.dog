@@ -151,7 +151,7 @@ export function deprecationRows(list: Entry[]): DeprecationRow[] {
 
 export function buildEnvelope(view: string, list: Entry[]) {
   return {
-    schema: "https://aka.dog/schema/entry.json",
+    schema: "https://aka.dog/schemas/entry.json",
     version: 1,
     view,
     generated: new Date().toISOString(),

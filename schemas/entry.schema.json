@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://aka.dog/schema/entry.json",
+  "$id": "https://aka.dog/schemas/entry.json",
   "title": "aka.dog index entries",
   "type": "array",
   "items": { "$ref": "#/$defs/entry" },
