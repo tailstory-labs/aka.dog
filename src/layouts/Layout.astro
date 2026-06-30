@@ -6,6 +6,9 @@ interface Props {
 }
 const { title, description = "", noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const SITE_NAME = "aka.dog";
+const documentTitle =
+  title === SITE_NAME ? SITE_NAME : `${title} - ${SITE_NAME}`;
 ---
 
 <!doctype html>
@@ -13,7 +16,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{title} - aka.dog</title>
+    <title>{documentTitle}</title>
     {description && <meta name="description" content={description} />}
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={canonical} />}
