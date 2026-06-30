@@ -5,14 +5,14 @@ import Ajv2020 from "ajv/dist/2020.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schema = JSON.parse(
-  readFileSync(`${root}/schema/entry.schema.json`, "utf8"),
+  readFileSync(`${root}/schemas/entry.schema.json`, "utf8"),
 );
 const validate = new Ajv2020({ allErrors: true, strict: false }).compile(
   schema,
 );
 
 // Keep in sync with src/lib/reserved.ts and the COLLECTIONS slugs in src/lib/views.ts.
-const RESERVED_TOP = new Set(["index", "about", "schema", ".well-known"]);
+const RESERVED_TOP = new Set(["index", "about", "schemas", ".well-known"]);
 const RESERVED_VIEW = new Set(["deprecated"]);
 const AUTHORED_COLLECTION_SLUGS = ["cloud-microsoft", "end-user"];
 

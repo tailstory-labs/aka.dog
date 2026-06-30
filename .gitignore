@@ -1,6 +1,6 @@
 # build output
 dist/
-# generated types (from schema/entry.schema.json)
+# generated types (from schemas/entry.schema.json)
 src/lib/types.ts
 # dependencies
 node_modules/
