@@ -11,5 +11,5 @@ The two systems are parallel and only share provider names.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for architecture, commands, how to add data, and deployment.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for architecture, commands, how to add data, and deployment.<br>
 Working with an AI coding agent? See [AGENTS.md](AGENTS.md).
