@@ -16,24 +16,28 @@ const RESERVED_TOP = new Set(["index", "about", "schema", ".well-known"]);
 const RESERVED_VIEW = new Set(["deprecated"]);
 const AUTHORED_COLLECTION_SLUGS = ["cloud-microsoft", "end-user"];
 
-const dir = `${root}/data/entries`;
+const entriesDirectory = `${root}/data/entries`;
 let failed = false;
 const errors = [];
 const all = [];
 
-if (!existsSync(dir)) {
-  console.error(`FAIL no data/entries directory at ${dir}`);
+if (!existsSync(entriesDirectory)) {
+  console.error(`FAIL no data/entries directory at ${entriesDirectory}`);
   process.exit(1);
 }
-for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
-  const data = JSON.parse(readFileSync(`${dir}/${file}`, "utf8"));
+for (const file of readdirSync(entriesDirectory).filter((fileName) =>
+  fileName.endsWith(".json"),
+)) {
+  const data = JSON.parse(readFileSync(`${entriesDirectory}/${file}`, "utf8"));
   if (validate(data)) {
     console.log(`OK   ${file}`);
   } else {
     failed = true;
     console.error(`FAIL ${file}`);
-    for (const e of validate.errors)
-      console.error(`     ${e.instancePath || "/"} ${e.message}`);
+    for (const validationError of validate.errors)
+      console.error(
+        `     ${validationError.instancePath || "/"} ${validationError.message}`,
+      );
   }
   if (Array.isArray(data)) for (const entry of data) all.push({ entry, file });
 }
@@ -41,8 +45,10 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith(".json"))) {
 const ids = new Map();
 const knownUrls = new Set();
 for (const { entry } of all) {
-  for (const a of entry.current ?? []) if (a?.url) knownUrls.add(a.url);
-  for (const h of entry.history ?? []) if (h?.url) knownUrls.add(h.url);
+  for (const address of entry.current ?? [])
+    if (address?.url) knownUrls.add(address.url);
+  for (const historyEntry of entry.history ?? [])
+    if (historyEntry?.url) knownUrls.add(historyEntry.url);
 }
 
 for (const { entry, file } of all) {
@@ -70,10 +76,10 @@ for (const { entry, file } of all) {
     errors.push(
       `"${entry.id}" has superseded_by but still lists a current address (${file})`,
     );
-  for (const h of entry.history ?? [])
-    if (h?.became != null && !knownUrls.has(h.became))
+  for (const historyEntry of entry.history ?? [])
+    if (historyEntry?.became != null && !knownUrls.has(historyEntry.became))
       errors.push(
-        `history.became "${h.became}" on "${entry.id}" does not resolve to any known address (${file})`,
+        `history.became "${historyEntry.became}" on "${entry.id}" does not resolve to any known address (${file})`,
       );
 }
 
@@ -86,7 +92,7 @@ for (const slug of AUTHORED_COLLECTION_SLUGS)
 if (errors.length) {
   failed = true;
   console.error(`\nSemantic check failures (${errors.length}):`);
-  for (const e of errors) console.error(`  - ${e}`);
+  for (const error of errors) console.error(`  - ${error}`);
 } else if (!failed) {
   console.log(
     `\nSemantic checks passed (${all.length} entries, ${ids.size} unique ids).`,

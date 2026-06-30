@@ -11,9 +11,9 @@ const files = import.meta.glob("../../../schema/*.schema.json", {
 }) as Record<string, string>;
 
 const byName = new Map(
-  Object.entries(files).map(([p, raw]) => [
-    (p.split("/").pop() ?? "").replace(/\.schema\.json$/, ""),
-    raw,
+  Object.entries(files).map(([filePath, rawContent]) => [
+    (filePath.split("/").pop() ?? "").replace(/\.schema\.json$/, ""),
+    rawContent,
   ]),
 );
 
@@ -22,9 +22,9 @@ export function getStaticPaths() {
 }
 
 export const GET: APIRoute = ({ params }) => {
-  const raw = byName.get(params.name ?? "");
-  if (raw == null) return new Response("Not found", { status: 404 });
-  return new Response(raw, {
+  const rawContent = byName.get(params.name ?? "");
+  if (rawContent == null) return new Response("Not found", { status: 404 });
+  return new Response(rawContent, {
     headers: { "content-type": "application/schema+json; charset=utf-8" },
   });
 };

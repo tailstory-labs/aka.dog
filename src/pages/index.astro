@@ -2,7 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { providerNav } from "@/lib/views";
 
-const nav = providerNav();
+const navigation = providerNav();
 ---
 
 <Layout
@@ -22,16 +22,18 @@ const nav = providerNav();
   </p>
   <ul>
     {
-      nav.map((p) => (
+      navigation.map((providerGroup) => (
         <li>
-          <a href={`/index/${p.provider}`}>{p.provider}</a>
-          {p.collections.length ? (
+          <a href={`/index/${providerGroup.provider}`}>{providerGroup.provider}</a>
+          {providerGroup.collections.length ? (
             <small>
               {' - '}
-              {p.collections.map((c, i) => (
+              {providerGroup.collections.map((collection, index) => (
                 <>
-                  {i > 0 ? ', ' : ''}
-                  <a href={`/index/${p.provider}/${c.slug}`}>{c.title}</a>
+                  {index > 0 ? ', ' : ''}
+                  <a href={`/index/${providerGroup.provider}/${collection.slug}`}>
+                    {collection.title}
+                  </a>
                 </>
               ))}
             </small>

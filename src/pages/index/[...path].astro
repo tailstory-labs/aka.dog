@@ -25,29 +25,29 @@ try {
   {
     view.kind === 'deprecated' ? (
       <ul>
-        {deprecationRows(view.entries).map((r) => (
+        {deprecationRows(view.entries).map((row) => (
           <li>
-            <code>{r.url}</code>
-            {r.became ? (
+            <code>{row.url}</code>
+            {row.became ? (
               <>
-                {' '}-> <code>{r.became}</code>
+                {' '}-> <code>{row.became}</code>
               </>
             ) : null}
-            {r.until ? <> {'-'} retired {r.until}</> : null}
-            {' '}- {r.entry.name}
+            {row.until ? <> {'-'} retired {row.until}</> : null}
+            {' '}- {row.entry.name}
           </li>
         ))}
       </ul>
     ) : (
       <ul>
-        {view.entries.map((e) => (
+        {view.entries.map((entry) => (
           <li>
-            {e.current?.[0] ? (
-              <a href={`https://${e.current[0].url}`}>{e.name}</a>
+            {entry.current?.[0] ? (
+              <a href={`https://${entry.current[0].url}`}>{entry.name}</a>
             ) : (
-              <span>{e.name}</span>
+              <span>{entry.name}</span>
             )}
-            {e.description ? <> - {e.description}</> : null}
+            {entry.description ? <> - {entry.description}</> : null}
           </li>
         ))}
       </ul>
