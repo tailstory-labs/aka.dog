@@ -81,5 +81,17 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
         </>
       )
     }
+    {
+      /* Dead addresses are only listed on the deprecated view now, so every
+         other view points at it rather than reprinting one. */
+      view.kind !== 'deprecated' && (
+        <>
+          {' · '}
+          <a href={provider ? `/index/${provider}/deprecated` : '/index/deprecated'}>
+            deprecated addresses
+          </a>
+        </>
+      )
+    }
   </p>
 </Layout>
