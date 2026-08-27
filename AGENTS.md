@@ -39,6 +39,12 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   URL**, so when an address moves in `data/entries` every curated page follows. Never hard-code a
   destination URL in an `.astro` file. A curated item's `blurb` is written for that page's audience;
   it is not `entry.description` and must never fall back to it.
+- **Dead addresses belong to the deprecated views.** `/index/deprecated` and
+  `/index/{provider}/deprecated` are the only pages that print a `history` URL; every other view
+  shows a retired entry as its name, the `retired` chip and an em dash, and links to the deprecated
+  view from the meta line. Past addresses do stay in the entry table's `data-search` key (searching
+  an old host still finds the entry that replaced it) and in the JSON envelopes, which remain the
+  whole dataset.
 - A curated page's `title` is stored **bare** (`"end-user surfaces"`); the resolver prefixes
   the provider, exactly as it does for a COLLECTION, so the same string serves both the
   page heading and the homepage nav label.

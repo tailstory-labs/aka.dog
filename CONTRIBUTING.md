@@ -63,7 +63,9 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
   `schemas/entry.schema.json`. An entry is the durable thing; addresses live under it (`current` /
   `history`). No `current` => retired. `npm run validate` enforces structure plus: unique `id`,
   `superseded_by` resolves and implies no `current`, every `became` URL resolves, and no
-  reserved-word collisions.
+  reserved-word collisions. A `history` address is only ever printed on the deprecated views
+  (`/index/deprecated`, `/index/{provider}/deprecated`) - elsewhere a retired entry shows the
+  `retired` chip and an em dash, and the page links to the deprecated view.
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
   title + description + predicate). No entry changes. This is the right tool when the page *is* a
   query - "every `*.cloud.microsoft` host" is a fact about the entries.

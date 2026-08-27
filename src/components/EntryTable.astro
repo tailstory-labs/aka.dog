@@ -13,6 +13,9 @@ const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
 const successorOf = (entry: Entry) =>
   entry.superseded_by ? entriesById.get(entry.superseded_by) : undefined;
 
+// Past addresses stay in the search key even though no cell prints one: a
+// reader who only remembers the old host still lands on the entry that
+// replaced it, and the key is never rendered.
 const searchKey = (entry: Entry) =>
   [
     entry.name,
@@ -52,8 +55,14 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
       entries.map((entry) => {
         const current = entry.current ?? [];
         const primary = current[0];
-        const history = entry.history ?? [];
         const successor = successorOf(entry);
+        const pointers = entry.aka_ms ?? [];
+        // A retired entry keeps its row - the entry is the durable thing, and
+        // the deprecated table links back to this anchor - but its addresses
+        // are all dead, and dead addresses are the deprecated view's job. An
+        // em dash rather than a blank cell, as in DeprecationTable.
+        const nothingLive =
+          current.length === 0 && !successor && pointers.length === 0;
         return (
           <tr id={`entry-${entry.id}`} data-search={searchKey(entry)}>
             <td>
@@ -66,12 +75,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
                   <Host url={address.url} />
                 </a>
               ))}
-              {!primary && history.length > 0 && (
-                <Host
-                  url={history[history.length - 1]?.url ?? ""}
-                  class="stack dead"
-                />
-              )}
+              {nothingLive && <span>&#8212;</span>}
               {successor && (
                 <span class="secondary">
                   {'→ '}
@@ -87,9 +91,9 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
                   )}
                 </span>
               )}
-              {(entry.aka_ms ?? []).length > 0 && (
+              {pointers.length > 0 && (
                 <span class="secondary">
-                  {(entry.aka_ms ?? []).map((pointer) => (
+                  {pointers.map((pointer) => (
                     <a
                       class="chip"
                       href={`https://${pointer.url}`}
