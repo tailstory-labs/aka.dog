@@ -1,0 +1,164 @@
+---
+import Host from "@/components/Host.astro";
+import type { AddressHit, Where } from "@/lib/introspect";
+
+interface Props {
+  hit: AddressHit;
+}
+const { hit } = Astro.props;
+const { match, entry: facts } = hit;
+const { entry } = facts;
+
+const WHERE_LABEL: Record<Where, string> = {
+  current: "current address",
+  history: "former address",
+  aka_ms: "aka.ms pointer",
+  alternate: "alternate address",
+};
+
+// A former address is shown but not linked, matching DeprecationTable: it may no
+// longer resolve, and offering it as a link invites the exact dead click this
+// page exists to prevent.
+const linkable = match.where !== "history";
+const tags = entry.tags ?? [];
+---
+
+<table class="table">
+  <tbody>
+    <tr>
+      <th scope="row">Address</th>
+      <td>
+        {
+          linkable ? (
+            <a href={`https://${match.url}`}>
+              <Host url={match.url} />
+            </a>
+          ) : (
+            <Host url={match.url} class="dead" />
+          )
+        }
+        <span class="secondary">
+          <span class="chip">{WHERE_LABEL[match.where]}</span>
+          {match.environment && <span class="chip">{match.environment}</span>}
+          {match.label}
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">Service</th>
+      <td>
+        <a href={`/index/${entry.provider}#entry-${entry.id}`}>{entry.name}</a>
+        {facts.retired && <> <span class="chip">retired</span></>}
+        {entry.description && <span class="secondary">{entry.description}</span>}
+      </td>
+    </tr>
+    {
+      facts.primary && (
+        <tr>
+          <th scope="row">{match.where === 'current' ? 'Also at' : 'Now at'}</th>
+          <td>
+            <a href={`https://${facts.primary}`}>
+              <Host url={facts.primary} />
+            </a>
+          </td>
+        </tr>
+      )
+    }
+    {
+      match.became && (
+        <tr>
+          <th scope="row">Became</th>
+          <td>
+            <a href={`https://${match.became}`}>
+              <Host url={match.became} />
+            </a>
+            {match.becameEntry && (
+              <span class="secondary">{match.becameEntry.entry.name}</span>
+            )}
+          </td>
+        </tr>
+      )
+    }
+    {
+      facts.successor && (
+        <tr>
+          <th scope="row">Superseded by</th>
+          <td>
+            {facts.successor.primary ? (
+              <a href={`https://${facts.successor.primary}`}>
+                {facts.successor.entry.name}
+              </a>
+            ) : (
+              <span>{facts.successor.entry.name}</span>
+            )}
+          </td>
+        </tr>
+      )
+    }
+    {
+      match.since && (
+        <tr>
+          <th scope="row">Since</th>
+          <td>{match.since}</td>
+        </tr>
+      )
+    }
+    {
+      match.deprecated && (
+        <tr>
+          <th scope="row">Deprecated</th>
+          <td>{match.deprecated}</td>
+        </tr>
+      )
+    }
+    {
+      match.until && (
+        <tr>
+          <th scope="row">Until</th>
+          <td>{match.until}</td>
+        </tr>
+      )
+    }
+    {
+      match.note && (
+        <tr>
+          <th scope="row">Note</th>
+          <td class="column-notes">{match.note}</td>
+        </tr>
+      )
+    }
+    {
+      tags.length > 0 && (
+        <tr>
+          <th scope="row">Tags</th>
+          <td>
+            {tags.map((tag) => (
+              <span class="chip">{tag}</span>
+            ))}
+          </td>
+        </tr>
+      )
+    }
+    {
+      (match.verified ?? entry.last_verified) && (
+        <tr>
+          <th scope="row">Last verified</th>
+          <td>{match.verified ?? entry.last_verified}</td>
+        </tr>
+      )
+    }
+    <tr>
+      <th scope="row">Listed on</th>
+      <td>
+        {
+          facts.views.map((view, index) => (
+            <>
+              {index > 0 ? ', ' : ''}
+              <a href={view.href}>{view.label}</a>
+            </>
+          ))
+        }
+      </td>
+    </tr>
+  </tbody>
+</table>

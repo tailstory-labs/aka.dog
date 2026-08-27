@@ -13,10 +13,10 @@ import { entries } from "@/lib/entries";
 import { RESERVED_VIEW } from "@/lib/reserved";
 import type { Entry } from "@/lib/types";
 
-const host = (url: string) => url.split("/")[0] ?? "";
-const isRetired = (entry: Entry) => !entry.current?.length;
+export const host = (url: string) => url.split("/")[0] ?? "";
+export const isRetired = (entry: Entry) => !entry.current?.length;
 
-const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
+export const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
 const PROVIDERS = new Set(entries.map((entry) => entry.provider));
 
 export const primaryAddress = (entry: Entry): string | undefined =>

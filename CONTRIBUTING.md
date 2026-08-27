@@ -21,8 +21,10 @@ Request -> Cloudflare
   |- /index/**.json, /sitemap.xml, /robots.txt, /_astro/** -> static asset from the edge
   |- /index, /index/{provider}/{view}                      -> Worker -> Astro renders HTML
   |                                                           (Accept: application/json -> JSON envelope)
-  |- /{who}/{slug}                                          -> Worker -> 302 redirect
-  \- anything else                                          -> Worker -> 404
+  |- /introspect/{link}                                    -> Worker -> Astro renders HTML
+  |                                                           (Accept: application/json -> JSON envelope)
+  |- /{who}/{slug}                                         -> Worker -> 302 redirect
+  \- anything else                                         -> Worker -> 404
 ```
 
 - **Index HTML is server-rendered** (not prerendered) so the Worker can content-negotiate the
@@ -64,8 +66,9 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
   `history`). No `current` => retired. `npm run validate` enforces structure plus: unique `id`,
   `superseded_by` resolves and implies no `current`, every `became` URL resolves, and no
   reserved-word collisions. A `history` address is only ever printed on the deprecated views
-  (`/index/deprecated`, `/index/{provider}/deprecated`) - elsewhere a retired entry shows the
-  `retired` chip and an em dash, and the page links to the deprecated view.
+  (`/index/deprecated`, `/index/{provider}/deprecated`) and on `/introspect/{link}`, where the dead
+  address is the lookup itself - elsewhere a retired entry shows the `retired` chip and an em dash,
+  and the page links to the deprecated view.
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
   title + description + predicate). No entry changes. This is the right tool when the page *is* a
   query - "every `*.cloud.microsoft` host" is a fact about the entries.
@@ -133,8 +136,9 @@ data/entries/*.json          the index dataset (authored)
 data/redirects/*.json        the shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - one {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
-src/lib/                     entries, redirects, curated, views, reserved, types (generated)
-src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter
+src/lib/                     entries, redirects, curated, views, introspect, reserved, types (generated)
+src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter, AddressFacts
 src/pages/index/             dump + [...path] views (HTML, server-rendered) and .json twins
+src/pages/introspect/        [...link] lookup over both datasets (server-rendered) and its .json twin
 src/pages/sitemap.xml.ts     index-only sitemap
 ```

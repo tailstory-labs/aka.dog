@@ -1,0 +1,261 @@
+---
+import AddressFacts from "@/components/AddressFacts.astro";
+import Host from "@/components/Host.astro";
+import Layout, { type Crumb } from "@/layouts/Layout.astro";
+import { forDisplay, introspectPathname, type Where } from "@/lib/introspect";
+
+// Unbounded input, so this is server-rendered rather than prerendered.
+export const prerender = false;
+
+const result = introspectPathname(Astro.url.pathname);
+// Set the status but still render the page: an unknown link deserves a helpful
+// body, which is exactly what index/[...path].astro's bare `new Response("Not
+// found")` cannot give.
+if (result.kind === "unknown") Astro.response.status = 404;
+
+const shown = forDisplay(result.link);
+const crumbs: Crumb[] = [
+  { label: "aka.dog", href: "/" },
+  { label: "introspect", href: "/introspect" },
+  ...(result.kind === "empty" ? [] : [{ label: shown }]),
+];
+const jsonHref = `${Astro.url.pathname.replace(/\.json$/, "")}.json`;
+
+const WHERE_LEDE: Record<Where, string> = {
+  current: "a current address of",
+  history: "a former address of",
+  aka_ms: "an aka.ms pointer to",
+  alternate: "an alternate address of",
+};
+
+const title =
+  result.kind === "empty" ? "Introspect a link" : `${shown} - introspect`;
+
+const description =
+  result.kind === "empty"
+    ? "Look up any aka.dog short link or tracked index address and see what's known about it."
+    : `What aka.dog knows about ${shown}.`;
+---
+
+<Layout
+  title={title}
+  description={description}
+  crumbs={crumbs}
+  noindex={result.kind !== 'empty'}
+>
+  {
+    result.kind === 'empty' ? (
+      <>
+        <h1>Introspect a link</h1>
+        <p class="lede">
+          Put a link in the path and this page reports everything the index and the
+          shortener know about it.
+        </p>
+        <p>Two forms are accepted:</p>
+        <ul>
+          <li>
+            An <strong>index address</strong> - a host, with or without a path or
+            scheme:{' '}
+            <a href="/introspect/office.com">
+              <code>/introspect/office.com</code>
+            </a>{' '}
+            or{' '}
+            <a href="/introspect/aka.ms/copilot">
+              <code>/introspect/aka.ms/copilot</code>
+            </a>
+            .
+          </li>
+          <li>
+            A <strong>short link</strong> - the{' '}
+            <code>{'{who}/{slug}'}</code> a redirect is served at:{' '}
+            <a href="/introspect/shenanigans/resume">
+              <code>/introspect/shenanigans/resume</code>
+            </a>
+            .
+          </li>
+        </ul>
+        <p>
+          Append <code>.json</code>, or send{' '}
+          <code>Accept: application/json</code>, for the machine-readable answer.
+        </p>
+        <p class="meta">
+          <a href="/index">index</a>
+          {' · '}
+          <a href="/index/deprecated">deprecated</a>
+        </p>
+      </>
+    ) : (
+      <>
+        <h1><Host url={shown} /></h1>
+
+        {result.via === 'www-stripped' && (
+          <p class="secondary">
+            No match on <code>{forDisplay(result.input)}</code>; showing{' '}
+            <code>{shown}</code>.
+          </p>
+        )}
+
+        {result.kind === 'redirect' && (
+          <>
+            <p class="lede">
+              A short link in the <code>{result.namespace}</code> namespace. It
+              redirects to <a href={result.target}>{result.target}</a>.
+            </p>
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">Namespace</th>
+                  <td>{result.namespace}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Slug</th>
+                  <td><code>{result.slug}</code></td>
+                </tr>
+                <tr>
+                  <th scope="row">Redirects to</th>
+                  <td>
+                    <a href={result.target}>
+                      {result.targetLink ? (
+                        <Host url={result.targetLink} />
+                      ) : (
+                        <code>{result.target}</code>
+                      )}
+                    </a>
+                    <span class="secondary">302</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            {result.targetIsSelf && result.targetLink && (
+              <p>
+                That target is an aka.dog URL.{' '}
+                <a href={`/introspect/${result.targetLink.replace(/^[^/]*\/?/, '')}`}>
+                  Introspect it too
+                </a>
+                .
+              </p>
+            )}
+
+            {result.targetHit ? (
+              <div class="group">
+                <h2>Where it lands</h2>
+                <AddressFacts hit={result.targetHit} />
+              </div>
+            ) : (
+              !result.targetIsSelf && (
+                <p class="secondary">
+                  The index does not track the destination, so there is nothing
+                  more to say about where it goes.
+                </p>
+              )
+            )}
+
+            {result.alsoIndexed && (
+              <div class="group">
+                <h2>Also a tracked address</h2>
+                <p class="group-note">
+                  The same string is an address in the index, independent of the
+                  redirect above.
+                </p>
+                <AddressFacts hit={result.alsoIndexed} />
+              </div>
+            )}
+          </>
+        )}
+
+        {result.kind === 'address' && (
+          <>
+            <p class="lede">
+              {WHERE_LEDE[result.hit.match.where]}{' '}
+              <strong>{result.hit.entry.entry.name}</strong>
+              {result.hit.entry.retired && ', which is retired'}.
+            </p>
+            <AddressFacts hit={result.hit} />
+            {result.otherHits.length > 0 && (
+              <div class="group">
+                <h2>Also known as</h2>
+                <p class="group-note">
+                  This address appears under more than one entry.
+                </p>
+                {result.otherHits.map((hit) => (
+                  <AddressFacts hit={hit} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {result.kind === 'host' && (
+          <>
+            <p class="lede">
+              Nothing tracked at this exact address, but {result.addresses.length}{' '}
+              {result.addresses.length === 1 ? 'address' : 'addresses'} under{' '}
+              <code>{result.host}</code> {result.addresses.length === 1 ? 'is' : 'are'}.
+            </p>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Address</th>
+                  <th scope="col">Service</th>
+                </tr>
+              </thead>
+              <tbody>
+                {result.addresses.map((hit) => (
+                  <tr>
+                    <td>
+                      <a href={`/introspect/${hit.match.url}`}>
+                        <Host
+                          url={hit.match.url}
+                          class={hit.match.where === 'history' ? 'dead' : undefined}
+                        />
+                      </a>
+                    </td>
+                    <td class="column-notes">
+                      <a href={`/index/${hit.entry.entry.provider}#entry-${hit.entry.entry.id}`}>
+                        {hit.entry.entry.name}
+                      </a>
+                      {hit.match.where === 'history' && (
+                        <> <span class="chip">former</span></>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {result.kind === 'unknown' && (
+          <>
+            <p class="lede">Nothing known about this link.</p>
+            <p>
+              Introspection answers over two datasets only: the index of tracked
+              addresses and the aka.dog shortener. A miss here does not mean the
+              URL is dead - just that nothing here tracks it.
+            </p>
+            <p>
+              Browse the <a href="/index">full index</a> or the{' '}
+              <a href="/index/deprecated">deprecated</a> list, or{' '}
+              <a href="https://github.com/tailstory-labs/aka.dog/issues/new/choose">
+                report an address worth tracking
+              </a>
+              .
+            </p>
+          </>
+        )}
+
+        <p class="meta">
+          {result.input !== result.link && (
+            <>Read as <code>{shown}</code>{' · '}</>
+          )}
+          <a href={jsonHref}>JSON</a>
+          {' · '}
+          <a href="/introspect">introspect another</a>
+          {' · '}
+          <a href="/index">index</a>
+        </p>
+      </>
+    )
+  }
+</Layout>
