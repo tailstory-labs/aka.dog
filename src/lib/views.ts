@@ -33,7 +33,7 @@ const ALL_COLLECTIONS: Collection[] = [
   {
     slug: "cloud-microsoft",
     title: "cloud.microsoft endpoints",
-    description: "Current *.cloud.microsoft hosts.",
+    description: "Current *.cloud.microsoft hosts",
     match: (entry) =>
       (entry.current ?? []).some((address) =>
         /\.cloud\.microsoft$/.test(host(address.url)),
@@ -42,7 +42,7 @@ const ALL_COLLECTIONS: Collection[] = [
   {
     slug: "end-user",
     title: "End-user surfaces",
-    description: "Endpoints users hit directly, like myapps and mygroups.",
+    description: "Endpoints users hit directly, like myapps and mygroups",
     match: (entry) => (entry.tags ?? []).includes("end-user"),
   },
 ];
@@ -188,7 +188,7 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   if (segments.length === 0)
     return {
       title: "aka.dog index",
-      description: "Everything tracked here.",
+      description: "Everything tracked here",
       kind: "entries",
       entries,
     };
@@ -196,7 +196,7 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   if (segments.length === 1 && segments[0] === "deprecated")
     return {
       title: "Deprecated",
-      description: "Link histories across all providers.",
+      description: "Link histories across all providers",
       kind: "deprecated",
       entries: deprecatedSet(entries),
     };
@@ -216,7 +216,7 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   if (!view)
     return {
       title: provider,
-      description: `Everything under ${provider}.`,
+      description: `Everything under ${provider}`,
       kind: "entries",
       entries: scopedEntries,
     };
@@ -224,7 +224,7 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   if (view === "deprecated")
     return {
       title: `${provider}: deprecated`,
-      description: `Link histories for ${provider}.`,
+      description: `Link histories for ${provider}`,
       kind: "deprecated",
       entries: deprecatedSet(scopedEntries),
     };

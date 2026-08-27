@@ -61,7 +61,7 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
         <DeprecationTable rows={rows} />
       </>
     ) : view.entries.length === 0 ? (
-      <p>Nothing here yet.</p>
+      <p>Nothing here yet</p>
     ) : (
       <>
         <TableFilter label="Filter entries" />
@@ -71,7 +71,7 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
   }
 
   <p class="meta">
-    {lastVerified && <>Addresses last verified {lastVerified}. </>}
+    {lastVerified && <>Addresses last verified {lastVerified}{' · '}</>}
     <a href={`${Astro.url.pathname}.json`}>JSON</a>
     {
       view.kind === 'curated' && (

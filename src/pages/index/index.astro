@@ -19,13 +19,13 @@ const lastVerified = view.entries
   crumbs={[{ label: 'aka.dog', href: '/' }, { label: 'index' }]}
 >
   <h1>{view.title}</h1>
-  <p class="lede">{view.description} {view.entries.length} entries.</p>
+  <p class="lede">{view.description} - {view.entries.length} entries</p>
 
   <TableFilter label="Filter entries" />
   <EntryTable entries={view.entries} showProvider />
 
   <p class="meta">
-    {lastVerified && <>Addresses last verified {lastVerified}. </>}
+    {lastVerified && <>Addresses last verified {lastVerified}{' · '}</>}
     <a href="/index.json">JSON</a>
   </p>
 </Layout>

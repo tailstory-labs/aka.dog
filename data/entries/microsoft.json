@@ -3,7 +3,7 @@
     "id": "m365",
     "name": "Microsoft 365",
     "provider": "microsoft",
-    "description": "Root Microsoft 365 portal; bare cloud.microsoft redirects here.",
+    "description": "Root Microsoft 365 portal; bare cloud.microsoft redirects here",
     "tags": ["end-user"],
     "current": [{ "url": "m365.cloud.microsoft" }],
     "history": [
@@ -24,7 +24,7 @@
     "id": "m365-copilot-chat",
     "name": "Microsoft 365 Copilot Chat",
     "provider": "microsoft",
-    "description": "The Copilot chat surface inside the Microsoft 365 Copilot app.",
+    "description": "The Copilot chat surface inside the Microsoft 365 Copilot app",
     "tags": ["end-user", "copilot"],
     "current": [{ "url": "m365.cloud.microsoft/chat", "since": "2024" }],
     "aka_ms": [
@@ -40,7 +40,7 @@
     "id": "excel",
     "name": "Microsoft Excel",
     "provider": "microsoft",
-    "description": "Excel for the web.",
+    "description": "Excel for the web",
     "tags": ["end-user"],
     "current": [{ "url": "excel.cloud.microsoft" }],
     "history": [
@@ -56,7 +56,7 @@
     "id": "powerpoint",
     "name": "Microsoft PowerPoint",
     "provider": "microsoft",
-    "description": "PowerPoint for the web.",
+    "description": "PowerPoint for the web",
     "tags": ["end-user"],
     "current": [{ "url": "powerpoint.cloud.microsoft" }],
     "history": [
@@ -72,7 +72,7 @@
     "id": "word",
     "name": "Microsoft Word",
     "provider": "microsoft",
-    "description": "Word for the web.",
+    "description": "Word for the web",
     "tags": ["end-user"],
     "current": [{ "url": "word.cloud.microsoft" }],
     "history": [
@@ -88,7 +88,7 @@
     "id": "outlook",
     "name": "Microsoft Outlook",
     "provider": "microsoft",
-    "description": "Outlook on the web.",
+    "description": "Outlook on the web",
     "tags": ["end-user"],
     "current": [{ "url": "outlook.cloud.microsoft" }],
     "history": [
@@ -104,7 +104,7 @@
     "id": "status",
     "name": "Microsoft 365 Service Health Status",
     "provider": "microsoft",
-    "description": "Microsoft 365 service health status page.",
+    "description": "Microsoft 365 service health status page",
     "current": [{ "url": "status.cloud.microsoft" }],
     "history": [
       {
@@ -119,7 +119,7 @@
     "id": "admin",
     "name": "Microsoft 365 Admin Center",
     "provider": "microsoft",
-    "description": "Microsoft 365 admin center.",
+    "description": "Microsoft 365 admin center",
     "current": [{ "url": "admin.cloud.microsoft" }],
     "history": [
       {
@@ -134,7 +134,7 @@
     "id": "loop",
     "name": "Microsoft Loop",
     "provider": "microsoft",
-    "description": "Microsoft Loop collaborative canvas.",
+    "description": "Microsoft Loop collaborative canvas",
     "tags": ["end-user"],
     "current": [{ "url": "loop.cloud.microsoft" }],
     "history": [
@@ -150,7 +150,7 @@
     "id": "mesh",
     "name": "Microsoft Mesh",
     "provider": "microsoft",
-    "description": "Microsoft Mesh immersive experiences; the web surface has been retired.",
+    "description": "Microsoft Mesh immersive experiences; the web surface has been retired",
     "tags": ["end-user"],
     "history": [
       {
@@ -165,7 +165,7 @@
     "id": "onenote",
     "name": "Microsoft OneNote",
     "provider": "microsoft",
-    "description": "OneNote for the web.",
+    "description": "OneNote for the web",
     "tags": ["end-user"],
     "current": [{ "url": "onenote.cloud.microsoft" }],
     "history": [
@@ -181,7 +181,7 @@
     "id": "places",
     "name": "Microsoft Places",
     "provider": "microsoft",
-    "description": "Microsoft Places workplace coordination.",
+    "description": "Microsoft Places workplace coordination",
     "tags": ["end-user"],
     "current": [{ "url": "places.cloud.microsoft" }],
     "history": [
@@ -197,7 +197,7 @@
     "id": "planner",
     "name": "Microsoft Planner",
     "provider": "microsoft",
-    "description": "Microsoft Planner; absorbed the former Tasks surface.",
+    "description": "Microsoft Planner; absorbed the former Tasks surface",
     "tags": ["end-user"],
     "current": [{ "url": "planner.cloud.microsoft" }],
     "history": [
@@ -213,7 +213,7 @@
     "id": "setup",
     "name": "Microsoft 365 Setup",
     "provider": "microsoft",
-    "description": "Microsoft 365 setup and deployment portal.",
+    "description": "Microsoft 365 setup and deployment portal",
     "current": [{ "url": "setup.cloud.microsoft" }],
     "history": [
       {
@@ -228,7 +228,7 @@
     "id": "sway",
     "name": "Microsoft Sway",
     "provider": "microsoft",
-    "description": "Microsoft Sway.",
+    "description": "Microsoft Sway",
     "tags": ["end-user"],
     "current": [{ "url": "sway.cloud.microsoft" }],
     "history": [{ "url": "sway.office.com", "became": "sway.cloud.microsoft" }],
@@ -238,7 +238,7 @@
     "id": "viva-engage",
     "name": "Microsoft Viva Engage",
     "provider": "microsoft",
-    "description": "Viva Engage, the rebrand of Yammer.",
+    "description": "Viva Engage, the rebrand of Yammer",
     "tags": ["end-user"],
     "current": [{ "url": "engage.cloud.microsoft" }],
     "history": [
@@ -254,7 +254,7 @@
     "id": "viva-goals",
     "name": "Microsoft Viva Goals",
     "provider": "microsoft",
-    "description": "Viva Goals OKR tracking; service retired.",
+    "description": "Viva Goals OKR tracking; service retired",
     "tags": ["end-user"],
     "history": [
       {
@@ -274,7 +274,7 @@
     "id": "viva-home",
     "name": "Microsoft Viva Home",
     "provider": "microsoft",
-    "description": "Viva Home dashboard; the marketing site viva.microsoft.com is a separate resource.",
+    "description": "Viva Home dashboard; the marketing site viva.microsoft.com is a separate resource",
     "tags": ["end-user"],
     "current": [{ "url": "viva.cloud.microsoft" }],
     "last_verified": "2026-06"
@@ -283,7 +283,7 @@
     "id": "viva-insights",
     "name": "Microsoft Viva Insights",
     "provider": "microsoft",
-    "description": "Viva Insights productivity analytics.",
+    "description": "Viva Insights productivity analytics",
     "tags": ["end-user"],
     "current": [{ "url": "insights.cloud.microsoft" }],
     "history": [
@@ -299,7 +299,7 @@
     "id": "viva-learning",
     "name": "Microsoft Viva Learning",
     "provider": "microsoft",
-    "description": "Viva Learning.",
+    "description": "Viva Learning",
     "tags": ["end-user"],
     "current": [{ "url": "learning.cloud.microsoft" }],
     "last_verified": "2026-06"
@@ -308,7 +308,7 @@
     "id": "viva-pulse",
     "name": "Microsoft Viva Pulse",
     "provider": "microsoft",
-    "description": "Viva Pulse sentiment surveys.",
+    "description": "Viva Pulse sentiment surveys",
     "tags": ["end-user"],
     "current": [{ "url": "pulse.cloud.microsoft" }],
     "last_verified": "2026-06"
@@ -317,7 +317,7 @@
     "id": "copilot",
     "name": "Microsoft Copilot",
     "provider": "microsoft",
-    "description": "Microsoft Copilot; coexists with copilot.microsoft.com as a separate resource (not a redirect).",
+    "description": "Microsoft Copilot; coexists with copilot.microsoft.com as a separate resource (not a redirect)",
     "tags": ["end-user", "copilot"],
     "current": [{ "url": "copilot.cloud.microsoft" }],
     "last_verified": "2026-06"
@@ -326,7 +326,7 @@
     "id": "forms",
     "name": "Microsoft Forms",
     "provider": "microsoft",
-    "description": "Microsoft Forms.",
+    "description": "Microsoft Forms",
     "tags": ["end-user"],
     "current": [{ "url": "forms.cloud.microsoft" }],
     "history": [
@@ -342,7 +342,7 @@
     "id": "whiteboard",
     "name": "Microsoft Whiteboard",
     "provider": "microsoft",
-    "description": "Microsoft Whiteboard.",
+    "description": "Microsoft Whiteboard",
     "tags": ["end-user"],
     "current": [{ "url": "whiteboard.cloud.microsoft" }],
     "history": [
@@ -358,7 +358,7 @@
     "id": "visio",
     "name": "Microsoft Visio",
     "provider": "microsoft",
-    "description": "Visio for the web; previously reached via the Office.com app launcher with no dedicated host.",
+    "description": "Visio for the web; previously reached via the Office.com app launcher with no dedicated host",
     "tags": ["end-user"],
     "current": [{ "url": "visio.cloud.microsoft" }],
     "last_verified": "2026-06"
@@ -367,7 +367,7 @@
     "id": "teams",
     "name": "Microsoft Teams",
     "provider": "microsoft",
-    "description": "Microsoft Teams.",
+    "description": "Microsoft Teams",
     "tags": ["end-user"],
     "current": [{ "url": "teams.cloud.microsoft" }],
     "history": [
@@ -383,7 +383,7 @@
     "id": "todo",
     "name": "Microsoft To Do",
     "provider": "microsoft",
-    "description": "Microsoft To Do.",
+    "description": "Microsoft To Do",
     "tags": ["end-user"],
     "current": [{ "url": "todo.cloud.microsoft" }],
     "history": [
@@ -399,7 +399,7 @@
     "id": "onedrive",
     "name": "OneDrive",
     "provider": "microsoft",
-    "description": "OneDrive on the web.",
+    "description": "OneDrive on the web",
     "tags": ["end-user"],
     "current": [{ "url": "onedrive.cloud.microsoft" }],
     "history": [
@@ -415,7 +415,7 @@
     "id": "viva-skills",
     "name": "Microsoft Viva Skills",
     "provider": "microsoft",
-    "description": "Viva Skills; deployed new on cloud.microsoft with no prior public URL.",
+    "description": "Viva Skills; deployed new on cloud.microsoft with no prior public URL",
     "tags": ["end-user"],
     "current": [{ "url": "skills.cloud.microsoft" }],
     "last_verified": "2026-06"
@@ -424,7 +424,7 @@
     "id": "skype-for-business",
     "name": "Skype for Business",
     "provider": "microsoft",
-    "description": "Skype for Business Online; retired and superseded by Microsoft Teams.",
+    "description": "Skype for Business Online; retired and superseded by Microsoft Teams",
     "tags": ["end-user"],
     "superseded_by": "teams",
     "history": [
@@ -440,7 +440,7 @@
     "id": "myaccount",
     "name": "My Account",
     "provider": "microsoft",
-    "description": "Work or school account settings - password, MFA methods, devices, sign-ins. Distinct from account.microsoft.com, which is the consumer Microsoft account.",
+    "description": "Work or school account settings - password, MFA methods, devices, sign-ins. Distinct from account.microsoft.com, which is the consumer Microsoft account",
     "tags": ["end-user"],
     "current": [{ "url": "myaccount.microsoft.com" }],
     "last_verified": "2026-08"
@@ -449,7 +449,7 @@
     "id": "myapps",
     "name": "My Apps",
     "provider": "microsoft",
-    "description": "Every application the signed-in user is assigned. Both hosts are live; neither redirects to the other.",
+    "description": "Every application the signed-in user is assigned. Both hosts are live; neither redirects to the other",
     "tags": ["end-user"],
     "current": [
       { "url": "myapplications.microsoft.com" },
@@ -471,7 +471,7 @@
     "id": "mysignins",
     "name": "My Sign-ins",
     "provider": "microsoft",
-    "description": "Recent sign-in activity for the signed-in user.",
+    "description": "Recent sign-in activity for the signed-in user",
     "tags": ["end-user"],
     "current": [{ "url": "mysignins.microsoft.com" }],
     "last_verified": "2026-08"
@@ -480,7 +480,7 @@
     "id": "security-info",
     "name": "Security info",
     "provider": "microsoft",
-    "description": "Manage MFA methods - authenticator app, phone, passkeys.",
+    "description": "Manage MFA methods - authenticator app, phone, passkeys",
     "tags": ["end-user"],
     "current": [{ "url": "mysignins.microsoft.com/security-info" }],
     "aka_ms": [
@@ -497,7 +497,7 @@
     "id": "mygroups",
     "name": "My Groups",
     "provider": "microsoft",
-    "description": "Groups the signed-in user owns or belongs to; now a section of My Account.",
+    "description": "Groups the signed-in user owns or belongs to; now a section of My Account",
     "tags": ["end-user"],
     "current": [{ "url": "myaccount.microsoft.com/groups" }],
     "history": [
@@ -513,7 +513,7 @@
     "id": "myaccess",
     "name": "My Access",
     "provider": "microsoft",
-    "description": "Request and review access packages (Entra entitlement management).",
+    "description": "Request and review access packages (Entra entitlement management)",
     "tags": ["end-user"],
     "current": [{ "url": "myaccess.microsoft.com" }],
     "last_verified": "2026-08"
@@ -522,7 +522,7 @@
     "id": "password-reset",
     "name": "Password reset",
     "provider": "microsoft",
-    "description": "Self-service password reset, reachable while locked out.",
+    "description": "Self-service password reset, reachable while locked out",
     "tags": ["end-user"],
     "current": [{ "url": "passwordreset.microsoftonline.com" }],
     "aka_ms": [
@@ -538,7 +538,7 @@
     "id": "calendar",
     "name": "Outlook Calendar",
     "provider": "microsoft",
-    "description": "The calendar surface of Outlook on the web.",
+    "description": "The calendar surface of Outlook on the web",
     "tags": ["end-user"],
     "current": [{ "url": "outlook.cloud.microsoft/calendar" }],
     "history": [
@@ -554,7 +554,7 @@
     "id": "bookings",
     "name": "Microsoft Bookings",
     "provider": "microsoft",
-    "description": "Appointment scheduling, hosted inside Outlook on the web.",
+    "description": "Appointment scheduling, hosted inside Outlook on the web",
     "tags": ["end-user"],
     "current": [{ "url": "outlook.cloud.microsoft/bookings" }],
     "history": [
@@ -570,7 +570,7 @@
     "id": "sharepoint",
     "name": "SharePoint",
     "provider": "microsoft",
-    "description": "SharePoint start page. Sites themselves stay on the per-tenant *.sharepoint.com host.",
+    "description": "SharePoint start page. Sites themselves stay on the per-tenant *.sharepoint.com host",
     "tags": ["end-user"],
     "current": [{ "url": "m365.cloud.microsoft/launch/sharepoint" }],
     "last_verified": "2026-08"
@@ -579,7 +579,7 @@
     "id": "clipchamp",
     "name": "Microsoft Clipchamp",
     "provider": "microsoft",
-    "description": "Video hub for Microsoft 365; absorbed Stream.",
+    "description": "Video hub for Microsoft 365; absorbed Stream",
     "tags": ["end-user"],
     "current": [{ "url": "m365.cloud.microsoft/launch/clipchamp" }],
     "history": [
@@ -595,7 +595,7 @@
     "id": "lists",
     "name": "Microsoft Lists",
     "provider": "microsoft",
-    "description": "Microsoft Lists.",
+    "description": "Microsoft Lists",
     "tags": ["end-user"],
     "current": [{ "url": "m365.cloud.microsoft/launch/lists" }],
     "last_verified": "2026-08"
@@ -604,7 +604,7 @@
     "id": "designer",
     "name": "Microsoft Designer",
     "provider": "microsoft",
-    "description": "Microsoft Designer; has no cloud.microsoft host.",
+    "description": "Microsoft Designer; has no cloud.microsoft host",
     "tags": ["end-user"],
     "current": [{ "url": "designer.microsoft.com" }],
     "last_verified": "2026-08"

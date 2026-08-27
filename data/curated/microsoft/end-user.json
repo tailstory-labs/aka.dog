@@ -1,15 +1,15 @@
 {
   "title": "Microsoft, for people who just need the link",
-  "description": "The Microsoft 365 addresses an end user actually needs, grouped so you can point at one.",
+  "description": "The Microsoft 365 addresses an end user actually needs, grouped so you can point at one",
   "lead": {
     "entry": "myaccount",
     "label": "My Account",
-    "blurb": "Password, MFA, and devices. This is the one nobody can find."
+    "blurb": "Password, MFA, and devices. This is the one nobody can find"
   },
   "groups": [
     {
       "title": "Your account",
-      "note": "Everything about you rather than your work.",
+      "note": "Everything about you rather than your work",
       "items": [
         {
           "entry": "myapps",
@@ -67,7 +67,7 @@
     },
     {
       "title": "Everything else",
-      "note": "Which of these you get depends on your licence.",
+      "note": "Which of these you get depends on your licence",
       "items": [
         { "entry": "loop", "label": "Loop", "blurb": "Shared workspaces" },
         {
