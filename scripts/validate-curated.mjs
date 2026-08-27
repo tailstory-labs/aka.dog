@@ -12,7 +12,7 @@ const validate = new Ajv2020({ allErrors: true, strict: false }).compile(
 );
 
 // Keep in sync with src/lib/reserved.ts.
-const RESERVED_VIEW = new Set(["deprecated"]);
+const RESERVED_VIEW = new Set(["deprecated", "links"]);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const curatedDirectory = `${root}/data/curated`;

@@ -21,7 +21,7 @@ const RESERVED_TOP = new Set([
   "schemas",
   ".well-known",
 ]);
-const RESERVED_VIEW = new Set(["deprecated"]);
+const RESERVED_VIEW = new Set(["deprecated", "links"]);
 const AUTHORED_COLLECTION_SLUGS = ["cloud-microsoft", "end-user"];
 
 const entriesDirectory = `${root}/data/entries`;
@@ -73,6 +73,10 @@ for (const { entry, file } of allEntries) {
   if (RESERVED_TOP.has(entry.provider))
     errors.push(
       `provider "${entry.provider}" is a reserved top-level word (${file})`,
+    );
+  if (RESERVED_VIEW.has(entry.provider))
+    errors.push(
+      `provider "${entry.provider}" is a top-level /index view, so /index/${entry.provider} would never reach it (${file})`,
     );
 }
 

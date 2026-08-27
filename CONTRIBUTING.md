@@ -4,7 +4,8 @@ aka.dog is two small systems on one domain, built on **Astro 7** + **Cloudflare 
 Assets**:
 
 1. **A redirect shortener** - `aka.dog/{who}/{slug}` -> `302` to an external URL, resolved in the
-   Worker from build-embedded JSON (`data/redirects/*.json`).
+   Worker from build-embedded JSON (`data/redirects/*.json`). Every link it serves is listed at
+   `/index/links`.
 2. **A derived reference index** - `aka.dog/index/*` pages that are *queries* (views) over a
    hand-authored entry dataset (`data/entries/*.json`), plus **curated pages** assembled from a
    second dataset (`data/curated/{provider}/{slug}.json`). You author data; the pages are derived
@@ -19,7 +20,7 @@ two systems are parallel and only share provider names.
 ```
 Request -> Cloudflare
   |- /index/**.json, /sitemap.xml, /robots.txt, /_astro/** -> static asset from the edge
-  |- /index, /index/{provider}/{view}                      -> Worker -> Astro renders HTML
+  |- /index, /index/links, /index/{provider}/{view}        -> Worker -> Astro renders HTML
   |                                                           (Accept: application/json -> JSON envelope)
   |- /introspect/{link}                                    -> Worker -> Astro renders HTML
   |                                                           (Accept: application/json -> JSON envelope)
@@ -32,9 +33,11 @@ Request -> Cloudflare
   prerendered static assets.
 - **`src/fetch.ts`** is the Astro 7 advanced-routing entry: it resolves redirects, negotiates
   `/index/*`, and falls through to Astro for everything else.
-- **One source of truth per shape**: `schemas/entry.schema.json` for entries and
-  `schemas/curated.schema.json` for curated pages (JSON Schema draft 2020-12). Both are validated
-  by ajv in the build gate, and TypeScript types are generated from them.
+- **One source of truth per shape**: `schemas/entry.schema.json` for entries,
+  `schemas/curated.schema.json` for curated pages and `schemas/redirect.schema.json` for the
+  shortener (JSON Schema draft 2020-12). All three are validated by ajv in the build gate. Types
+  are generated from the first two; a redirect file is a flat `Record<string, string>`, so it has
+  no generated type.
 
 ## Commands
 
@@ -42,7 +45,7 @@ Request -> Cloudflare
 |---|---|
 | `npm run dev` | Astro dev server (runs `generate:types` first) |
 | `npm run build` | `validate` + `generate:types`, then `astro build` (the build gate) |
-| `npm run validate` | ajv + semantic checks over `data/entries/*.json` and `data/curated/**/*.json` |
+| `npm run validate` | ajv + semantic checks over `data/entries/*.json`, `data/curated/**/*.json` and `data/redirects/*.json` |
 | `npm run generate:types` | regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from the schemas |
 | `npm run preview` | preview the production build locally |
 | `npm run cloudflare:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
@@ -60,7 +63,14 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
 ## Adding data
 
 - **A redirect**: add `"slug": "https://target"` to `data/redirects/{who}.json` (filename = the
-  `{who}` namespace). Commit + redeploy.
+  `{who}` namespace; a new file is a new namespace). The slug is case-sensitive and may contain
+  slashes - the Worker matches the whole remainder of the path verbatim - and the target must be an
+  absolute `http(s)` URL, because `Response.redirect()` rejects a relative one. `npm run validate`
+  enforces that, plus: the namespace is well-formed and not a reserved top-level word (a reserved
+  one would make every link in the file 404), no slug is written twice in the same file, and an
+  `aka.dog` target neither loops back on itself nor points at a path that is neither a page nor
+  another short link. The link then shows up on `/index/links` and at `/introspect/{who}/{slug}`
+  with no further edits. Commit + redeploy.
 - **An index entry**: add an object to `data/entries/{provider}.json` following
   `schemas/entry.schema.json`. An entry is the durable thing; addresses live under it (`current` /
   `history`). No `current` => retired. `npm run validate` enforces structure plus: unique `id`,
@@ -130,14 +140,16 @@ Notes:
 ```
 schemas/entry.schema.json     canonical entry contract (draft 2020-12)
 schemas/curated.schema.json   canonical curated-page contract (draft 2020-12)
+schemas/redirect.schema.json  canonical shortener contract (draft 2020-12) - one {who}.json
 scripts/validate-entries.mjs build gate: ajv + semantic checks over entries
 scripts/validate-curated.mjs build gate: ajv + entry-reference checks over curated pages
+scripts/validate-redirects.mjs build gate: ajv + reachability checks over redirects
 data/entries/*.json          the index dataset (authored)
 data/redirects/*.json        the shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - one {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
 src/lib/                     entries, redirects, curated, views, introspect, reserved, types (generated)
-src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter, AddressFacts
+src/components/              EntryTable, DeprecationTable, LinkTable, CuratedGroups, TableFilter, AddressFacts
 src/pages/index/             dump + [...path] views (HTML, server-rendered) and .json twins
 src/pages/introspect/        [...link] lookup over both datasets (server-rendered) and its .json twin
 src/pages/sitemap.xml.ts     index-only sitemap

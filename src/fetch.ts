@@ -6,7 +6,7 @@ import {
 } from "@/lib/introspect";
 import { redirects } from "@/lib/redirects";
 import { RESERVED_TOP } from "@/lib/reserved";
-import { buildEnvelope, envelopeExtra, resolveViewByPath } from "@/lib/views";
+import { envelopeFor, resolveViewByPath } from "@/lib/views";
 
 const INDEX_CACHE = "public, max-age=600";
 
@@ -42,11 +42,7 @@ export default {
           .filter(Boolean);
         try {
           const view = resolveViewByPath(segments);
-          const body = buildEnvelope(
-            segments.join("/"),
-            view.entries,
-            envelopeExtra(view),
-          );
+          const body = envelopeFor(segments.join("/"), view);
           return new Response(JSON.stringify(body), {
             headers: {
               "content-type": "application/json",

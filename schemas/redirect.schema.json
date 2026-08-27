@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aka.dog/schemas/redirect.json",
+  "title": "RedirectNamespace",
+  "description": "One data/redirects/{who}.json: the shortener's slug -> target map for a single namespace. The filename is the {who} segment, so it is not restated inside the document.",
+  "type": "object",
+  "minProperties": 1,
+  "propertyNames": {
+    "$comment": "Slashes are allowed: src/fetch.ts keys the lookup on the whole remainder of the path, so a slug may span segments. Mixed case is allowed because the lookup is deliberately case-sensitive.",
+    "pattern": "^[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*$"
+  },
+  "additionalProperties": {
+    "$comment": "Absolute http(s) only - Response.redirect() throws on a relative target.",
+    "type": "string",
+    "pattern": "^https?://[^\\s]+$"
+  }
+}
