@@ -1,7 +1,7 @@
 import { astro, FetchState } from "astro/fetch";
 import { redirects } from "@/lib/redirects";
 import { RESERVED_TOP } from "@/lib/reserved";
-import { buildEnvelope, resolveViewByPath } from "@/lib/views";
+import { buildEnvelope, envelopeExtra, resolveViewByPath } from "@/lib/views";
 
 const INDEX_CACHE = "public, max-age=600";
 
@@ -36,9 +36,11 @@ export default {
           .split("/")
           .filter(Boolean);
         try {
+          const view = resolveViewByPath(segments);
           const body = buildEnvelope(
             segments.join("/"),
-            resolveViewByPath(segments).entries,
+            view.entries,
+            envelopeExtra(view),
           );
           return new Response(JSON.stringify(body), {
             headers: {

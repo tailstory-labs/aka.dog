@@ -1,56 +1,85 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import CuratedGroups from "@/components/CuratedGroups.astro";
+import DeprecationTable from "@/components/DeprecationTable.astro";
+import EntryTable from "@/components/EntryTable.astro";
+import TableFilter from "@/components/TableFilter.astro";
+import Layout, { type Crumb } from "@/layouts/Layout.astro";
 import {
   deprecationRows,
   type ResolvedView,
   resolveViewByPath,
 } from "@/lib/views";
 
-const segments = (Astro.params.path ?? "").split("/");
-let view: ResolvedView;
+const segments = (Astro.params.path ?? "").split("/").filter(Boolean);
+let resolved: ResolvedView;
 try {
-  view = resolveViewByPath(segments);
+  resolved = resolveViewByPath(segments);
 } catch {
   return new Response("Not found", {
     status: 404,
     headers: { "content-type": "text/plain" },
   });
 }
+const view = resolved;
+
+const [provider, subview] = segments;
+const crumbs: Crumb[] = [
+  { label: "aka.dog", href: "/" },
+  { label: "index", href: "/index" },
+];
+if (provider)
+  crumbs.push(
+    subview
+      ? { label: provider, href: `/index/${provider}` }
+      : { label: provider },
+  );
+if (subview) crumbs.push({ label: subview });
+
+const lastVerified = view.entries
+  .map((entry) => entry.last_verified)
+  .filter(Boolean)
+  .sort()
+  .pop();
+const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
 ---
 
-<Layout title={view.title} description={view.description}>
+<Layout
+  title={view.title}
+  description={view.description}
+  width={view.kind === 'curated' ? 'prose' : 'wide'}
+  crumbs={crumbs}
+>
   <h1>{view.title}</h1>
-  <p>{view.description}</p>
+  <p class="lede">{view.description}</p>
 
   {
-    view.kind === 'deprecated' ? (
-      <ul>
-        {deprecationRows(view.entries).map((row) => (
-          <li>
-            <code>{row.url}</code>
-            {row.became ? (
-              <>
-                {' '}-> <code>{row.became}</code>
-              </>
-            ) : null}
-            {row.until ? <> {'-'} retired {row.until}</> : null}
-            {' '}- {row.entry.name}
-          </li>
-        ))}
-      </ul>
+    view.kind === 'curated' ? (
+      <CuratedGroups lead={view.lead} groups={view.groups} />
+    ) : view.kind === 'deprecated' ? (
+      <>
+        <TableFilter label="Filter addresses" />
+        <DeprecationTable rows={rows} />
+      </>
+    ) : view.entries.length === 0 ? (
+      <p>Nothing here yet.</p>
     ) : (
-      <ul>
-        {view.entries.map((entry) => (
-          <li>
-            {entry.current?.[0] ? (
-              <a href={`https://${entry.current[0].url}`}>{entry.name}</a>
-            ) : (
-              <span>{entry.name}</span>
-            )}
-            {entry.description ? <> - {entry.description}</> : null}
-          </li>
-        ))}
-      </ul>
+      <>
+        <TableFilter label="Filter entries" />
+        <EntryTable entries={view.entries} showPrevious provider={provider} />
+      </>
     )
   }
+
+  <p class="meta">
+    {lastVerified && <>Addresses last verified {lastVerified}. </>}
+    <a href={`${Astro.url.pathname}.json`}>JSON</a>
+    {
+      view.kind === 'curated' && (
+        <>
+          {' · '}
+          <a href={`/index/${provider}`}>every {provider} address</a>
+        </>
+      )
+    }
+  </p>
 </Layout>

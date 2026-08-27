@@ -1,0 +1,39 @@
+---
+import type { ResolvedGroup, ResolvedItem } from "@/lib/views";
+
+interface Props {
+  lead?: ResolvedItem | undefined;
+  groups: ResolvedGroup[];
+}
+const { lead, groups } = Astro.props;
+
+const host = (href: string) => href.replace(/^https:\/\//, "");
+---
+
+{
+  lead && (
+    <p class="lead">
+      <a href={lead.href}>{lead.label}</a>
+      {lead.blurb && <span class="blurb">{lead.blurb}</span>}
+      <code>{host(lead.href)}</code>
+    </p>
+  )
+}
+{
+  groups.map((group) => (
+    <section class="grp">
+      <h2>{group.title}</h2>
+      {group.note && <p class="grp-note">{group.note}</p>}
+      <ul class="links">
+        {group.items.map((item) => (
+          <li>
+            <a href={item.href} title={host(item.href)}>
+              {item.label}
+            </a>
+            {item.blurb && <span class="blurb">{item.blurb}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}

@@ -1,10 +1,23 @@
 ---
+export interface Crumb {
+  label: string;
+  href?: string | undefined;
+}
+
 interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
+  width?: "prose" | "wide";
+  crumbs?: Crumb[];
 }
-const { title, description = "", noindex = false } = Astro.props;
+const {
+  title,
+  description = "",
+  noindex = false,
+  width = "prose",
+  crumbs = [],
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const SITE_NAME = "aka.dog";
 const documentTitle =
@@ -25,7 +38,25 @@ const documentTitle =
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <main><slot /></main>
+    <main class={width === 'wide' ? 'wide' : undefined}>
+      {
+        crumbs.length > 0 && (
+          <nav aria-label="Breadcrumb" class="crumbs">
+            {crumbs.map((crumb, index) => (
+              <>
+                {index > 0 && <span aria-hidden="true"> / </span>}
+                {crumb.href ? (
+                  <a href={crumb.href}>{crumb.label}</a>
+                ) : (
+                  <span aria-current="page">{crumb.label}</span>
+                )}
+              </>
+            ))}
+          </nav>
+        )
+      }
+      <slot />
+    </main>
   </body>
 </html>
 
@@ -35,6 +66,7 @@ const documentTitle =
     --fg: light-dark(#1a1a1a, #e8e8e8);
     --bg: light-dark(#fff, #111);
     --muted: light-dark(#666, #999);
+    --rule: light-dark(#e5e5e5, #2a2a2a);
   }
   body {
     margin: 0;
@@ -47,6 +79,9 @@ const documentTitle =
     margin: 0 auto;
     padding: 2rem 1rem;
   }
+  main.wide {
+    max-width: 96ch;
+  }
   ul {
     list-style: none;
     padding: 0;
@@ -55,5 +90,223 @@ const documentTitle =
   }
   small {
     color: var(--muted);
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.25rem;
+  }
+  .crumbs {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  .lede {
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-top: 2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* tables ---------------------------------------------------------------- */
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+  .tbl th,
+  .tbl td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.45rem 0.75rem 0.45rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .tbl th:last-child,
+  .tbl td:last-child {
+    padding-right: 0;
+  }
+  .tbl thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border-bottom-color: var(--fg);
+  }
+  .tbl code {
+    font-size: 0.875em;
+    /* [tenant]-my.sharepoint.com must not blow out a fixed-width cell */
+    overflow-wrap: anywhere;
+  }
+  .tbl .dead {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+  .c-notes {
+    color: var(--muted);
+  }
+  .c-tags {
+    color: var(--muted);
+    font-size: 0.875em;
+  }
+  .stack {
+    display: block;
+    color: var(--muted);
+  }
+
+  .chip {
+    display: inline-block;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    padding: 0 0.35em;
+    margin-right: 0.3em;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a.chip:hover {
+    color: var(--fg);
+    border-color: var(--fg);
+  }
+
+  /* filter ---------------------------------------------------------------- */
+  .filter {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .filter input {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 0.4rem 4rem 0.4rem 0;
+  }
+  .filter input:focus {
+    outline: none;
+    border-bottom-color: var(--fg);
+  }
+  .filter .count {
+    position: absolute;
+    right: 0;
+    top: 0.4rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  /* curated pages --------------------------------------------------------- */
+  .lead {
+    margin: 0 0 0.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .lead a {
+    font-size: 1.375rem;
+  }
+  .lead .blurb {
+    display: block;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  .lead code {
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+  .grp h2 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 2rem 0 0.25rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .grp-note {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin: 0.5rem 0 0;
+  }
+  .links {
+    margin: 0.5rem 0 0;
+    gap: 0;
+  }
+  .links li {
+    display: grid;
+    /* one fixed name column so every blurb starts at the same x */
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+    gap: 0 1rem;
+    align-items: baseline;
+    padding: 0.3rem 0;
+  }
+  .links .blurb {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 40.0625rem) {
+    /* Fixed layout is what actually keeps the columns aligned: without it the
+       longest description dictates the column width for every row. Widths live
+       here so that below the breakpoint - where columns are shed - the table
+       reflows to fill the screen instead of holding empty tracks open. */
+    .tbl {
+      table-layout: fixed;
+    }
+    .tbl--dump col:nth-child(1) {
+      width: 26%;
+    }
+    .tbl--dump col:nth-child(2) {
+      width: 32%;
+    }
+    .tbl--dump col:nth-child(3) {
+      width: 12%;
+    }
+    .tbl--provider col:nth-child(1) {
+      width: 22%;
+    }
+    .tbl--provider col:nth-child(2) {
+      width: 28%;
+    }
+    .tbl--provider col:nth-child(4) {
+      width: 20%;
+    }
+    .tbl--deprecated col:nth-child(1) {
+      width: 30%;
+    }
+    .tbl--deprecated col:nth-child(2) {
+      width: 28%;
+    }
+    .tbl--deprecated col:nth-child(3) {
+      width: 12%;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    /* shed columns rather than scroll sideways - the table stays a table, so
+       it stays navigable for assistive tech. */
+    .tbl .c-notes,
+    .tbl .c-tags,
+    .tbl .c-provider {
+      display: none;
+    }
+    .links li {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: 0.4rem 0;
+    }
+    .grp h2 {
+      margin-top: 1.5rem;
+    }
   }
 </style>

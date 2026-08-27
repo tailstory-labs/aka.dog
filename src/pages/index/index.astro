@@ -1,26 +1,31 @@
 ---
+import EntryTable from "@/components/EntryTable.astro";
+import TableFilter from "@/components/TableFilter.astro";
 import Layout from "@/layouts/Layout.astro";
 import { resolveViewByPath } from "@/lib/views";
 
 const view = resolveViewByPath([]);
+const lastVerified = view.entries
+  .map((entry) => entry.last_verified)
+  .filter(Boolean)
+  .sort()
+  .pop();
 ---
 
-<Layout title={view.title} description={view.description}>
+<Layout
+  title={view.title}
+  description={view.description}
+  width="wide"
+  crumbs={[{ label: 'aka.dog', href: '/' }, { label: 'index' }]}
+>
   <h1>{view.title}</h1>
-  <p>{view.description}</p>
-  <ul>
-    {
-      view.entries.map((entry) => (
-        <li>
-          {entry.current?.[0] ? (
-            <a href={`https://${entry.current[0].url}`}>{entry.name}</a>
-          ) : (
-            <span>{entry.name}</span>
-          )}
-          {' '}
-          <small>{entry.provider}</small>
-        </li>
-      ))
-    }
-  </ul>
+  <p class="lede">{view.description} {view.entries.length} entries.</p>
+
+  <TableFilter label="Filter entries" />
+  <EntryTable entries={view.entries} showProvider />
+
+  <p class="meta">
+    {lastVerified && <>Addresses last verified {lastVerified}. </>}
+    <a href="/index.json">JSON</a>
+  </p>
 </Layout>

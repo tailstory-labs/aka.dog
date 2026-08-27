@@ -1,0 +1,60 @@
+---
+import Host from "@/components/Host.astro";
+import type { DeprecationRow } from "@/lib/views";
+
+interface Props {
+  rows: DeprecationRow[];
+}
+const { rows } = Astro.props;
+
+const searchKey = (row: DeprecationRow) =>
+  [row.entry.name, row.url ?? "", row.became ?? "", row.until ?? ""]
+    .join(" ")
+    .toLowerCase();
+---
+
+<table class="tbl tbl--deprecated" id="index-table">
+  <colgroup>
+    <col />
+    <col />
+    <col />
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Was</th>
+      <th scope="col">Became</th>
+      <th scope="col" class="c-tags">Retired</th>
+      <th scope="col" class="c-notes">Service</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((row) => (
+        <tr data-search={searchKey(row)}>
+          <td>
+            {row.url ? <Host url={row.url} class="dead" /> : <span>&#8212;</span>}
+          </td>
+          <td>
+            {row.became ? (
+              <a href={`https://${row.became}`}>
+                <Host url={row.became} />
+              </a>
+            ) : (
+              <span class="chip">retired</span>
+            )}
+          </td>
+          <td class="c-tags">{row.until ?? ''}</td>
+          <td class="c-notes">
+            <a href={`/index/${row.entry.provider}#e-${row.entry.id}`}>
+              {row.entry.name}
+            </a>
+          </td>
+        </tr>
+      ))
+    }
+    <tr id="filter-empty" hidden>
+      <td colspan="4">No matches.</td>
+    </tr>
+  </tbody>
+</table>

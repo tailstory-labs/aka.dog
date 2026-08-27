@@ -1,0 +1,144 @@
+---
+import Host from "@/components/Host.astro";
+import type { Entry } from "@/lib/types";
+
+interface Props {
+  entries: Entry[];
+  /** Show the provider column (the cross-provider dump). */
+  showProvider?: boolean;
+  /** Show the previous-address column (a provider-scoped view). */
+  showPrevious?: boolean;
+  /** Provider slug, used to link the "+n more" into the deprecated view. */
+  provider?: string | undefined;
+}
+const {
+  entries,
+  showProvider = false,
+  showPrevious = false,
+  provider,
+} = Astro.props;
+
+const byId = new Map(entries.map((entry) => [entry.id, entry]));
+const successorOf = (entry: Entry) =>
+  entry.superseded_by ? byId.get(entry.superseded_by) : undefined;
+
+const searchKey = (entry: Entry) =>
+  [
+    entry.name,
+    entry.provider,
+    entry.description ?? "",
+    ...(entry.current ?? []).map((address) => address.url),
+    ...(entry.history ?? []).map((address) => address.url),
+    ...(entry.aka_ms ?? []).map((pointer) => pointer.url),
+    ...(entry.tags ?? []),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
+---
+
+<table
+  class:list={['tbl', showProvider ? 'tbl--dump' : 'tbl--provider']}
+  id="index-table"
+>
+  <colgroup>
+    <col />
+    <col />
+    {showProvider && <col />}
+    <col />
+    {showPrevious && <col />}
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Address</th>
+      {showProvider && <th scope="col" class="c-provider">Provider</th>}
+      <th scope="col" class="c-notes">What it is</th>
+      {showPrevious && <th scope="col" class="c-tags">Previously</th>}
+    </tr>
+  </thead>
+  <tbody>
+    {
+      entries.map((entry) => {
+        const current = entry.current ?? [];
+        const primary = current[0];
+        const history = entry.history ?? [];
+        // A retired entry already shows its last address struck through, so
+        // "Previously" only covers what came before that.
+        const previous = primary ? history : history.slice(0, -1);
+        const successor = successorOf(entry);
+        return (
+          <tr id={`e-${entry.id}`} data-search={searchKey(entry)}>
+            <td>
+              {primary ? (
+                <a href={`https://${primary.url}`}>{entry.name}</a>
+              ) : (
+                <>
+                  <span>{entry.name}</span> <span class="chip">retired</span>
+                </>
+              )}
+            </td>
+            <td>
+              {current.map((address) => (
+                <Host url={address.url} class="stack" />
+              ))}
+              {!primary && history.length > 0 && (
+                <Host
+                  url={history[history.length - 1]?.url ?? ""}
+                  class="stack dead"
+                />
+              )}
+              {successor && (
+                <span class="stack">
+                  {'→ '}
+                  <a
+                    href={
+                      successor.current?.[0]
+                        ? `https://${successor.current[0].url}`
+                        : `/index/${successor.provider}#e-${successor.id}`
+                    }
+                  >
+                    {successor.name}
+                  </a>
+                </span>
+              )}
+              {(entry.aka_ms ?? []).length > 0 && (
+                <span class="stack">
+                  {(entry.aka_ms ?? []).map((pointer) => (
+                    <a
+                      class="chip"
+                      href={`https://${pointer.url}`}
+                      title={pointer.label}
+                    >
+                      {pointer.url}
+                    </a>
+                  ))}
+                </span>
+              )}
+            </td>
+            {showProvider && (
+              <td class="c-provider">
+                <a href={`/index/${entry.provider}`}>{entry.provider}</a>
+              </td>
+            )}
+            <td class="c-notes">{entry.description}</td>
+            {showPrevious && (
+              <td class="c-tags">
+                {previous[0] ? <Host url={previous[0].url} /> : null}
+                {previous.length > 1 && (
+                  <a class="stack" href={`/index/${provider}/deprecated`}>
+                    +{previous.length - 1} more
+                  </a>
+                )}
+              </td>
+            )}
+          </tr>
+        );
+      })
+    }
+    <tr id="filter-empty" hidden>
+      <td colspan={columns}>No matches.</td>
+    </tr>
+  </tbody>
+</table>

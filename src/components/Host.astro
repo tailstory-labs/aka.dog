@@ -1,0 +1,21 @@
+---
+interface Props {
+  url: string;
+  class?: string | undefined;
+}
+const { url, class: className } = Astro.props;
+
+// Offer the line breaker somewhere sensible to wrap. Without this, a fixed
+// column plus `overflow-wrap: anywhere` snaps hosts mid-word
+// ("microsoft365.com/launch/e | xcel").
+const parts = url.split(/(?<=[/.])/);
+---
+
+<code class={className}>{
+  parts.map((part, index) => (
+    <>
+      {part}
+      {index < parts.length - 1 && <wbr />}
+    </>
+  ))
+}</code>

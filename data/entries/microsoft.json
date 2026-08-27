@@ -429,11 +429,184 @@
     "superseded_by": "teams",
     "history": [
       {
-        "url": "TODO.skypeforbusiness.example",
-        "until": "2021",
-        "note": "Service retired; users migrated to Microsoft Teams. (host/date placeholders - confirm.)"
+        "url": "online.lync.com",
+        "until": "2021-07",
+        "note": "Skype for Business Online retired 2021-07-31; users migrated to Microsoft Teams. End-user web access was per-tenant rather than a single public host."
       }
     ],
     "last_verified": "2026-06"
+  },
+  {
+    "id": "myaccount",
+    "name": "My Account",
+    "provider": "microsoft",
+    "description": "Work or school account settings - password, MFA methods, devices, sign-ins. Distinct from account.microsoft.com, which is the consumer Microsoft account.",
+    "tags": ["end-user"],
+    "current": [{ "url": "myaccount.microsoft.com" }],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "myapps",
+    "name": "My Apps",
+    "provider": "microsoft",
+    "description": "Every application the signed-in user is assigned. Both hosts are live; neither redirects to the other.",
+    "tags": ["end-user"],
+    "current": [
+      { "url": "myapplications.microsoft.com" },
+      {
+        "url": "myapps.microsoft.com",
+        "note": "Older host, still served directly."
+      }
+    ],
+    "history": [
+      {
+        "url": "account.activedirectory.windowsazure.com",
+        "became": "myapplications.microsoft.com",
+        "note": "The original Access Panel host."
+      }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "mysignins",
+    "name": "My Sign-ins",
+    "provider": "microsoft",
+    "description": "Recent sign-in activity for the signed-in user.",
+    "tags": ["end-user"],
+    "current": [{ "url": "mysignins.microsoft.com" }],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "security-info",
+    "name": "Security info",
+    "provider": "microsoft",
+    "description": "Manage MFA methods - authenticator app, phone, passkeys.",
+    "tags": ["end-user"],
+    "current": [{ "url": "mysignins.microsoft.com/security-info" }],
+    "aka_ms": [
+      {
+        "url": "aka.ms/mysecurityinfo",
+        "label": "Security info",
+        "verified": "2026-08"
+      },
+      { "url": "aka.ms/mfasetup", "label": "MFA setup", "verified": "2026-08" }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "mygroups",
+    "name": "My Groups",
+    "provider": "microsoft",
+    "description": "Groups the signed-in user owns or belongs to; now a section of My Account.",
+    "tags": ["end-user"],
+    "current": [{ "url": "myaccount.microsoft.com/groups" }],
+    "history": [
+      {
+        "url": "mygroups.microsoft.com",
+        "became": "myaccount.microsoft.com/groups",
+        "note": "Standalone host still 301s to the My Account section."
+      }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "myaccess",
+    "name": "My Access",
+    "provider": "microsoft",
+    "description": "Request and review access packages (Entra entitlement management).",
+    "tags": ["end-user"],
+    "current": [{ "url": "myaccess.microsoft.com" }],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "password-reset",
+    "name": "Password reset",
+    "provider": "microsoft",
+    "description": "Self-service password reset, reachable while locked out.",
+    "tags": ["end-user"],
+    "current": [{ "url": "passwordreset.microsoftonline.com" }],
+    "aka_ms": [
+      {
+        "url": "aka.ms/sspr",
+        "label": "Self-service password reset",
+        "verified": "2026-08"
+      }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "calendar",
+    "name": "Outlook Calendar",
+    "provider": "microsoft",
+    "description": "The calendar surface of Outlook on the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "outlook.cloud.microsoft/calendar" }],
+    "history": [
+      {
+        "url": "outlook.office.com/calendar",
+        "became": "outlook.cloud.microsoft/calendar",
+        "note": "Follows the outlook.office.com host move (MC1188995)."
+      }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "bookings",
+    "name": "Microsoft Bookings",
+    "provider": "microsoft",
+    "description": "Appointment scheduling, hosted inside Outlook on the web.",
+    "tags": ["end-user"],
+    "current": [{ "url": "outlook.cloud.microsoft/bookings" }],
+    "history": [
+      {
+        "url": "outlook.office.com/bookings",
+        "became": "outlook.cloud.microsoft/bookings",
+        "note": "Follows the outlook.office.com host move (MC1188995)."
+      }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "sharepoint",
+    "name": "SharePoint",
+    "provider": "microsoft",
+    "description": "SharePoint start page. Sites themselves stay on the per-tenant *.sharepoint.com host.",
+    "tags": ["end-user"],
+    "current": [{ "url": "m365.cloud.microsoft/launch/sharepoint" }],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "clipchamp",
+    "name": "Microsoft Clipchamp",
+    "provider": "microsoft",
+    "description": "Video hub for Microsoft 365; absorbed Stream.",
+    "tags": ["end-user"],
+    "current": [{ "url": "m365.cloud.microsoft/launch/clipchamp" }],
+    "history": [
+      {
+        "url": "web.microsoftstream.com",
+        "became": "m365.cloud.microsoft/launch/clipchamp",
+        "note": "Stream and Clipchamp unified under the Clipchamp brand (MC1088176)."
+      }
+    ],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "lists",
+    "name": "Microsoft Lists",
+    "provider": "microsoft",
+    "description": "Microsoft Lists.",
+    "tags": ["end-user"],
+    "current": [{ "url": "m365.cloud.microsoft/launch/lists" }],
+    "last_verified": "2026-08"
+  },
+  {
+    "id": "designer",
+    "name": "Microsoft Designer",
+    "provider": "microsoft",
+    "description": "Microsoft Designer; has no cloud.microsoft host.",
+    "tags": ["end-user"],
+    "current": [{ "url": "designer.microsoft.com" }],
+    "last_verified": "2026-08"
   }
 ]

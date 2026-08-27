@@ -12,6 +12,8 @@ const validate = new Ajv2020({ allErrors: true, strict: false }).compile(
 );
 
 // Keep in sync with src/lib/reserved.ts and the COLLECTIONS slugs in src/lib/views.ts.
+// Curated page slugs live in data/curated/ and are checked by validate-curated.mjs;
+// one may deliberately shadow a collection slug listed here.
 const RESERVED_TOP = new Set(["index", "about", "schemas", ".well-known"]);
 const RESERVED_VIEW = new Set(["deprecated"]);
 const AUTHORED_COLLECTION_SLUGS = ["cloud-microsoft", "end-user"];
