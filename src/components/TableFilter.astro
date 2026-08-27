@@ -48,12 +48,12 @@ const { label = "Filter" } = Astro.props;
       if (countLabel) countLabel.textContent = terms.length ? `${shown}/${rows.length}` : "";
 
       const url = new URL(location.href);
-      if (raw) url.searchParams.set("q", raw);
-      else url.searchParams.delete("q");
+      if (raw) url.searchParams.set("query", raw);
+      else url.searchParams.delete("query");
       history.replaceState(null, "", url);
     };
 
-    const initial = new URL(location.href).searchParams.get("q") ?? "";
+    const initial = new URL(location.href).searchParams.get("query") ?? "";
     if (initial) {
       input.value = initial;
       apply(initial);

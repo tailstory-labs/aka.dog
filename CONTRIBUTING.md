@@ -38,15 +38,15 @@ Request -> Cloudflare
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Astro dev server (runs `gen:types` first) |
-| `npm run build` | `validate` + `gen:types`, then `astro build` (the build gate) |
+| `npm run dev` | Astro dev server (runs `generate:types` first) |
+| `npm run build` | `validate` + `generate:types`, then `astro build` (the build gate) |
 | `npm run validate` | ajv + semantic checks over `data/entries/*.json` and `data/curated/**/*.json` |
-| `npm run gen:types` | regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from the schemas |
+| `npm run generate:types` | regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from the schemas |
 | `npm run preview` | preview the production build locally |
-| `npm run cf:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
+| `npm run cloudflare:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
 | `npm run deploy` | `build` then `wrangler deploy --x-new-config` |
 
-To exercise the real Worker locally (redirects, negotiation): `npm run cf:dev`.
+To exercise the real Worker locally (redirects, negotiation): `npm run cloudflare:dev`.
 
 ## Formatting & linting
 
@@ -85,7 +85,7 @@ Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`) - t
 - **`cloudflare.config.ts`** (`defineWorker`) - runtime settings: name, compatibility date, custom
   `domains`, the `ASSETS`/`SESSION`/`IMAGES` bindings, `assets.htmlHandling`, and observability.
   aka.dog uses the `@astrojs/cloudflare` **server** adapter, so `entrypoint` points at the worker
-  the adapter emits at `dist/server/entry.mjs` - `astro build` must run first (the `deploy`/`cf:dev`
+  the adapter emits at `dist/server/entry.mjs` - `astro build` must run first (the `deploy`/`cloudflare:dev`
   scripts do this).
 - **`wrangler.config.ts`** (`defineWranglerConfig`) - tooling: `assetsDirectory: "./dist/client"`
   (the adapter's static-asset output).

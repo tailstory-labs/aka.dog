@@ -16,14 +16,14 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 
 ## Commands
 
-- `npm run build` - the build gate: `validate` + `gen:types`, then `astro build`. Run before
+- `npm run build` - the build gate: `validate` + `generate:types`, then `astro build`. Run before
   considering work done.
 - `npm run validate` - ajv + semantic checks over `data/entries/*.json` and
   `data/curated/**/*.json`.
-- `npm run gen:types` - regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from
+- `npm run generate:types` - regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from
   `schemas/*.schema.json`.
 - `npm run dev` - Astro dev server.
-- `npm run cf:dev` - run the real Worker locally (redirects + content negotiation).
+- `npm run cloudflare:dev` - run the real Worker locally (redirects + content negotiation).
 - `npx biome check --write .` - format and lint (always run before committing).
 
 ## Conventions & invariants
@@ -31,7 +31,7 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 - **Single source of truth for the entry shape**: `schemas/entry.schema.json` (draft 2020-12);
   for curated pages, `schemas/curated.schema.json`. `src/lib/types.ts` and
   `src/lib/curated-types.ts` are **generated** - never hand-edit; change the schema and run
-  `gen:types`.
+  `generate:types`.
 - **Don't author derived views.** Add data, not view output. There are three authored datasets:
   `data/entries/*.json` (facts - services and the addresses they live at), `data/redirects/*.json`
   (the shortener), and `data/curated/{provider}/{slug}.json` (editorial - ordering, grouping, and
