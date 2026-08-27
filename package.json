@@ -8,14 +8,16 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "predev": "npm run gen:types",
+    "predev": "npm run generate:types",
     "build": "astro build",
-    "prebuild": "npm run validate && npm run gen:types",
+    "prebuild": "npm run validate && npm run generate:types",
     "preview": "astro preview",
     "astro": "astro",
-    "validate": "node scripts/validate-entries.mjs",
-    "gen:types": "json2ts -i schemas/entry.schema.json -o src/lib/types.ts --unreachableDefinitions",
-    "cf:dev": "npm run build && wrangler dev --x-new-config",
+    "validate": "node scripts/validate-entries.mjs && node scripts/validate-curated.mjs",
+    "generate:types": "npm run generate:types:entry && npm run generate:types:curated",
+    "generate:types:entry": "json2ts -i schemas/entry.schema.json -o src/lib/types.ts --unreachableDefinitions",
+    "generate:types:curated": "json2ts -i schemas/curated.schema.json -o src/lib/curated-types.ts --unreachableDefinitions",
+    "cloudflare:dev": "npm run build && wrangler dev --x-new-config",
     "deploy": "npm run build && wrangler deploy --x-new-config"
   },
   "dependencies": {

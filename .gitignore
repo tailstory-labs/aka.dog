@@ -1,7 +1,8 @@
 # build output
 dist/
-# generated types (from schemas/entry.schema.json)
+# generated types (from schemas/*.schema.json)
 src/lib/types.ts
+src/lib/curated-types.ts
 # dependencies
 node_modules/
 # astro

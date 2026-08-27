@@ -1,0 +1,76 @@
+---
+interface Props {
+  /** Placeholder text; name the thing being filtered. */
+  label?: string;
+}
+const { label = "Filter" } = Astro.props;
+---
+
+<div class="filter" id="filter-wrapper" hidden>
+  <input
+    id="filter-input"
+    type="search"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder={`${label}…  (press /)`}
+    aria-label={label}
+    aria-controls="index-table"
+  />
+  <span class="count" id="filter-count" aria-live="polite"></span>
+</div>
+
+<script>
+  const filterWrapper = document.getElementById("filter-wrapper");
+  const input = document.getElementById("filter-input") as HTMLInputElement | null;
+  const table = document.getElementById("index-table");
+
+  if (filterWrapper && input && table) {
+    // The input only exists once JS is running; without it every row renders.
+    filterWrapper.hidden = false;
+
+    const rows = [
+      ...table.querySelectorAll<HTMLTableRowElement>("tbody tr[data-search]"),
+    ];
+    const emptyRow = document.getElementById("filter-empty");
+    const countLabel = document.getElementById("filter-count");
+
+    const apply = (raw: string) => {
+      const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
+      let shown = 0;
+      for (const row of rows) {
+        const matches = terms.every((term) =>
+          (row.dataset.search ?? "").includes(term),
+        );
+        row.hidden = !matches;
+        if (matches) shown++;
+      }
+      if (emptyRow) emptyRow.hidden = shown > 0;
+      if (countLabel) countLabel.textContent = terms.length ? `${shown}/${rows.length}` : "";
+
+      const url = new URL(location.href);
+      if (raw) url.searchParams.set("query", raw);
+      else url.searchParams.delete("query");
+      history.replaceState(null, "", url);
+    };
+
+    const initial = new URL(location.href).searchParams.get("query") ?? "";
+    if (initial) {
+      input.value = initial;
+      apply(initial);
+    }
+
+    input.addEventListener("input", () => apply(input.value));
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        input.value = "";
+        apply("");
+      }
+    });
+    addEventListener("keydown", (event) => {
+      if (event.key === "/" && document.activeElement !== input) {
+        event.preventDefault();
+        input.focus();
+      }
+    });
+  }
+</script>

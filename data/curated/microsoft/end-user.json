@@ -1,0 +1,96 @@
+{
+  "title": "end-user surfaces",
+  "description": "Endpoints an end user reaches directly, grouped by task",
+  "lead": {
+    "entry": "myaccount",
+    "label": "My Account",
+    "blurb": "Password, MFA, and registered devices"
+  },
+  "groups": [
+    {
+      "title": "Your account",
+      "note": "Everything about you rather than your work",
+      "items": [
+        {
+          "entry": "myapps",
+          "label": "My Apps",
+          "blurb": "Every app you can sign in to"
+        },
+        {
+          "entry": "security-info",
+          "label": "Security info",
+          "blurb": "Add or change an MFA method"
+        },
+        {
+          "entry": "password-reset",
+          "label": "Password reset",
+          "blurb": "Works while you are locked out"
+        },
+        {
+          "entry": "mygroups",
+          "label": "My Groups",
+          "blurb": "Groups you are in or own"
+        }
+      ]
+    },
+    {
+      "title": "Mail and meetings",
+      "items": [
+        { "entry": "outlook", "label": "Outlook", "blurb": "Email" },
+        {
+          "entry": "teams",
+          "label": "Teams",
+          "blurb": "Chat, calls, meetings"
+        },
+        { "entry": "calendar", "label": "Calendar", "blurb": "Your schedule" },
+        {
+          "entry": "bookings",
+          "label": "Bookings",
+          "blurb": "Let people book time with you"
+        }
+      ]
+    },
+    {
+      "title": "Documents",
+      "items": [
+        { "entry": "word", "label": "Word", "blurb": "Documents" },
+        { "entry": "excel", "label": "Excel", "blurb": "Spreadsheets" },
+        { "entry": "powerpoint", "label": "PowerPoint", "blurb": "Slides" },
+        { "entry": "onenote", "label": "OneNote", "blurb": "Notebooks" },
+        { "entry": "onedrive", "label": "OneDrive", "blurb": "Your files" },
+        {
+          "entry": "sharepoint",
+          "label": "SharePoint",
+          "blurb": "Shared team files"
+        }
+      ]
+    },
+    {
+      "title": "Everything else",
+      "note": "Which of these you get depends on your licence",
+      "items": [
+        { "entry": "loop", "label": "Loop", "blurb": "Shared workspaces" },
+        {
+          "entry": "whiteboard",
+          "label": "Whiteboard",
+          "blurb": "Freeform canvas"
+        },
+        { "entry": "todo", "label": "To Do", "blurb": "Task lists" },
+        {
+          "entry": "planner",
+          "label": "Planner",
+          "blurb": "Plans and assigned tasks"
+        },
+        { "entry": "forms", "label": "Forms", "blurb": "Surveys and quizzes" },
+        {
+          "entry": "clipchamp",
+          "label": "Clipchamp",
+          "blurb": "Video, and where Stream went"
+        },
+        { "entry": "designer", "label": "Designer", "blurb": "Quick graphics" },
+        { "entry": "visio", "label": "Visio", "blurb": "Diagrams" },
+        { "entry": "sway", "label": "Sway", "blurb": "Quick web pages" }
+      ]
+    }
+  ]
+}

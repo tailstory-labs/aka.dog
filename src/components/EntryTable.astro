@@ -1,0 +1,118 @@
+---
+import Host from "@/components/Host.astro";
+import type { Entry } from "@/lib/types";
+
+interface Props {
+  entries: Entry[];
+  /** Show the provider column (the cross-provider dump). */
+  showProvider?: boolean;
+}
+const { entries, showProvider = false } = Astro.props;
+
+const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
+const successorOf = (entry: Entry) =>
+  entry.superseded_by ? entriesById.get(entry.superseded_by) : undefined;
+
+const searchKey = (entry: Entry) =>
+  [
+    entry.name,
+    entry.provider,
+    entry.description ?? "",
+    ...(entry.current ?? []).map((address) => address.url),
+    ...(entry.history ?? []).map((address) => address.url),
+    ...(entry.aka_ms ?? []).map((pointer) => pointer.url),
+    ...(entry.tags ?? []),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+const columns = 2 + (showProvider ? 1 : 0) + 1;
+---
+
+<table
+  class:list={['table', showProvider ? 'table--dump' : 'table--provider']}
+  id="index-table"
+>
+  <colgroup>
+    <col />
+    <col />
+    {showProvider && <col />}
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Address</th>
+      {showProvider && <th scope="col" class="column-provider">Provider</th>}
+      <th scope="col" class="column-notes">What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      entries.map((entry) => {
+        const current = entry.current ?? [];
+        const primary = current[0];
+        const history = entry.history ?? [];
+        const successor = successorOf(entry);
+        return (
+          <tr id={`entry-${entry.id}`} data-search={searchKey(entry)}>
+            <td>
+              <span>{entry.name}</span>
+              {!primary && <> <span class="chip">retired</span></>}
+            </td>
+            <td>
+              {current.map((address) => (
+                <a class="stack" href={`https://${address.url}`}>
+                  <Host url={address.url} />
+                </a>
+              ))}
+              {!primary && history.length > 0 && (
+                <Host
+                  url={history[history.length - 1]?.url ?? ""}
+                  class="stack dead"
+                />
+              )}
+              {successor && (
+                <span class="secondary">
+                  {'→ '}
+                  {successor.current?.[0] ? (
+                    <a
+                      href={`https://${successor.current[0].url}`}
+                      title={successor.name}
+                    >
+                      <Host url={successor.current[0].url} />
+                    </a>
+                  ) : (
+                    <span>{successor.name}</span>
+                  )}
+                </span>
+              )}
+              {(entry.aka_ms ?? []).length > 0 && (
+                <span class="secondary">
+                  {(entry.aka_ms ?? []).map((pointer) => (
+                    <a
+                      class="chip"
+                      href={`https://${pointer.url}`}
+                      title={pointer.label}
+                    >
+                      {pointer.url}
+                    </a>
+                  ))}
+                </span>
+              )}
+            </td>
+            {showProvider && (
+              <td class="column-provider">
+                <a href={`/index/${entry.provider}`}>{entry.provider}</a>
+              </td>
+            )}
+            <td class="column-notes">{entry.description}</td>
+          </tr>
+        );
+      })
+    }
+    <tr id="filter-empty" hidden>
+      <td colspan={columns}>No matches.</td>
+    </tr>
+  </tbody>
+</table>

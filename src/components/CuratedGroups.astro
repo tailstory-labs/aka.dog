@@ -1,0 +1,41 @@
+---
+import Host from "@/components/Host.astro";
+import type { ResolvedGroup, ResolvedItem } from "@/lib/views";
+
+interface Props {
+  lead?: ResolvedItem | undefined;
+  groups: ResolvedGroup[];
+}
+const { lead, groups } = Astro.props;
+
+const host = (href: string) => href.replace(/^https:\/\//, "");
+---
+
+{
+  lead && (
+    <a class="card card--lead" href={lead.href}>
+      <span class="name">{lead.label}</span>
+      {lead.blurb && <span class="blurb">{lead.blurb}</span>}
+      <Host url={host(lead.href)} class="host" />
+    </a>
+  )
+}
+{
+  groups.map((group) => (
+    <section class="group">
+      <h2>{group.title}</h2>
+      {group.note && <p class="group-note">{group.note}</p>}
+      <ul class="cards">
+        {group.items.map((item) => (
+          <li>
+            <a class="card" href={item.href}>
+              <span class="name">{item.label}</span>
+              {item.blurb && <span class="blurb">{item.blurb}</span>}
+              <Host url={host(item.href)} class="host" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}

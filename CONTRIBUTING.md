@@ -5,9 +5,11 @@ Assets**:
 
 1. **A redirect shortener** - `aka.dog/{who}/{slug}` -> `302` to an external URL, resolved in the
    Worker from build-embedded JSON (`data/redirects/*.json`).
-2. **A derived reference index** - `aka.dog/index/*` pages that are *queries* (views) over a single
-   hand-authored entry dataset (`data/entries/*.json`). You author **entries**; the views (dump,
-   per-provider, `deprecated`, `cloud-microsoft`, `end-user`) are derived - never hand-written.
+2. **A derived reference index** - `aka.dog/index/*` pages that are *queries* (views) over a
+   hand-authored entry dataset (`data/entries/*.json`), plus **curated pages** assembled from a
+   second dataset (`data/curated/{provider}/{slug}.json`). You author data; the pages are derived
+   from it - never hand-written. A curated page supplies ordering, grouping and audience-specific
+   wording, and references entries by `id` so it never restates an address.
 
 The dataset is organized by namespace (provider), so any vendor can be added as a new namespace. The
 two systems are parallel and only share provider names.
@@ -28,22 +30,23 @@ Request -> Cloudflare
   prerendered static assets.
 - **`src/fetch.ts`** is the Astro 7 advanced-routing entry: it resolves redirects, negotiates
   `/index/*`, and falls through to Astro for everything else.
-- **One source of truth for the entry shape**: `schemas/entry.schema.json` (JSON Schema draft
-  2020-12). Validated by ajv in the build gate; TypeScript types are generated from it.
+- **One source of truth per shape**: `schemas/entry.schema.json` for entries and
+  `schemas/curated.schema.json` for curated pages (JSON Schema draft 2020-12). Both are validated
+  by ajv in the build gate, and TypeScript types are generated from them.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Astro dev server (runs `gen:types` first) |
-| `npm run build` | `validate` + `gen:types`, then `astro build` (the build gate) |
-| `npm run validate` | ajv structural validation + the 5 semantic checks over `data/entries/*.json` |
-| `npm run gen:types` | regenerate `src/lib/types.ts` from the schema |
+| `npm run dev` | Astro dev server (runs `generate:types` first) |
+| `npm run build` | `validate` + `generate:types`, then `astro build` (the build gate) |
+| `npm run validate` | ajv + semantic checks over `data/entries/*.json` and `data/curated/**/*.json` |
+| `npm run generate:types` | regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from the schemas |
 | `npm run preview` | preview the production build locally |
-| `npm run cf:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
+| `npm run cloudflare:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
 | `npm run deploy` | `build` then `wrangler deploy --x-new-config` |
 
-To exercise the real Worker locally (redirects, negotiation): `npm run cf:dev`.
+To exercise the real Worker locally (redirects, negotiation): `npm run cloudflare:dev`.
 
 ## Formatting & linting
 
@@ -62,7 +65,19 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
   `superseded_by` resolves and implies no `current`, every `became` URL resolves, and no
   reserved-word collisions.
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
-  title + description + predicate). No entry changes.
+  title + description + predicate). No entry changes. This is the right tool when the page *is* a
+  query - "every `*.cloud.microsoft` host" is a fact about the entries.
+- **A hand-curated page**: add `data/curated/{provider}/{slug}.json` - the directory is the
+  provider and the filename is the view slug, so `/index/{provider}/{slug}` starts serving. Use
+  this when the page is editorial: ordering, grouping and wording aimed at a particular reader, of
+  the kind no predicate over `data/entries` could produce. Items reference an entry by `id`
+  (`{ "entry": "outlook", "label": "Outlook", "blurb": "Email" }`) and the address is resolved from
+  it, so the page follows any future host move; an inline `{ "name", "url", "blurb" }` item is the
+  escape hatch for a link not worth an index entry. `blurb` is capped at 64 characters and `label`
+  at 32 - that cap is what keeps a curated page from going ragged, so don't raise it. A curated
+  page shadows a same-slug entry in `COLLECTIONS`. Store `title` **bare** (`"end-user
+  surfaces"`, not `"microsoft: end-user surfaces"`) - the resolver prefixes the provider, so the
+  same string serves both the page heading and the homepage nav label.
 
 ## Reporting a stale link
 
@@ -79,7 +94,7 @@ Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`) - t
 - **`cloudflare.config.ts`** (`defineWorker`) - runtime settings: name, compatibility date, custom
   `domains`, the `ASSETS`/`SESSION`/`IMAGES` bindings, `assets.htmlHandling`, and observability.
   aka.dog uses the `@astrojs/cloudflare` **server** adapter, so `entrypoint` points at the worker
-  the adapter emits at `dist/server/entry.mjs` - `astro build` must run first (the `deploy`/`cf:dev`
+  the adapter emits at `dist/server/entry.mjs` - `astro build` must run first (the `deploy`/`cloudflare:dev`
   scripts do this).
 - **`wrangler.config.ts`** (`defineWranglerConfig`) - tooling: `assetsDirectory: "./dist/client"`
   (the adapter's static-asset output).
@@ -109,11 +124,15 @@ Notes:
 
 ```
 schemas/entry.schema.json     canonical entry contract (draft 2020-12)
-scripts/validate-entries.mjs build gate: ajv + semantic checks
+schemas/curated.schema.json   canonical curated-page contract (draft 2020-12)
+scripts/validate-entries.mjs build gate: ajv + semantic checks over entries
+scripts/validate-curated.mjs build gate: ajv + entry-reference checks over curated pages
 data/entries/*.json          the index dataset (authored)
 data/redirects/*.json        the shortener dataset (authored)
+data/curated/{provider}/     curated pages (authored) - one {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
-src/lib/                     entries, redirects, views, reserved, types (generated)
+src/lib/                     entries, redirects, curated, views, reserved, types (generated)
+src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter
 src/pages/index/             dump + [...path] views (HTML, server-rendered) and .json twins
 src/pages/sitemap.xml.ts     index-only sitemap
 ```

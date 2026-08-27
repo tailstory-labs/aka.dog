@@ -1,7 +1,7 @@
 import { astro, FetchState } from "astro/fetch";
 import { redirects } from "@/lib/redirects";
 import { RESERVED_TOP } from "@/lib/reserved";
-import { buildEnvelope, resolveViewByPath } from "@/lib/views";
+import { buildEnvelope, envelopeExtra, resolveViewByPath } from "@/lib/views";
 
 const INDEX_CACHE = "public, max-age=600";
 
@@ -27,18 +27,20 @@ export default {
   async fetch(request: Request) {
     const state = new FetchState(request);
     const pathname = state.url.pathname.replace(/^\/+/, "");
-    const first = pathname.split("/")[0];
+    const firstSegment = pathname.split("/")[0];
 
-    if (first === "index") {
+    if (firstSegment === "index") {
       if (wantsJson(request)) {
         const segments = pathname
           .replace(/^index\/?/, "")
           .split("/")
           .filter(Boolean);
         try {
+          const view = resolveViewByPath(segments);
           const body = buildEnvelope(
             segments.join("/"),
-            resolveViewByPath(segments).entries,
+            view.entries,
+            envelopeExtra(view),
           );
           return new Response(JSON.stringify(body), {
             headers: {
@@ -59,7 +61,7 @@ export default {
       return withCache(await astro(state));
     }
 
-    if (first && !RESERVED_TOP.has(first)) {
+    if (firstSegment && !RESERVED_TOP.has(firstSegment)) {
       const target = redirects.get(pathname);
       if (target) return Response.redirect(target, 302);
     }
