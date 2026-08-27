@@ -67,12 +67,38 @@ const documentTitle =
     --bg: light-dark(#fff, #111);
     --muted: light-dark(#666, #999);
     --rule: light-dark(#e5e5e5, #2a2a2a);
+    /* Deliberately stronger than --rule. A table hairline wants to disappear;
+       a link underline has to be seen, since it is now the only thing marking
+       a link. ~2.5:1 against the background in both themes, against 1.3:1 if
+       --rule were reused, while staying far quieter than the text at ~17:1. */
+    --link-line: light-dark(#a4a4a4, #545454);
   }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--fg);
     font: 16px/1.5 system-ui, sans-serif;
+  }
+  /* Flat links: no colour of their own, marked by a hairline underline that
+     firms up on hover. `color: inherit` is what makes one rule work
+     everywhere - a link in a muted cell stays muted, one in an address cell
+     stays full strength - and it beats the UA :link/:visited colours by
+     cascade origin, so the blue and the purple both go. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--link-line);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  a:hover {
+    text-decoration-color: var(--fg);
+  }
+  /* Not optional: with colour gone, this is all a keyboard user has left. */
+  a:focus-visible {
+    outline: 1px solid var(--fg);
+    outline-offset: 2px;
+    text-decoration-color: var(--fg);
   }
   main {
     max-width: 70ch;
@@ -158,7 +184,11 @@ const documentTitle =
   }
   .stack {
     display: block;
+  }
+  .sub {
+    display: block;
     color: var(--muted);
+    font-size: 0.875em;
   }
 
   .chip {
@@ -173,8 +203,17 @@ const documentTitle =
     text-decoration: none;
     white-space: nowrap;
   }
-  a.chip:hover {
+  /* The bordered pill is its own affordance, so chips opt out of the
+     underline; full-strength text is what separates a link chip from the
+     static `retired` marker. */
+  .chip {
+    text-decoration: none;
+  }
+  a.chip {
     color: var(--fg);
+    border-color: var(--link-line);
+  }
+  a.chip:hover {
     border-color: var(--fg);
   }
 
@@ -211,7 +250,7 @@ const documentTitle =
     padding-bottom: 1.25rem;
     border-bottom: 1px solid var(--rule);
   }
-  .lead a {
+  .lead .name {
     font-size: 1.375rem;
   }
   .lead .blurb {
@@ -219,7 +258,9 @@ const documentTitle =
     color: var(--muted);
     font-size: 0.9375rem;
   }
-  .lead code {
+  .lead .host {
+    display: inline-block;
+    margin-top: 0.35rem;
     color: var(--muted);
     font-size: 0.8125rem;
   }
@@ -248,11 +289,20 @@ const documentTitle =
     grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
     gap: 0 1rem;
     align-items: baseline;
-    padding: 0.3rem 0;
+    padding: 0.4rem 0;
   }
   .links .blurb {
     color: var(--muted);
     font-size: 0.9375rem;
+  }
+  /* Second row, right column: the address sits under its blurb, where there
+     is room for it, and every one lines up at the same x. */
+  .links .host {
+    grid-column: 2;
+    justify-self: start;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
   }
 
   @media (min-width: 40.0625rem) {
@@ -303,7 +353,10 @@ const documentTitle =
     .links li {
       grid-template-columns: 1fr;
       gap: 0;
-      padding: 0.4rem 0;
+      padding: 0.5rem 0;
+    }
+    .links .host {
+      grid-column: 1;
     }
     .grp h2 {
       margin-top: 1.5rem;

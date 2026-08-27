@@ -71,17 +71,14 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
         return (
           <tr id={`e-${entry.id}`} data-search={searchKey(entry)}>
             <td>
-              {primary ? (
-                <a href={`https://${primary.url}`}>{entry.name}</a>
-              ) : (
-                <>
-                  <span>{entry.name}</span> <span class="chip">retired</span>
-                </>
-              )}
+              <span>{entry.name}</span>
+              {!primary && <> <span class="chip">retired</span></>}
             </td>
             <td>
               {current.map((address) => (
-                <Host url={address.url} class="stack" />
+                <a class="stack" href={`https://${address.url}`}>
+                  <Host url={address.url} />
+                </a>
               ))}
               {!primary && history.length > 0 && (
                 <Host
@@ -90,21 +87,22 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
                 />
               )}
               {successor && (
-                <span class="stack">
+                <span class="sub">
                   {'→ '}
-                  <a
-                    href={
-                      successor.current?.[0]
-                        ? `https://${successor.current[0].url}`
-                        : `/index/${successor.provider}#e-${successor.id}`
-                    }
-                  >
-                    {successor.name}
-                  </a>
+                  {successor.current?.[0] ? (
+                    <a
+                      href={`https://${successor.current[0].url}`}
+                      title={successor.name}
+                    >
+                      <Host url={successor.current[0].url} />
+                    </a>
+                  ) : (
+                    <span>{successor.name}</span>
+                  )}
                 </span>
               )}
               {(entry.aka_ms ?? []).length > 0 && (
-                <span class="stack">
+                <span class="sub">
                   {(entry.aka_ms ?? []).map((pointer) => (
                     <a
                       class="chip"
@@ -127,7 +125,7 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
               <td class="c-tags">
                 {previous[0] ? <Host url={previous[0].url} /> : null}
                 {previous.length > 1 && (
-                  <a class="stack" href={`/index/${provider}/deprecated`}>
+                  <a class="sub" href={`/index/${provider}/deprecated`}>
                     +{previous.length - 1} more
                   </a>
                 )}
