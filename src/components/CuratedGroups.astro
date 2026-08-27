@@ -24,9 +24,9 @@ const host = (href: string) => href.replace(/^https:\/\//, "");
 }
 {
   groups.map((group) => (
-    <section class="grp">
+    <section class="group">
       <h2>{group.title}</h2>
-      {group.note && <p class="grp-note">{group.note}</p>}
+      {group.note && <p class="group-note">{group.note}</p>}
       <ul class="links">
         {group.items.map((item) => (
           <li>

@@ -10,7 +10,7 @@ const files = import.meta.glob("../../../schemas/*.schema.json", {
   eager: true,
 }) as Record<string, string>;
 
-const byName = new Map(
+const schemasByName = new Map(
   Object.entries(files).map(([filePath, rawContent]) => [
     (filePath.split("/").pop() ?? "").replace(/\.schema\.json$/, ""),
     rawContent,
@@ -18,11 +18,11 @@ const byName = new Map(
 );
 
 export function getStaticPaths() {
-  return [...byName.keys()].map((name) => ({ params: { name } }));
+  return [...schemasByName.keys()].map((name) => ({ params: { name } }));
 }
 
 export const GET: APIRoute = ({ params }) => {
-  const rawContent = byName.get(params.name ?? "");
+  const rawContent = schemasByName.get(params.name ?? "");
   if (rawContent == null) return new Response("Not found", { status: 404 });
   return new Response(rawContent, {
     headers: { "content-type": "application/schema+json; charset=utf-8" },

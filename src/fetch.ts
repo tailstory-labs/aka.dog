@@ -27,9 +27,9 @@ export default {
   async fetch(request: Request) {
     const state = new FetchState(request);
     const pathname = state.url.pathname.replace(/^\/+/, "");
-    const first = pathname.split("/")[0];
+    const firstSegment = pathname.split("/")[0];
 
-    if (first === "index") {
+    if (firstSegment === "index") {
       if (wantsJson(request)) {
         const segments = pathname
           .replace(/^index\/?/, "")
@@ -61,7 +61,7 @@ export default {
       return withCache(await astro(state));
     }
 
-    if (first && !RESERVED_TOP.has(first)) {
+    if (firstSegment && !RESERVED_TOP.has(firstSegment)) {
       const target = redirects.get(pathname);
       if (target) return Response.redirect(target, 302);
     }

@@ -63,8 +63,8 @@ const documentTitle =
 <style is:global>
   :root {
     color-scheme: light dark;
-    --fg: light-dark(#1a1a1a, #e8e8e8);
-    --bg: light-dark(#fff, #111);
+    --foreground: light-dark(#1a1a1a, #e8e8e8);
+    --background: light-dark(#fff, #111);
     --muted: light-dark(#666, #999);
     --rule: light-dark(#e5e5e5, #2a2a2a);
     /* Deliberately stronger than --rule. A table hairline wants to disappear;
@@ -75,8 +75,8 @@ const documentTitle =
   }
   body {
     margin: 0;
-    background: var(--bg);
-    color: var(--fg);
+    background: var(--background);
+    color: var(--foreground);
     font: 16px/1.5 system-ui, sans-serif;
   }
   /* Flat links: no colour of their own, marked by a hairline underline that
@@ -92,13 +92,13 @@ const documentTitle =
     text-underline-offset: 3px;
   }
   a:hover {
-    text-decoration-color: var(--fg);
+    text-decoration-color: var(--foreground);
   }
   /* Not optional: with colour gone, this is all a keyboard user has left. */
   a:focus-visible {
-    outline: 1px solid var(--fg);
+    outline: 1px solid var(--foreground);
     outline-offset: 2px;
-    text-decoration-color: var(--fg);
+    text-decoration-color: var(--foreground);
   }
   main {
     max-width: 70ch;
@@ -138,35 +138,34 @@ const documentTitle =
     border-top: 1px solid var(--rule);
   }
 
-  /* tables ---------------------------------------------------------------- */
-  .tbl {
+  .table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9375rem;
   }
-  .tbl th,
-  .tbl td {
+  .table th,
+  .table td {
     text-align: left;
     vertical-align: top;
     padding: 0.45rem 0.75rem 0.45rem 0;
     border-bottom: 1px solid var(--rule);
   }
-  .tbl th:last-child,
-  .tbl td:last-child {
+  .table th:last-child,
+  .table td:last-child {
     padding-right: 0;
   }
-  .tbl thead th {
+  .table thead th {
     position: sticky;
     top: 0;
-    background: var(--bg);
+    background: var(--background);
     font-weight: 600;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--muted);
-    border-bottom-color: var(--fg);
+    border-bottom-color: var(--foreground);
   }
-  .tbl code {
+  .table code {
     font-size: 0.875em;
     /* [tenant]-my.sharepoint.com must not blow out a fixed-width cell */
     overflow-wrap: anywhere;
@@ -174,20 +173,20 @@ const documentTitle =
   /* Deliberately no line-through: struck small monospace is unreadable, and
      nothing depends on it - a retired row carries the `retired` chip beside
      its name, and the deprecated table's column header reads "Was". */
-  .tbl .dead {
+  .table .dead {
     color: var(--muted);
   }
-  .c-notes {
+  .column-notes {
     color: var(--muted);
   }
-  .c-tags {
+  .column-retired {
     color: var(--muted);
     font-size: 0.875em;
   }
   .stack {
     display: block;
   }
-  .sub {
+  .secondary {
     display: block;
     color: var(--muted);
     font-size: 0.875em;
@@ -212,14 +211,13 @@ const documentTitle =
     text-decoration: none;
   }
   a.chip {
-    color: var(--fg);
+    color: var(--foreground);
     border-color: var(--link-line);
   }
   a.chip:hover {
-    border-color: var(--fg);
+    border-color: var(--foreground);
   }
 
-  /* filter ---------------------------------------------------------------- */
   .filter {
     position: relative;
     margin-bottom: 1rem;
@@ -236,7 +234,7 @@ const documentTitle =
   }
   .filter input:focus {
     outline: none;
-    border-bottom-color: var(--fg);
+    border-bottom-color: var(--foreground);
   }
   .filter .count {
     position: absolute;
@@ -246,7 +244,6 @@ const documentTitle =
     font-size: 0.875rem;
   }
 
-  /* curated pages --------------------------------------------------------- */
   .lead {
     margin: 0 0 0.5rem;
     padding-bottom: 1.25rem;
@@ -266,7 +263,7 @@ const documentTitle =
     color: var(--muted);
     font-size: 0.8125rem;
   }
-  .grp h2 {
+  .group h2 {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -276,7 +273,7 @@ const documentTitle =
     padding-bottom: 0.35rem;
     border-bottom: 1px solid var(--rule);
   }
-  .grp-note {
+  .group-note {
     color: var(--muted);
     font-size: 0.875rem;
     margin: 0.5rem 0 0;
@@ -312,31 +309,31 @@ const documentTitle =
        longest description dictates the column width for every row. Widths live
        here so that below the breakpoint - where columns are shed - the table
        reflows to fill the screen instead of holding empty tracks open. */
-    .tbl {
+    .table {
       table-layout: fixed;
     }
-    .tbl--dump col:nth-child(1) {
+    .table--dump col:nth-child(1) {
       width: 26%;
     }
-    .tbl--dump col:nth-child(2) {
+    .table--dump col:nth-child(2) {
       width: 32%;
     }
-    .tbl--dump col:nth-child(3) {
+    .table--dump col:nth-child(3) {
       width: 12%;
     }
-    .tbl--provider col:nth-child(1) {
+    .table--provider col:nth-child(1) {
       width: 24%;
     }
-    .tbl--provider col:nth-child(2) {
+    .table--provider col:nth-child(2) {
       width: 30%;
     }
-    .tbl--deprecated col:nth-child(1) {
+    .table--deprecated col:nth-child(1) {
       width: 30%;
     }
-    .tbl--deprecated col:nth-child(2) {
+    .table--deprecated col:nth-child(2) {
       width: 28%;
     }
-    .tbl--deprecated col:nth-child(3) {
+    .table--deprecated col:nth-child(3) {
       width: 12%;
     }
   }
@@ -344,9 +341,9 @@ const documentTitle =
   @media (max-width: 40rem) {
     /* shed columns rather than scroll sideways - the table stays a table, so
        it stays navigable for assistive tech. */
-    .tbl .c-notes,
-    .tbl .c-tags,
-    .tbl .c-provider {
+    .table .column-notes,
+    .table .column-retired,
+    .table .column-provider {
       display: none;
     }
     .links li {
@@ -357,7 +354,7 @@ const documentTitle =
     .links .host {
       grid-column: 1;
     }
-    .grp h2 {
+    .group h2 {
       margin-top: 1.5rem;
     }
   }

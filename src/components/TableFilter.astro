@@ -6,7 +6,7 @@ interface Props {
 const { label = "Filter" } = Astro.props;
 ---
 
-<div class="filter" id="filter-wrap" hidden>
+<div class="filter" id="filter-wrapper" hidden>
   <input
     id="filter-input"
     type="search"
@@ -20,32 +20,32 @@ const { label = "Filter" } = Astro.props;
 </div>
 
 <script>
-  const wrap = document.getElementById("filter-wrap");
+  const filterWrapper = document.getElementById("filter-wrapper");
   const input = document.getElementById("filter-input") as HTMLInputElement | null;
   const table = document.getElementById("index-table");
 
-  if (wrap && input && table) {
+  if (filterWrapper && input && table) {
     // The input only exists once JS is running; without it every row renders.
-    wrap.hidden = false;
+    filterWrapper.hidden = false;
 
     const rows = [
       ...table.querySelectorAll<HTMLTableRowElement>("tbody tr[data-search]"),
     ];
-    const empty = document.getElementById("filter-empty");
-    const count = document.getElementById("filter-count");
+    const emptyRow = document.getElementById("filter-empty");
+    const countLabel = document.getElementById("filter-count");
 
     const apply = (raw: string) => {
       const terms = raw.toLowerCase().split(/\s+/).filter(Boolean);
       let shown = 0;
       for (const row of rows) {
-        const hit = terms.every((term) =>
+        const matches = terms.every((term) =>
           (row.dataset.search ?? "").includes(term),
         );
-        row.hidden = !hit;
-        if (hit) shown++;
+        row.hidden = !matches;
+        if (matches) shown++;
       }
-      if (empty) empty.hidden = shown > 0;
-      if (count) count.textContent = terms.length ? `${shown}/${rows.length}` : "";
+      if (emptyRow) emptyRow.hidden = shown > 0;
+      if (countLabel) countLabel.textContent = terms.length ? `${shown}/${rows.length}` : "";
 
       const url = new URL(location.href);
       if (raw) url.searchParams.set("q", raw);

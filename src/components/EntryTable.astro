@@ -9,9 +9,9 @@ interface Props {
 }
 const { entries, showProvider = false } = Astro.props;
 
-const byId = new Map(entries.map((entry) => [entry.id, entry]));
+const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
 const successorOf = (entry: Entry) =>
-  entry.superseded_by ? byId.get(entry.superseded_by) : undefined;
+  entry.superseded_by ? entriesById.get(entry.superseded_by) : undefined;
 
 const searchKey = (entry: Entry) =>
   [
@@ -30,7 +30,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
 ---
 
 <table
-  class:list={['tbl', showProvider ? 'tbl--dump' : 'tbl--provider']}
+  class:list={['table', showProvider ? 'table--dump' : 'table--provider']}
   id="index-table"
 >
   <colgroup>
@@ -43,8 +43,8 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Address</th>
-      {showProvider && <th scope="col" class="c-provider">Provider</th>}
-      <th scope="col" class="c-notes">What it is</th>
+      {showProvider && <th scope="col" class="column-provider">Provider</th>}
+      <th scope="col" class="column-notes">What it is</th>
     </tr>
   </thead>
   <tbody>
@@ -55,7 +55,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
         const history = entry.history ?? [];
         const successor = successorOf(entry);
         return (
-          <tr id={`e-${entry.id}`} data-search={searchKey(entry)}>
+          <tr id={`entry-${entry.id}`} data-search={searchKey(entry)}>
             <td>
               <span>{entry.name}</span>
               {!primary && <> <span class="chip">retired</span></>}
@@ -73,7 +73,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
                 />
               )}
               {successor && (
-                <span class="sub">
+                <span class="secondary">
                   {'→ '}
                   {successor.current?.[0] ? (
                     <a
@@ -88,7 +88,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
                 </span>
               )}
               {(entry.aka_ms ?? []).length > 0 && (
-                <span class="sub">
+                <span class="secondary">
                   {(entry.aka_ms ?? []).map((pointer) => (
                     <a
                       class="chip"
@@ -102,11 +102,11 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
               )}
             </td>
             {showProvider && (
-              <td class="c-provider">
+              <td class="column-provider">
                 <a href={`/index/${entry.provider}`}>{entry.provider}</a>
               </td>
             )}
-            <td class="c-notes">{entry.description}</td>
+            <td class="column-notes">{entry.description}</td>
           </tr>
         );
       })

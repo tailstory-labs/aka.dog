@@ -16,7 +16,7 @@ import type { Entry } from "@/lib/types";
 const host = (url: string) => url.split("/")[0] ?? "";
 const isRetired = (entry: Entry) => !entry.current?.length;
 
-const byId = new Map(entries.map((entry) => [entry.id, entry]));
+const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
 const PROVIDERS = new Set(entries.map((entry) => entry.provider));
 
 export const primaryAddress = (entry: Entry): string | undefined =>
@@ -136,7 +136,7 @@ export type ResolvedView =
 
 function resolveItem(item: CuratedItem): ResolvedItem | undefined {
   if ("entry" in item) {
-    const entry = byId.get(item.entry);
+    const entry = entriesById.get(item.entry);
     const url = entry && primaryAddress(entry);
     // validate-curated.mjs rejects both cases at build time.
     if (!entry || !url) return undefined;

@@ -21,7 +21,7 @@ const AUTHORED_COLLECTION_SLUGS = ["cloud-microsoft", "end-user"];
 const entriesDirectory = `${root}/data/entries`;
 let failed = false;
 const errors = [];
-const all = [];
+const allEntries = [];
 
 if (!existsSync(entriesDirectory)) {
   console.error(`FAIL no data/entries directory at ${entriesDirectory}`);
@@ -41,25 +41,26 @@ for (const file of readdirSync(entriesDirectory).filter((fileName) =>
         `     ${validationError.instancePath || "/"} ${validationError.message}`,
       );
   }
-  if (Array.isArray(data)) for (const entry of data) all.push({ entry, file });
+  if (Array.isArray(data))
+    for (const entry of data) allEntries.push({ entry, file });
 }
 
-const ids = new Map();
+const idsToFiles = new Map();
 const knownUrls = new Set();
-for (const { entry } of all) {
+for (const { entry } of allEntries) {
   for (const address of entry.current ?? [])
     if (address?.url) knownUrls.add(address.url);
   for (const historyEntry of entry.history ?? [])
     if (historyEntry?.url) knownUrls.add(historyEntry.url);
 }
 
-for (const { entry, file } of all) {
+for (const { entry, file } of allEntries) {
   if (entry.id != null) {
-    if (ids.has(entry.id))
+    if (idsToFiles.has(entry.id))
       errors.push(
-        `duplicate id "${entry.id}" (${ids.get(entry.id)} and ${file})`,
+        `duplicate id "${entry.id}" (${idsToFiles.get(entry.id)} and ${file})`,
       );
-    else ids.set(entry.id, file);
+    else idsToFiles.set(entry.id, file);
   }
   if (RESERVED_TOP.has(entry.id))
     errors.push(`id "${entry.id}" is a reserved top-level word (${file})`);
@@ -69,8 +70,8 @@ for (const { entry, file } of all) {
     );
 }
 
-for (const { entry, file } of all) {
-  if (entry.superseded_by != null && !ids.has(entry.superseded_by))
+for (const { entry, file } of allEntries) {
+  if (entry.superseded_by != null && !idsToFiles.has(entry.superseded_by))
     errors.push(
       `superseded_by "${entry.superseded_by}" on "${entry.id}" does not resolve to a known entry id (${file})`,
     );
@@ -97,7 +98,7 @@ if (errors.length) {
   for (const error of errors) console.error(`  - ${error}`);
 } else if (!failed) {
   console.log(
-    `\nSemantic checks passed (${all.length} entries, ${ids.size} unique ids).`,
+    `\nSemantic checks passed (${allEntries.length} entries, ${idsToFiles.size} unique ids).`,
   );
 }
 

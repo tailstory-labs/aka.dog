@@ -13,7 +13,7 @@ const searchKey = (row: DeprecationRow) =>
     .toLowerCase();
 ---
 
-<table class="tbl tbl--deprecated" id="index-table">
+<table class="table table--deprecated" id="index-table">
   <colgroup>
     <col />
     <col />
@@ -24,8 +24,8 @@ const searchKey = (row: DeprecationRow) =>
     <tr>
       <th scope="col">Was</th>
       <th scope="col">Became</th>
-      <th scope="col" class="c-tags">Retired</th>
-      <th scope="col" class="c-notes">Service</th>
+      <th scope="col" class="column-retired">Retired</th>
+      <th scope="col" class="column-notes">Service</th>
     </tr>
   </thead>
   <tbody>
@@ -44,9 +44,9 @@ const searchKey = (row: DeprecationRow) =>
               <span class="chip">retired</span>
             )}
           </td>
-          <td class="c-tags">{row.until ?? ''}</td>
-          <td class="c-notes">
-            <a href={`/index/${row.entry.provider}#e-${row.entry.id}`}>
+          <td class="column-retired">{row.until ?? ''}</td>
+          <td class="column-notes">
+            <a href={`/index/${row.entry.provider}#entry-${row.entry.id}`}>
               {row.entry.name}
             </a>
           </td>
