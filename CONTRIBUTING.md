@@ -64,6 +64,13 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
   title + description + predicate). No entry changes.
 
+## Reporting a stale link
+
+Spotted a moved or dead link but don't want to edit JSON? File an issue at
+[issues/new/choose](https://github.com/tailstory-labs/aka.dog/issues/new/choose) - there's a form
+for index addresses and one for redirects. The forms ask for the evidence a maintainer needs
+(a Message Center ID, a doc link, or just what you saw), so the fix can land without a round trip.
+
 ## Worker config
 
 Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`) - there is **no

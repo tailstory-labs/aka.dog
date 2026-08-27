@@ -1,0 +1,101 @@
+name: Update an index link
+description: An address in the aka.dog index moved, retired, or needs re-checking.
+title: "[link] "
+labels: ["link-change", "index"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep the index accurate.
+
+        This form is for addresses in the **index** - the entries listed at
+        <https://aka.dog/index>. To change where an `aka.dog/{who}/{slug}` short
+        link points, use **Update a redirect** instead.
+
+  - type: input
+    id: entry
+    attributes:
+      label: Which entry?
+      description: >-
+        The entry `id` or its name - for example `m365` or "Microsoft 365".
+        Browse them at <https://aka.dog/index/microsoft.json>. If the index does
+        not track this thing at all yet, that is a new entry rather than an
+        update - see CONTRIBUTING.
+      placeholder: m365
+    validations:
+      required: true
+
+  - type: dropdown
+    id: change
+    attributes:
+      label: What changed?
+      options:
+        - The address moved to a new URL
+        - The address is dead or retired, with no replacement
+        - This entry is now the same thing as another entry
+        - The URL is still right - I am just confirming it works
+        - Something else (the name, description, or tags are wrong)
+    validations:
+      required: true
+
+  - type: input
+    id: listed-url
+    attributes:
+      label: URL as listed today
+      description: >-
+        Copy it from the index so we know which address you mean. Addresses are
+        listed without `https://`.
+      placeholder: office.com
+    validations:
+      required: true
+
+  - type: input
+    id: new-url
+    attributes:
+      label: New URL (or "none")
+      description: >-
+        Where it goes now. If it retired with no replacement, or you are only
+        confirming the existing URL, write `none`. If another entry supersedes
+        it, give that entry's `id`.
+      placeholder: m365.cloud.microsoft
+    validations:
+      required: true
+
+  - type: input
+    id: when
+    attributes:
+      label: When did this change?
+      description: >-
+        Use whatever precision you have - `2026`, `2026-08`, or `2026-08-27`.
+        Leave it blank if you do not know.
+      placeholder: "2026-08"
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: How do you know?
+      description: >-
+        A Message Center ID, a link to vendor documentation, or just what you
+        saw. This is what lets a maintainer verify the change without repeating
+        your research.
+      placeholder: |
+        MC958903 - office.com -> cloud.microsoft redirect, mid-Jan 2025.
+
+        Or: opened office.com on 2026-08-27, landed on m365.cloud.microsoft.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: Context worth recording alongside the address.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you file
+      options:
+        - label: I checked <https://aka.dog/index> and this is not already fixed.
+          required: true
+        - label: I would like to open the pull request myself.

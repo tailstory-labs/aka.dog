@@ -1,0 +1,48 @@
+name: Update a redirect
+description: An aka.dog/{who}/{slug} short link points at the wrong place.
+title: "[redirect] "
+labels: ["link-change", "redirect"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form is for the **shortener** - the `aka.dog/{who}/{slug}` links
+        that `302` elsewhere. To correct an address in the index, use
+        **Update an index link** instead.
+
+  - type: input
+    id: short-link
+    attributes:
+      label: Which short link?
+      description: The full aka.dog URL, or just the `{who}/{slug}` part.
+      placeholder: aka.dog/shenanigans/resume
+    validations:
+      required: true
+
+  - type: input
+    id: current-target
+    attributes:
+      label: Where it points today
+      description: The target you land on now.
+      placeholder: https://github.com/shenanigansd/resume
+    validations:
+      required: true
+
+  - type: input
+    id: new-target
+    attributes:
+      label: Where it should point
+      description: The full URL, including `https://`.
+      placeholder: https://example.com/somewhere-new
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Why?
+      description: >-
+        What is wrong with the current target - dead, moved, superseded? Include
+        anything that helps confirm it.
+    validations:
+      required: true
