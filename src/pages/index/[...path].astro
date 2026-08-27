@@ -2,6 +2,7 @@
 import CuratedGroups from "@/components/CuratedGroups.astro";
 import DeprecationTable from "@/components/DeprecationTable.astro";
 import EntryTable from "@/components/EntryTable.astro";
+import LinkTable from "@/components/LinkTable.astro";
 import TableFilter from "@/components/TableFilter.astro";
 import Layout, { type Crumb } from "@/layouts/Layout.astro";
 import {
@@ -60,6 +61,15 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
         <TableFilter label="Filter addresses" />
         <DeprecationTable rows={rows} />
       </>
+    ) : view.kind === 'links' ? (
+      view.links.length === 0 ? (
+        <p>Nothing here yet</p>
+      ) : (
+        <>
+          <TableFilter label="Filter short links" />
+          <LinkTable links={view.links} />
+        </>
+      )
     ) : view.entries.length === 0 ? (
       <p>Nothing here yet</p>
     ) : (
@@ -83,8 +93,11 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
     }
     {
       /* Dead addresses are only listed on the deprecated view now, so every
-         other view points at it rather than reprinting one. */
-      view.kind !== 'deprecated' && (
+         other view points at it rather than reprinting one. The links view is
+         the exception: a short link is not an address and has no history, so
+         there is nothing for it to point at. */
+      view.kind !== 'deprecated' &&
+        view.kind !== 'links' && (
         <>
           {' · '}
           <a href={provider ? `/index/${provider}/deprecated` : '/index/deprecated'}>

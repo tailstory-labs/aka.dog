@@ -1,0 +1,59 @@
+---
+import Host from "@/components/Host.astro";
+import type { ShortLink } from "@/lib/redirects";
+
+interface Props {
+  links: ShortLink[];
+}
+const { links } = Astro.props;
+
+// Targets are stored with their scheme (data/entries stores addresses bare), and
+// Host wants the bare form. This is the only place the two datasets' URL
+// conventions have to meet.
+const bare = (url: string) => url.replace(/^https?:\/\//, "");
+
+// Lowercased like every other search key. The redirect map itself stays
+// case-sensitive - this key is a filter convenience, never a lookup.
+const searchKey = (link: ShortLink) =>
+  [link.namespace, link.slug, link.path, link.target].join(" ").toLowerCase();
+---
+
+<table class="table table--links" id="index-table">
+  <colgroup>
+    <col />
+    <col />
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th scope="col">Short link</th>
+      <th scope="col">Goes to</th>
+      <th scope="col" class="column-notes">Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      links.map((link) => (
+        <tr data-search={searchKey(link)}>
+          <td>
+            {/* Relative, so following it exercises the real 302. */}
+            <a href={`/${link.path}`}>
+              <Host url={`aka.dog/${link.path}`} />
+            </a>
+          </td>
+          <td>
+            <a href={link.target}>
+              <Host url={bare(link.target)} />
+            </a>
+          </td>
+          <td class="column-notes">
+            <a href={`/introspect/${link.path}`}>introspect</a>
+          </td>
+        </tr>
+      ))
+    }
+    <tr id="filter-empty" hidden>
+      <td colspan="3">No matches.</td>
+    </tr>
+  </tbody>
+</table>

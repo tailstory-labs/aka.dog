@@ -6,4 +6,4 @@ export const RESERVED_TOP = new Set([
   ".well-known",
 ]);
 
-export const RESERVED_VIEW = new Set(["deprecated"]);
+export const RESERVED_VIEW = new Set(["deprecated", "links"]);

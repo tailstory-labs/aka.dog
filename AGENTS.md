@@ -8,18 +8,19 @@ deployment, layout) see [CONTRIBUTING.md](CONTRIBUTING.md).
 Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 
 1. **Redirect shortener** - `aka.dog/{who}/{slug}` -> `302`, resolved in the Worker from
-   `data/redirects/*.json`.
+   `data/redirects/*.json`, and listed at `/index/links`.
 2. **Derived reference index** - `aka.dog/index/*` views are *queries* over `data/entries/*.json`
    (the dump, per-provider, `deprecated` and `cloud-microsoft` views), plus **curated pages**
-   assembled from `data/curated/{provider}/{slug}.json` (today: `microsoft/end-user`). Author
-   data, never view output.
+   assembled from `data/curated/{provider}/{slug}.json` (today: `microsoft/end-user`), plus
+   `/index/links`, the one view whose rows come from the *other* dataset. Author data, never view
+   output.
 
 ## Commands
 
 - `npm run build` - the build gate: `validate` + `generate:types`, then `astro build`. Run before
   considering work done.
-- `npm run validate` - ajv + semantic checks over `data/entries/*.json` and
-  `data/curated/**/*.json`.
+- `npm run validate` - ajv + semantic checks over `data/entries/*.json`,
+  `data/curated/**/*.json` and `data/redirects/*.json`.
 - `npm run generate:types` - regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from
   `schemas/*.schema.json`.
 - `npm run dev` - Astro dev server.
@@ -29,9 +30,12 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 ## Conventions & invariants
 
 - **Single source of truth for the entry shape**: `schemas/entry.schema.json` (draft 2020-12);
-  for curated pages, `schemas/curated.schema.json`. `src/lib/types.ts` and
-  `src/lib/curated-types.ts` are **generated** - never hand-edit; change the schema and run
-  `generate:types`.
+  for curated pages, `schemas/curated.schema.json`; for the shortener,
+  `schemas/redirect.schema.json`. `src/lib/types.ts` and `src/lib/curated-types.ts` are
+  **generated** - never hand-edit; change the schema and run `generate:types`. The redirect schema
+  is the deliberate exception: a namespace file is a flat `Record<string, string>`, the shape
+  `src/lib/redirects.ts` already casts to, so generating a type for it would buy nothing.
+  `ShortLink` there is hand-written, like every other derived shape in `src/lib/`.
 - **Don't author derived views.** Add data, not view output. There are three authored datasets:
   `data/entries/*.json` (facts - services and the addresses they live at), `data/redirects/*.json`
   (the shortener), and `data/curated/{provider}/{slug}.json` (editorial - ordering, grouping, and
@@ -47,6 +51,12 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   whole dataset. `/introspect/{link}` is the one other page that prints one, because there the dead
   address **is** the question asked - and it prints it the deprecated view's way: muted, unlinked,
   with the live successor beside it.
+- **`/index/links` renders the other dataset.** It is the one `/index/*` view that is not a query
+  over `data/entries`: its rows come from `data/redirects/*.json` and its JSON envelope carries
+  `links` under the redirect schema, not `entries`. It must never join a short link to an entry -
+  `/introspect/{link}` is the page that asks both systems about one string. `links` is a reserved
+  view slug like `deprecated`, so no provider, collection or curated page can shadow it; it is
+  **not** reserved at the domain root, so `aka.dog/links/{slug}` remains a usable namespace.
 - A curated page's `title` is stored **bare** (`"end-user surfaces"`); the resolver prefixes
   the provider, exactly as it does for a COLLECTION, so the same string serves both the
   page heading and the homepage nav label.
@@ -57,6 +67,10 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   resolves and implies no `current`, every `became` URL resolves, and no reserved-word collisions.
   Over curated pages: the directory is a real provider, the slug is free and well-formed, every
   referenced entry exists, belongs to that provider, has a `current` address, and appears once.
+  Over redirects: the namespace (the filename) is well-formed and not a reserved top-level word, no
+  slug is written twice in one file, every target is an absolute http(s) URL, and an `aka.dog`
+  target neither loops back on itself nor points at a path that is neither a page nor another
+  short link.
 - **Formatting**: Biome - 2-space indent, double quotes, organized imports. CI runs `biome ci .` on
   every push to `main` and every PR.
 - **No `wrangler.jsonc`.** Worker config is the experimental TypeScript config
@@ -70,14 +84,16 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 ```
 schemas/entry.schema.json     canonical entry contract
 schemas/curated.schema.json   canonical curated-page contract
+schemas/redirect.schema.json  canonical shortener contract (one {who}.json)
 scripts/validate-entries.mjs build gate: ajv + semantic checks over entries
 scripts/validate-curated.mjs build gate: ajv + entry-reference checks over curated pages
+scripts/validate-redirects.mjs build gate: ajv + reachability checks over redirects
 data/entries/*.json          index dataset (authored)
 data/redirects/*.json        shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
 src/lib/                     entries, redirects, curated, views, introspect, reserved, types (generated)
-src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter, AddressFacts
+src/components/              EntryTable, DeprecationTable, LinkTable, CuratedGroups, TableFilter, AddressFacts
 src/pages/index/             dump + [...path] views and .json twins
 src/pages/introspect/        per-link lookup over both datasets, and its .json twin
 ```

@@ -10,6 +10,7 @@ import type {
   CuratedPage,
 } from "@/lib/curated-types";
 import { entries } from "@/lib/entries";
+import { type ShortLink, shortLinks } from "@/lib/redirects";
 import { RESERVED_VIEW } from "@/lib/reserved";
 import type { Entry } from "@/lib/types";
 
@@ -85,7 +86,7 @@ export function providerNav(): ProviderNav[] {
 export function indexViewPaths(): string[] {
   // A Set, not an array: a curated page and a collection can share a slug, and
   // getStaticPaths() throws on duplicate params.
-  const paths = new Set<string>(["deprecated"]);
+  const paths = new Set<string>(["deprecated", "links"]);
   for (const provider of providers()) {
     paths.add(provider);
     paths.add(`${provider}/deprecated`);
@@ -127,6 +128,10 @@ interface ViewBase {
 export type ResolvedView =
   | (ViewBase & { kind: "entries" })
   | (ViewBase & { kind: "deprecated" })
+  // The one view backed by data/redirects rather than data/entries. `entries`
+  // stays an empty array so every consumer that reads `view.entries` - the
+  // sitemap's lastmod, the pages' last_verified - keeps working untouched.
+  | (ViewBase & { kind: "links"; links: ShortLink[] })
   | (ViewBase & {
       kind: "curated";
       lead?: ResolvedItem | undefined;
@@ -204,6 +209,17 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
       entries: deprecatedSet(entries),
     };
 
+  // Before the provider branch, and reserved in RESERVED_VIEW, so no namespace
+  // can shadow it the way a provider named "deprecated" would.
+  if (segments.length === 1 && segments[0] === "links")
+    return {
+      title: "Short links",
+      description: "Every aka.dog/{who}/{slug} short link this site serves",
+      kind: "links",
+      entries: [],
+      links: shortLinks,
+    };
+
   // Anything deeper than {provider}/{view} used to silently render {provider}.
   if (segments.length > 2)
     throw new Error(`Unknown view: ${segments.join("/")}`);
@@ -273,12 +289,12 @@ export function deprecationRows(list: Entry[]): DeprecationRow[] {
 }
 
 /** The curated extras a view contributes to its JSON envelope, if any. */
-export const envelopeExtra = (view: ResolvedView) =>
+const envelopeExtra = (view: ResolvedView) =>
   view.kind === "curated"
     ? { lead: view.source.lead, groups: view.source.groups }
     : undefined;
 
-export function buildEnvelope(
+function buildEnvelope(
   view: string,
   list: Entry[],
   extra?:
@@ -305,6 +321,28 @@ export function buildEnvelope(
     entries: list,
   };
 }
+
+/**
+ * The links view's envelope. A short link is not an entry, so it carries its own
+ * schema and its own key rather than an empty `entries` array.
+ */
+const buildLinkEnvelope = (view: string, list: ShortLink[]) => ({
+  schema: "https://aka.dog/schemas/redirect.json",
+  version: 1,
+  view,
+  generated: new Date().toISOString(),
+  links: list,
+});
+
+/**
+ * The JSON body for a resolved view, whichever dataset backs it. Both JSON paths
+ * go through here - the prerendered twin and the Worker's Accept negotiation -
+ * so they can't answer /index/links differently.
+ */
+export const envelopeFor = (path: string, view: ResolvedView) =>
+  view.kind === "links"
+    ? buildLinkEnvelope(path, view.links)
+    : buildEnvelope(path, view.entries, envelopeExtra(view));
 
 export type { CuratedGroup, CuratedItem, CuratedPageDoc };
 export { curatedPages, curatedPagesFor };

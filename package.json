@@ -13,7 +13,7 @@
     "prebuild": "npm run validate && npm run generate:types",
     "preview": "astro preview",
     "astro": "astro",
-    "validate": "node scripts/validate-entries.mjs && node scripts/validate-curated.mjs",
+    "validate": "node scripts/validate-entries.mjs && node scripts/validate-curated.mjs && node scripts/validate-redirects.mjs",
     "generate:types": "npm run generate:types:entry && npm run generate:types:curated",
     "generate:types:entry": "json2ts -i schemas/entry.schema.json -o src/lib/types.ts --unreachableDefinitions",
     "generate:types:curated": "json2ts -i schemas/curated.schema.json -o src/lib/curated-types.ts --unreachableDefinitions",
