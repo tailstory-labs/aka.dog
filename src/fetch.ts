@@ -1,4 +1,9 @@
 import { astro, FetchState } from "astro/fetch";
+import {
+  introspectionEnvelope,
+  introspectionStatus,
+  introspectPathname,
+} from "@/lib/introspect";
 import { redirects } from "@/lib/redirects";
 import { RESERVED_TOP } from "@/lib/reserved";
 import { buildEnvelope, envelopeExtra, resolveViewByPath } from "@/lib/views";
@@ -57,6 +62,25 @@ export default {
             },
           );
         }
+      }
+      return withCache(await astro(state));
+    }
+
+    if (firstSegment === "introspect") {
+      if (wantsJson(request)) {
+        // state.url.pathname, not the leading-slash-stripped `pathname` above:
+        // introspectPathname() strips the /introspect prefix itself, so both
+        // call sites must hand it the same input shape. No try/catch needed -
+        // introspect() returns kind "unknown" rather than throwing, which is
+        // what lets this 404 carry a full envelope instead of an error stub.
+        const result = introspectPathname(state.url.pathname);
+        return new Response(JSON.stringify(introspectionEnvelope(result)), {
+          status: introspectionStatus(result),
+          headers: {
+            "content-type": "application/json",
+            "cache-control": INDEX_CACHE,
+          },
+        });
       }
       return withCache(await astro(state));
     }

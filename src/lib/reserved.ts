@@ -1,5 +1,6 @@
 export const RESERVED_TOP = new Set([
   "index",
+  "introspect",
   "about",
   "schemas",
   ".well-known",

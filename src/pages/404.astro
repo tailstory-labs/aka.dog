@@ -1,9 +1,26 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-export const prerender = true;
+
+// Server-rendered, unlike every other static page here, so it can name the path
+// that actually missed. Asset misses already reach the Worker (notFoundHandling
+// is deliberately unset, or redirects break), so this changes which branch of
+// the pipeline runs, not whether the Worker wakes.
+const missed = Astro.url.pathname;
+// Never offer to introspect an introspect URL: a trailing-slash miss on
+// /introspect/office.com/ would otherwise link /introspect/introspect/office.com/.
+const offer = missed.startsWith("/introspect")
+  ? undefined
+  : `/introspect${missed}`;
 ---
 
 <Layout title="Not found" noindex>
   <h1>404 - not found</h1>
   <p>No redirect or page matches this URL. Try the <a href="/index">index</a>.</p>
+  {
+    offer && (
+      <p>
+        Or see <a href={offer}>what aka.dog knows about <code>{missed}</code></a>.
+      </p>
+    )
+  }
 </Layout>
