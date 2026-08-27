@@ -106,7 +106,10 @@ const documentTitle =
     padding: 2rem 1rem;
   }
   main.wide {
-    max-width: 96ch;
+    /* Wide enough that no current address wraps and the card grid still holds
+       four columns; measured against the longest host in the dataset
+       (m365.cloud.microsoft/launch/sharepoint). */
+    max-width: 140ch;
   }
   ul {
     list-style: none;
@@ -261,7 +264,10 @@ const documentTitle =
   }
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    /* The floor, not the container width, is what stops addresses wrapping:
+       auto-fill spends extra width on more columns, not wider ones. min()
+       clamps it on narrow phones so a card can never overflow the screen. */
+    grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
     gap: 0.5rem;
     margin: 0.75rem 0 0;
   }
