@@ -65,7 +65,7 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
     ) : (
       <>
         <TableFilter label="Filter entries" />
-        <EntryTable entries={view.entries} showPrevious provider={provider} />
+        <EntryTable entries={view.entries} />
       </>
     )
   }

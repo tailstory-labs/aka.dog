@@ -6,17 +6,8 @@ interface Props {
   entries: Entry[];
   /** Show the provider column (the cross-provider dump). */
   showProvider?: boolean;
-  /** Show the previous-address column (a provider-scoped view). */
-  showPrevious?: boolean;
-  /** Provider slug, used to link the "+n more" into the deprecated view. */
-  provider?: string | undefined;
 }
-const {
-  entries,
-  showProvider = false,
-  showPrevious = false,
-  provider,
-} = Astro.props;
+const { entries, showProvider = false } = Astro.props;
 
 const byId = new Map(entries.map((entry) => [entry.id, entry]));
 const successorOf = (entry: Entry) =>
@@ -35,7 +26,7 @@ const searchKey = (entry: Entry) =>
     .join(" ")
     .toLowerCase();
 
-const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
+const columns = 2 + (showProvider ? 1 : 0) + 1;
 ---
 
 <table
@@ -47,7 +38,6 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
     <col />
     {showProvider && <col />}
     <col />
-    {showPrevious && <col />}
   </colgroup>
   <thead>
     <tr>
@@ -55,7 +45,6 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
       <th scope="col">Address</th>
       {showProvider && <th scope="col" class="c-provider">Provider</th>}
       <th scope="col" class="c-notes">What it is</th>
-      {showPrevious && <th scope="col" class="c-tags">Previously</th>}
     </tr>
   </thead>
   <tbody>
@@ -64,9 +53,6 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
         const current = entry.current ?? [];
         const primary = current[0];
         const history = entry.history ?? [];
-        // A retired entry already shows its last address struck through, so
-        // "Previously" only covers what came before that.
-        const previous = primary ? history : history.slice(0, -1);
         const successor = successorOf(entry);
         return (
           <tr id={`e-${entry.id}`} data-search={searchKey(entry)}>
@@ -121,16 +107,6 @@ const columns = 2 + (showProvider ? 1 : 0) + (showPrevious ? 1 : 0) + 1;
               </td>
             )}
             <td class="c-notes">{entry.description}</td>
-            {showPrevious && (
-              <td class="c-tags">
-                {previous[0] ? <Host url={previous[0].url} /> : null}
-                {previous.length > 1 && (
-                  <a class="sub" href={`/index/${provider}/deprecated`}>
-                    +{previous.length - 1} more
-                  </a>
-                )}
-              </td>
-            )}
           </tr>
         );
       })

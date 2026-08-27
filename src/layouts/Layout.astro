@@ -171,9 +171,11 @@ const documentTitle =
     /* [tenant]-my.sharepoint.com must not blow out a fixed-width cell */
     overflow-wrap: anywhere;
   }
+  /* Deliberately no line-through: struck small monospace is unreadable, and
+     nothing depends on it - a retired row carries the `retired` chip beside
+     its name, and the deprecated table's column header reads "Was". */
   .tbl .dead {
     color: var(--muted);
-    text-decoration: line-through;
   }
   .c-notes {
     color: var(--muted);
@@ -323,13 +325,10 @@ const documentTitle =
       width: 12%;
     }
     .tbl--provider col:nth-child(1) {
-      width: 22%;
+      width: 24%;
     }
     .tbl--provider col:nth-child(2) {
-      width: 28%;
-    }
-    .tbl--provider col:nth-child(4) {
-      width: 20%;
+      width: 30%;
     }
     .tbl--deprecated col:nth-child(1) {
       width: 30%;
