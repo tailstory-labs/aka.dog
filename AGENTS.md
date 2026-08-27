@@ -44,7 +44,9 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   shows a retired entry as its name, the `retired` chip and an em dash, and links to the deprecated
   view from the meta line. Past addresses do stay in the entry table's `data-search` key (searching
   an old host still finds the entry that replaced it) and in the JSON envelopes, which remain the
-  whole dataset.
+  whole dataset. `/introspect/{link}` is the one other page that prints one, because there the dead
+  address **is** the question asked - and it prints it the deprecated view's way: muted, unlinked,
+  with the live successor beside it.
 - A curated page's `title` is stored **bare** (`"end-user surfaces"`); the resolver prefixes
   the provider, exactly as it does for a COLLECTION, so the same string serves both the
   page heading and the homepage nav label.
@@ -74,7 +76,8 @@ data/entries/*.json          index dataset (authored)
 data/redirects/*.json        shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
-src/lib/                     entries, redirects, curated, views, reserved, types (generated)
-src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter
+src/lib/                     entries, redirects, curated, views, introspect, reserved, types (generated)
+src/components/              EntryTable, DeprecationTable, CuratedGroups, TableFilter, AddressFacts
 src/pages/index/             dump + [...path] views and .json twins
+src/pages/introspect/        per-link lookup over both datasets, and its .json twin
 ```
