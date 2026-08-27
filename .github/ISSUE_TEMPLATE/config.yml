@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Add a new entry or provider
+    url: https://github.com/tailstory-labs/aka.dog/blob/main/CONTRIBUTING.md#adding-data
+    about: Adding something the index does not track yet is a small JSON edit - see CONTRIBUTING.
