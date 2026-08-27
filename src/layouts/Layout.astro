@@ -244,25 +244,6 @@ const documentTitle =
     font-size: 0.875rem;
   }
 
-  .lead {
-    margin: 0 0 0.5rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--rule);
-  }
-  .lead .name {
-    font-size: 1.375rem;
-  }
-  .lead .blurb {
-    display: block;
-    color: var(--muted);
-    font-size: 0.9375rem;
-  }
-  .lead .host {
-    display: inline-block;
-    margin-top: 0.35rem;
-    color: var(--muted);
-    font-size: 0.8125rem;
-  }
   .group h2 {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -278,30 +259,63 @@ const documentTitle =
     font-size: 0.875rem;
     margin: 0.5rem 0 0;
   }
-  .links {
-    margin: 0.5rem 0 0;
-    gap: 0;
-  }
-  .links li {
+  .cards {
     display: grid;
-    /* one fixed name column so every blurb starts at the same x */
-    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
-    gap: 0 1rem;
-    align-items: baseline;
-    padding: 0.4rem 0;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 0.5rem;
+    margin: 0.75rem 0 0;
   }
-  .links .blurb {
+  .card {
+    /* Column flex so the address can sit at the bottom: grid rows stretch to
+       the tallest tile, and without this a one-line blurb leaves its address
+       stranded mid-tile while its neighbour's sits lower. */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem;
+    border: 1px solid var(--rule);
+    color: inherit;
+    /* The whole tile is the target, so the global link underline is
+       suppressed here and re-applied to the address below - the address
+       still reads as the link, and nothing else on the tile pretends to. */
+    text-decoration: none;
+  }
+  .card:hover {
+    border-color: var(--foreground);
+  }
+  .card .name {
+    display: block;
+    font-weight: 600;
+  }
+  .card .blurb {
+    display: block;
     color: var(--muted);
     font-size: 0.9375rem;
   }
-  /* Second row, right column: the address sits under its blurb, where there
-     is room for it, and every one lines up at the same x. */
-  .links .host {
-    grid-column: 2;
-    justify-self: start;
+  .card .host {
+    display: block;
+    margin-top: auto;
+    padding-top: 0.5rem;
     color: var(--muted);
     font-size: 0.8125rem;
+    text-decoration: underline;
+    text-decoration-color: var(--link-line);
+    text-underline-offset: 3px;
     overflow-wrap: anywhere;
+  }
+  .card:hover .host {
+    text-decoration-color: var(--foreground);
+  }
+  .card--lead {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .card--lead .name {
+    font-size: 1.375rem;
+  }
+  .card--lead .blurb {
+    font-size: 1rem;
   }
 
   @media (min-width: 40.0625rem) {
@@ -345,14 +359,6 @@ const documentTitle =
     .table .column-retired,
     .table .column-provider {
       display: none;
-    }
-    .links li {
-      grid-template-columns: 1fr;
-      gap: 0;
-      padding: 0.5rem 0;
-    }
-    .links .host {
-      grid-column: 1;
     }
     .group h2 {
       margin-top: 1.5rem;

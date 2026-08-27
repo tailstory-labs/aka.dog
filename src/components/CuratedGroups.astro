@@ -13,13 +13,11 @@ const host = (href: string) => href.replace(/^https:\/\//, "");
 
 {
   lead && (
-    <p class="lead">
+    <a class="card card--lead" href={lead.href}>
       <span class="name">{lead.label}</span>
       {lead.blurb && <span class="blurb">{lead.blurb}</span>}
-      <a class="host" href={lead.href}>
-        <Host url={host(lead.href)} />
-      </a>
-    </p>
+      <Host url={host(lead.href)} class="host" />
+    </a>
   )
 }
 {
@@ -27,13 +25,13 @@ const host = (href: string) => href.replace(/^https:\/\//, "");
     <section class="group">
       <h2>{group.title}</h2>
       {group.note && <p class="group-note">{group.note}</p>}
-      <ul class="links">
+      <ul class="cards">
         {group.items.map((item) => (
           <li>
-            <span class="name">{item.label}</span>
-            <span class="blurb">{item.blurb}</span>
-            <a class="host" href={item.href}>
-              <Host url={host(item.href)} />
+            <a class="card" href={item.href}>
+              <span class="name">{item.label}</span>
+              {item.blurb && <span class="blurb">{item.blurb}</span>}
+              <Host url={host(item.href)} class="host" />
             </a>
           </li>
         ))}

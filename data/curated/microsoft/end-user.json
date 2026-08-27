@@ -1,10 +1,10 @@
 {
-  "title": "Microsoft, for people who just need the link",
-  "description": "The Microsoft 365 addresses an end user actually needs, grouped so you can point at one",
+  "title": "end-user surfaces",
+  "description": "Endpoints an end user reaches directly, grouped by task",
   "lead": {
     "entry": "myaccount",
     "label": "My Account",
-    "blurb": "Password, MFA, and devices. This is the one nobody can find"
+    "blurb": "Password, MFA, and registered devices"
   },
   "groups": [
     {

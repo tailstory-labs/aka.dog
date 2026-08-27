@@ -175,7 +175,10 @@ function resolveCurated(page: CuratedPageDoc): ResolvedView {
 
   return {
     kind: "curated",
-    title: page.title,
+    // The stored title is bare ("end-user surfaces") so the homepage nav can
+    // use it as-is; the provider prefix is composed here, the same way a
+    // COLLECTION title is at the bottom of resolveViewByPath.
+    title: `${page.provider}: ${page.title}`,
     description: page.description,
     lead,
     groups,

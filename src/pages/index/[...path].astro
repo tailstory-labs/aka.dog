@@ -46,7 +46,7 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
 <Layout
   title={view.title}
   description={view.description}
-  width={view.kind === 'curated' ? 'prose' : 'wide'}
+  width="wide"
   crumbs={crumbs}
 >
   <h1>{view.title}</h1>

@@ -75,7 +75,9 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
   it, so the page follows any future host move; an inline `{ "name", "url", "blurb" }` item is the
   escape hatch for a link not worth an index entry. `blurb` is capped at 64 characters and `label`
   at 32 - that cap is what keeps a curated page from going ragged, so don't raise it. A curated
-  page shadows a same-slug entry in `COLLECTIONS`.
+  page shadows a same-slug entry in `COLLECTIONS`. Store `title` **bare** (`"end-user
+  surfaces"`, not `"microsoft: end-user surfaces"`) - the resolver prefixes the provider, so the
+  same string serves both the page heading and the homepage nav label.
 
 ## Worker config
 

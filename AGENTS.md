@@ -39,6 +39,9 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   URL**, so when an address moves in `data/entries` every curated page follows. Never hard-code a
   destination URL in an `.astro` file. A curated item's `blurb` is written for that page's audience;
   it is not `entry.description` and must never fall back to it.
+- A curated page's `title` is stored **bare** (`"end-user surfaces"`); the resolver prefixes
+  the provider, exactly as it does for a COLLECTION, so the same string serves both the
+  page heading and the homepage nav label.
 - **A curated page shadows a same-slug collection.** `data/curated/microsoft/end-user.json` is why
   `/index/microsoft/end-user` is grouped rather than tag-filtered. The `end-user` COLLECTION still
   exists and still answers for any provider without a curated file. This is deliberate.
