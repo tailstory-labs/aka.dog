@@ -3,9 +3,9 @@
     "id": "m365",
     "name": "Microsoft 365",
     "provider": "microsoft",
-    "description": "Root Microsoft 365 portal; bare cloud.microsoft redirects here",
+    "description": "Root Microsoft 365 portal, later the Microsoft 365 Copilot app; renamed the Microsoft Copilot app and moved to copilot.cloud.microsoft",
     "tags": ["end-user"],
-    "current": [{ "url": "m365.cloud.microsoft" }],
+    "superseded_by": "copilot",
     "history": [
       {
         "url": "microsoft365.com",
@@ -16,9 +16,15 @@
         "url": "office.com",
         "became": "m365.cloud.microsoft",
         "note": "office.com -> cloud.microsoft redirect scheduled mid-Jan 2025 (MC958903)."
+      },
+      {
+        "url": "m365.cloud.microsoft",
+        "deprecated": "2026-09",
+        "became": "copilot.cloud.microsoft",
+        "note": "Automatic redirect from early Sep 2026 where copilot.cloud.microsoft is reachable, early Oct 2026 for everyone else (MC1454108, MC1462915). Bare cloud.microsoft still 301s here first."
       }
     ],
-    "last_verified": "2026-06"
+    "last_verified": "2026-09"
   },
   {
     "id": "m365-copilot-chat",
@@ -317,10 +323,10 @@
     "id": "copilot",
     "name": "Microsoft Copilot",
     "provider": "microsoft",
-    "description": "Microsoft Copilot; coexists with copilot.microsoft.com as a separate resource (not a redirect)",
+    "description": "The Microsoft Copilot app on the web for work and school accounts, renamed from the Microsoft 365 Copilot app; coexists with copilot.microsoft.com as a separate resource (not a redirect)",
     "tags": ["end-user", "copilot"],
     "current": [{ "url": "copilot.cloud.microsoft" }],
-    "last_verified": "2026-06"
+    "last_verified": "2026-09"
   },
   {
     "id": "forms",
@@ -406,10 +412,10 @@
       {
         "url": "[tenant]-my.sharepoint.com",
         "became": "onedrive.cloud.microsoft",
-        "note": "Per-tenant URL. Short URL first noted MC796476 (May 2024); formal transition MC1392563 (Jun 2026)."
+        "note": "Per-tenant URL. Short URL first noted MC796476 (May 2024); became the browser URL late Jul to early Aug 2026 (MC1392563). No redirect: both hosts stay live side by side indefinitely."
       }
     ],
-    "last_verified": "2026-06"
+    "last_verified": "2026-09"
   },
   {
     "id": "viva-skills",
