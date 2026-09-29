@@ -1,20 +1,40 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { entries } from "@/lib/entries";
+import { counted, plural } from "@/lib/format";
 import { shortLinks } from "@/lib/redirects";
 import { deprecationRows, providerNav } from "@/lib/views";
 
-const navigation = providerNav();
-
-const plural = (count: number, one: string, many: string) =>
-  count === 1 ? one : many;
 // Counted from the data, never written down: each is what the page it links
 // to lists.
-const formerAddresses = deprecationRows(entries).filter(
-  (row) => row.url,
-).length;
-const entriesPer = (provider: string) =>
-  entries.filter((entry) => entry.provider === provider).length;
+const formerAddresses = deprecationRows(entries).filter((row) => row.url);
+const stats = [
+  {
+    href: "/index",
+    count: entries.length,
+    label: plural("entry", "entries", entries.length),
+    blurb: "The full index, one row per service",
+  },
+  {
+    href: "/index/deprecated",
+    count: formerAddresses.length,
+    label: plural("former address", "former addresses", formerAddresses.length),
+    blurb: "Old hosts, and what each one became",
+  },
+  {
+    href: "/index/links",
+    count: shortLinks.length,
+    label: plural("short link", "short links", shortLinks.length),
+    code: "aka.dog/{who}/{slug}",
+    blurb: "302s onward",
+  },
+];
+
+const namespaces = providerNav().map(({ provider, collections }) => ({
+  provider,
+  collections,
+  size: entries.filter((entry) => entry.provider === provider).length,
+}));
 ---
 
 <Layout
@@ -22,166 +42,115 @@ const entriesPer = (provider: string) =>
   description="A derived reference index of vendor cloud and service endpoints across namespaces (and a link shortener)."
 >
   <a href="/" class="wordmark" aria-current="page">aka.dog</a>
-  <h1 class="statement">Where vendors’ services actually live.</h1>
+  <h1>Where vendors’ services actually live.</h1>
   <p class="lede">
     Current endpoints, their old hosts, and what moved where, organized by namespace. Entries are the
     source of truth; every page is a derived view.
   </p>
 
   <p class="examples">
-    <span><a href="/introspect">Introspect</a> any link, like</span>
+    <span class="muted"><a href="/introspect">Introspect</a> any link, like</span>
     <a class="chip" href="/introspect/office.com">office.com</a>
     <a class="chip" href="/introspect/aka.ms/copilot">aka.ms/copilot</a>
     <a class="chip" href="/introspect/shenanigans/resume">shenanigans/resume</a>
   </p>
 
-  <ul class="stats">
-    <li>
-      <a class="card" href="/index">
-        <span class="figure">{entries.length}</span>
-        <span class="name">{plural(entries.length, 'entry', 'entries')}</span>
-        <span class="blurb">The full index, one row per service</span>
-      </a>
-    </li>
-    <li>
-      <a class="card" href="/index/deprecated">
-        <span class="figure">{formerAddresses}</span>
-        <span class="name">{plural(formerAddresses, 'former address', 'former addresses')}</span>
-        <span class="blurb">Old hosts, and what each one became</span>
-      </a>
-    </li>
-    <li>
-      <a class="card" href="/index/links">
-        <span class="figure">{shortLinks.length}</span>
-        <span class="name">{plural(shortLinks.length, 'short link', 'short links')}</span>
-        <span class="blurb"><code>aka.dog/&#123;who&#125;/&#123;slug&#125;</code> 302s onward</span>
-      </a>
-    </li>
+  <ul class="cards stats">
+    {
+      stats.map((stat) => (
+        <li>
+          <a class="card" href={stat.href}>
+            <span class="figure">{stat.count}</span>
+            <span class="name">{stat.label}</span>
+            <span class="blurb">
+              {stat.code && <><code>{stat.code}</code> </>}
+              {stat.blurb}
+            </span>
+          </a>
+        </li>
+      ))
+    }
   </ul>
 
-  <section class="namespaces">
+  <section class="group">
     <h2>Namespaces</h2>
-    <ul>
-      {
-        navigation.map((providerGroup) => (
-          <li>
-            <a class="provider" href={`/index/${providerGroup.provider}`}>
-              {providerGroup.provider}
-            </a>
-            <span class="views">
-              {providerGroup.collections.map((collection) => (
-                <a href={`/index/${providerGroup.provider}/${collection.slug}`}>
-                  {collection.title}
-                </a>
-              ))}
-              <a href={`/index/${providerGroup.provider}/deprecated`}>deprecated</a>
-            </span>
-            <span class="count">{entriesPer(providerGroup.provider)}</span>
-          </li>
-        ))
-      }
-    </ul>
+    <table class="table">
+      <colgroup>
+        <col style="--w: 11rem" />
+        <col />
+        <col style="--w: 7rem" />
+      </colgroup>
+      <tbody>
+        {
+          namespaces.map(({ provider, collections, size }) => (
+            <tr>
+              <td>
+                <a class="provider" href={`/index/${provider}`}>{provider}</a>
+              </td>
+              <td class="muted">
+                <span class="views">
+                  {collections.map((collection) => (
+                    <a href={`/index/${provider}/${collection.slug}`}>
+                      {collection.title}
+                    </a>
+                  ))}
+                  <a href={`/index/${provider}/deprecated`}>deprecated</a>
+                </span>
+              </td>
+              <td class="muted size">{counted('entry', 'entries', size)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
   </section>
 
-  <p class="meta">Append <code>.json</code> to any page for the machine-readable view.</p>
+  <p class="footnote">Append <code>.json</code> to any page for the machine-readable view.</p>
 </Layout>
 
 <style>
   .wordmark {
     font-weight: 700;
-    font-size: 1.0625rem;
+    font-size: var(--step-1);
     letter-spacing: -0.02em;
     text-decoration: none;
   }
-  .statement {
-    max-width: 45rem;
-    font-size: 2.75rem;
-    margin: 1.25rem 0 1rem;
-  }
-  .lede {
-    font-size: 1.125rem;
+  h1 {
+    margin-top: 1.25rem;
   }
   .examples {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.625rem;
-    margin: 2.25rem 0 0;
-    max-width: none;
+    font-size: var(--step--1);
   }
-  .examples span {
-    color: var(--muted);
-    font-size: 0.875rem;
-    margin-right: 0.25rem;
-  }
-  .examples span a {
+  .examples a:not(.chip) {
     color: var(--foreground);
   }
-  .examples .chip {
-    font-size: 0.8125rem;
-    line-height: 1.75rem;
-    padding: 0 0.6875rem;
-  }
   .stats {
-    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
-    gap: 0.625rem;
-    margin: 3.5rem 0 0;
-  }
-  .stats .card {
-    padding: 1.25rem 1.375rem;
+    margin-top: 2.5rem;
   }
   .figure {
-    font-size: 2.125rem;
+    font-size: var(--step-2);
     line-height: 1.2;
     font-weight: 600;
     letter-spacing: -0.02em;
   }
-  .stats .name {
-    font-weight: 500;
-  }
-  .namespaces {
-    margin-top: 3.5rem;
-  }
-  .namespaces h2 {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--muted);
-    margin: 0 0 0.5rem;
-  }
-  .namespaces ul {
-    gap: 0;
-    margin: 0;
-    border-top: 1px solid var(--rule);
-  }
-  .namespaces li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    column-gap: 1.5rem;
-    row-gap: 0.25rem;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid var(--rule);
-  }
   .provider {
-    flex: 0 0 11rem;
     font-weight: 600;
-    font-size: 1rem;
   }
   .views {
-    flex: 1 1 auto;
     display: flex;
     flex-wrap: wrap;
     column-gap: 1.25rem;
-    color: var(--muted);
   }
-  .count {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    color: var(--muted);
+  .size {
+    text-align: right;
   }
-  @media (max-width: 40rem) {
-    .statement {
-      font-size: 2.25rem;
-    }
+  .footnote {
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: var(--step--1);
   }
 </style>

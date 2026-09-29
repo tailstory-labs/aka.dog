@@ -27,7 +27,7 @@ const tags = entry.tags ?? [];
               <Host url={match.url} />
             </a>
           ) : (
-            <Host url={match.url} class="dead" />
+            <Host url={match.url} class="muted" />
           )
         }
         <span class="secondary">
@@ -118,7 +118,7 @@ const tags = entry.tags ?? [];
       match.note && (
         <tr>
           <th scope="row">Note</th>
-          <td class="column-notes">{match.note}</td>
+          <td class="muted">{match.note}</td>
         </tr>
       )
     }

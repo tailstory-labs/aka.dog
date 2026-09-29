@@ -18,17 +18,17 @@ const searchKey = (link: ShortLink) =>
   [link.namespace, link.slug, link.path, link.target].join(" ").toLowerCase();
 ---
 
-<table class="table table--links" id="index-table">
+<table class="table" id="index-table">
   <colgroup>
-    <col />
-    <col />
+    <col style="--w: 32%" />
+    <col style="--w: 44%" />
     <col />
   </colgroup>
   <thead>
     <tr>
       <th scope="col">Short link</th>
       <th scope="col">Goes to</th>
-      <th scope="col" class="column-notes">Details</th>
+      <th scope="col" class="shed">Details</th>
     </tr>
   </thead>
   <tbody>
@@ -46,7 +46,7 @@ const searchKey = (link: ShortLink) =>
               <Host url={bare(link.target)} />
             </a>
           </td>
-          <td class="column-notes">
+          <td class="muted shed">
             <a href={`/introspect/${link.path}`}>introspect</a>
           </td>
         </tr>

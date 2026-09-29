@@ -2,6 +2,7 @@
 import AddressFacts from "@/components/AddressFacts.astro";
 import Host from "@/components/Host.astro";
 import Layout, { type Crumb } from "@/layouts/Layout.astro";
+import { counted } from "@/lib/format";
 import {
   forDisplay,
   introspectPathname,
@@ -21,8 +22,9 @@ if (result.kind === "unknown") Astro.response.status = 404;
 const shown = forDisplay(result.link);
 const crumbs: Crumb[] = [
   { label: "aka.dog", href: "/" },
-  { label: "introspect", href: "/introspect" },
-  ...(result.kind === "empty" ? [] : [{ label: shown }]),
+  ...(result.kind === "empty"
+    ? [{ label: "introspect" }]
+    : [{ label: "introspect", href: "/introspect" }, { label: shown }]),
 ];
 const jsonHref = `${Astro.url.pathname.replace(/\.json$/, "")}.json`;
 
@@ -98,7 +100,6 @@ const description =
         </p>
         <p class="meta">
           <a href="/index">index</a>
-          {' · '}
           <a href="/index/deprecated">deprecated</a>
         </p>
       </>
@@ -179,7 +180,7 @@ const description =
             {result.alsoIndexed && (
               <div class="group">
                 <h2>Also a tracked address</h2>
-                <p class="group-note">
+                <p class="muted">
                   The same string is an address in the index, independent of the
                   redirect above.
                 </p>
@@ -197,14 +198,14 @@ const description =
               {result.hit.entry.retired && ', which is retired'}.
             </p>
             {nowAt && (
-              <div class="moved">
+              <div class="card moved">
                 <div>
-                  <span class="moved-label">Was</span>
-                  <Host url={result.hit.match.url} class="dead" />
+                  <span class="label">Was</span>
+                  <Host url={result.hit.match.url} class="muted" />
                 </div>
-                <span class="moved-arrow" aria-hidden="true">→</span>
+                <span class="arrow" aria-hidden="true">→</span>
                 <div>
-                  <span class="moved-label">Now at</span>
+                  <span class="label">Now at</span>
                   <a href={`https://${nowAt}`}>
                     <Host url={nowAt} />
                   </a>
@@ -215,7 +216,7 @@ const description =
             {result.otherHits.length > 0 && (
               <div class="group">
                 <h2>Also known as</h2>
-                <p class="group-note">
+                <p class="muted">
                   This address appears under more than one entry.
                 </p>
                 {result.otherHits.map((hit) => (
@@ -229,8 +230,8 @@ const description =
         {result.kind === 'host' && (
           <>
             <p class="lede">
-              Nothing tracked at this exact address, but {result.addresses.length}{' '}
-              {result.addresses.length === 1 ? 'address' : 'addresses'} under{' '}
+              Nothing tracked at this exact address, but{' '}
+              {counted('address', 'addresses', result.addresses.length)} under{' '}
               <code>{result.host}</code> {result.addresses.length === 1 ? 'is' : 'are'}.
             </p>
             <table class="table">
@@ -247,11 +248,11 @@ const description =
                       <a href={`/introspect/${hit.match.url}`}>
                         <Host
                           url={hit.match.url}
-                          class={hit.match.where === 'history' ? 'dead' : undefined}
+                          class={hit.match.where === 'history' ? 'muted' : undefined}
                         />
                       </a>
                     </td>
-                    <td class="column-notes">
+                    <td>
                       <a href={`/index/${hit.entry.entry.provider}#entry-${hit.entry.entry.id}`}>
                         {hit.entry.entry.name}
                       </a>
@@ -287,15 +288,61 @@ const description =
 
         <p class="meta">
           {result.input !== result.link && (
-            <>Read as <code>{shown}</code>{' · '}</>
+            <span>Read as <code>{shown}</code></span>
           )}
           <a href={jsonHref}>JSON</a>
-          {' · '}
           <a href="/introspect">introspect another</a>
-          {' · '}
           <a href="/index">index</a>
         </p>
       </>
     )
   }
 </Layout>
+
+<style>
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  .title-row h1 {
+    margin: 0;
+  }
+  .title-row :global(code) {
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+  /* Was -> Now at: a card, laid out as two addresses and an arrow. */
+  .moved {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 1.5rem;
+    padding: 1.375rem 1.625rem;
+    margin-bottom: 2.5rem;
+  }
+  .moved :global(code) {
+    font-size: var(--step-1);
+  }
+  .label {
+    display: block;
+    color: var(--muted);
+    font-size: var(--step--1);
+    font-weight: 500;
+  }
+  .arrow {
+    color: var(--accent);
+    font-size: var(--step-2);
+  }
+  @media (max-width: 40rem) {
+    .moved {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.75rem;
+    }
+    .arrow {
+      display: none;
+    }
+  }
+</style>
