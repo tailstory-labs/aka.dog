@@ -21,13 +21,13 @@
     "deploy": "npm run build && wrangler deploy --x-new-config"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.4",
-    "astro": "^7.2.6"
+    "@astrojs/cloudflare": "^14.2.5",
+    "astro": "^7.2.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.10",
+    "@biomejs/biome": "2.5.11",
     "ajv": "^8.20.0",
-    "json-schema-to-typescript": "^15.0.4",
+    "json-schema-to-typescript": "^16.0.0",
     "typescript": "^7.0.2",
     "wrangler": "^4.125.0"
   }
