@@ -71,6 +71,12 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   slug is written twice in one file, every target is an absolute http(s) URL, and an `aka.dog`
   target neither loops back on itself nor points at a path that is neither a page nor another
   short link.
+- **Styling**: `src/layouts/Layout.astro` holds the design tokens and only what several components
+  share (tables, pills, cards); a style one component or page needs is a scoped `<style>` in that
+  file. Neutral colours are mixed from `--foreground`/`--background` and sizes come from the
+  `--step-*` scale, so reach for a token before adding a hex value or a new size. Table column
+  widths go on the `<col>`s as `--w`; a column shed on phones carries `shed` on its header and
+  cells alike.
 - **Formatting**: Biome - 2-space indent, double quotes, organized imports. CI runs `biome ci .` on
   every push to `main` and every PR.
 - **No `wrangler.jsonc`.** Worker config is the experimental TypeScript config
@@ -92,8 +98,8 @@ data/entries/*.json          index dataset (authored)
 data/redirects/*.json        shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
-src/lib/                     entries, redirects, curated, views, introspect, reserved, types (generated)
+src/lib/                     entries, redirects, curated, views, introspect, format, reserved, types (generated)
 src/components/              EntryTable, DeprecationTable, LinkTable, CuratedGroups, TableFilter, AddressFacts
-src/pages/index/             dump + [...path] views and .json twins
+src/pages/index/             [...path] renders every /index view (the dump too) + .json twins
 src/pages/introspect/        per-link lookup over both datasets, and its .json twin
 ```

@@ -22,6 +22,14 @@ type AlternateAddress = NonNullable<Entry["alternates"]>[number];
 /** Which of an entry's four address arrays a link was found in. */
 export type Where = "current" | "history" | "aka_ms" | "alternate";
 
+/** How each place reads as a label, beside an address or a page title. */
+export const WHERE_LABEL: Record<Where, string> = {
+  current: "current address",
+  history: "former address",
+  aka_ms: "aka.ms pointer",
+  alternate: "alternate address",
+};
+
 const RANK: Record<Where, number> = {
   current: 0,
   history: 1,

@@ -2,24 +2,17 @@ export const prerender = true;
 
 import type { APIRoute } from "astro";
 import { entries } from "@/lib/entries";
-import { indexViewPaths, resolveViewByPath } from "@/lib/views";
-
-const latestModified = (list: { last_verified?: string }[]) =>
-  list
-    .map((entry) => entry.last_verified)
-    .filter(Boolean)
-    .sort()
-    .pop();
+import { indexViewPaths, lastVerified, resolveViewByPath } from "@/lib/views";
 
 export const GET: APIRoute = ({ site }) => {
   if (!site) throw new Error("Astro `site` must be configured");
   const base = site.toString().replace(/\/$/, "");
   const urls = [
-    { location: `${base}/`, lastModified: latestModified(entries) },
-    { location: `${base}/index`, lastModified: latestModified(entries) },
+    { location: `${base}/`, lastModified: lastVerified(entries) },
+    { location: `${base}/index`, lastModified: lastVerified(entries) },
     ...indexViewPaths().map((viewPath) => ({
       location: `${base}/index/${viewPath}`,
-      lastModified: latestModified(
+      lastModified: lastVerified(
         resolveViewByPath(viewPath.split("/")).entries,
       ),
     })),

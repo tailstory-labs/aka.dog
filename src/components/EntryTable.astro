@@ -1,6 +1,7 @@
 ---
 import Host from "@/components/Host.astro";
 import type { Entry } from "@/lib/types";
+import { entriesById } from "@/lib/views";
 
 interface Props {
   entries: Entry[];
@@ -9,7 +10,8 @@ interface Props {
 }
 const { entries, showProvider = false } = Astro.props;
 
-const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
+// Looked up across the whole dataset, not just this table's rows: a filtered
+// view can hold a retired entry without the entry that replaced it.
 const successorOf = (entry: Entry) =>
   entry.superseded_by ? entriesById.get(entry.superseded_by) : undefined;
 
@@ -32,22 +34,19 @@ const searchKey = (entry: Entry) =>
 const columns = 2 + (showProvider ? 1 : 0) + 1;
 ---
 
-<table
-  class:list={['table', showProvider ? 'table--dump' : 'table--provider']}
-  id="index-table"
->
+<table class="table" id="index-table">
   <colgroup>
-    <col />
-    <col />
-    {showProvider && <col />}
+    <col style="--w: 22%" />
+    <col style={`--w: ${showProvider ? 31 : 32}%`} />
+    {showProvider && <col style="--w: 11%" />}
     <col />
   </colgroup>
   <thead>
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Address</th>
-      {showProvider && <th scope="col" class="column-provider">Provider</th>}
-      <th scope="col" class="column-notes">What it is</th>
+      {showProvider && <th scope="col" class="shed">Provider</th>}
+      <th scope="col" class="shed">What it is</th>
     </tr>
   </thead>
   <tbody>
@@ -65,9 +64,9 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
           current.length === 0 && !successor && pointers.length === 0;
         return (
           <tr id={`entry-${entry.id}`} data-search={searchKey(entry)}>
-            <td>
+            <td class="name">
               <span>{entry.name}</span>
-              {!primary && <> <span class="chip">retired</span></>}
+              {!primary && <> <span class="chip chip--warn">retired</span></>}
             </td>
             <td>
               {current.map((address) => (
@@ -92,7 +91,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
                 </span>
               )}
               {pointers.length > 0 && (
-                <span class="secondary">
+                <span class="pills">
                   {pointers.map((pointer) => (
                     <a
                       class="chip"
@@ -106,11 +105,11 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
               )}
             </td>
             {showProvider && (
-              <td class="column-provider">
+              <td class="shed">
                 <a href={`/index/${entry.provider}`}>{entry.provider}</a>
               </td>
             )}
-            <td class="column-notes">{entry.description}</td>
+            <td class="muted shed">{entry.description}</td>
           </tr>
         );
       })
@@ -120,3 +119,18 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
     </tr>
   </tbody>
 </table>
+
+<style>
+  .name {
+    font-weight: 500;
+  }
+  .stack {
+    display: block;
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.3rem;
+  }
+</style>

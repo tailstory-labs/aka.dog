@@ -1,4 +1,6 @@
 ---
+import { Font } from "astro:assets";
+
 export interface Crumb {
   label: string;
   href?: string | undefined;
@@ -8,16 +10,9 @@ interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
-  width?: "prose" | "wide";
   crumbs?: Crumb[];
 }
-const {
-  title,
-  description = "",
-  noindex = false,
-  width = "prose",
-  crumbs = [],
-} = Astro.props;
+const { title, description = "", noindex = false, crumbs = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const SITE_NAME = "aka.dog";
 const documentTitle =
@@ -36,9 +31,11 @@ const documentTitle =
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
     <meta name="generator" content={Astro.generator} />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
   </head>
   <body>
-    <main class={width === 'wide' ? 'wide' : undefined}>
+    <main>
       {
         crumbs.length > 0 && (
           <nav aria-label="Breadcrumb" class="crumbs">
@@ -60,24 +57,56 @@ const documentTitle =
   </body>
 </html>
 
+<style>
+  .crumbs {
+    color: var(--muted);
+    font-size: var(--step--1);
+    margin-bottom: 0.4rem;
+  }
+  /* The first crumb is the site itself - the one way home, as there is no
+     header. */
+  .crumbs > a:first-child {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+</style>
+
 <style is:global>
+  /* Only tokens and what more than one component uses live here; a style one
+     component needs is scoped in that component. */
   :root {
     color-scheme: light dark;
-    --foreground: light-dark(#1a1a1a, #e8e8e8);
-    --background: light-dark(#fff, #111);
-    --muted: light-dark(#666, #999);
-    --rule: light-dark(#e5e5e5, #2a2a2a);
-    /* Deliberately stronger than --rule. A table hairline wants to disappear;
-       a link underline has to be seen, since it is now the only thing marking
-       a link. ~2.5:1 against the background in both themes, against 1.3:1 if
-       --rule were reused, while staying far quieter than the text at ~17:1. */
-    --link-line: light-dark(#a4a4a4, #545454);
+    --foreground: light-dark(#16161a, #ededef);
+    --background: light-dark(#fbfbfa, #0e0e10);
+    /* Every other neutral is mixed from those two, so the themes can't drift
+       apart and nothing needs a second hex value. --muted keeps 4.5:1 even on
+       --surface-2; --link-line is ~2.5:1 - stronger than --rule, because an
+       underline is the only thing marking a link, far quieter than text. */
+    --muted: color-mix(in srgb, var(--foreground) 65%, var(--background));
+    --link-line: color-mix(in srgb, var(--foreground) 40%, var(--background));
+    --rule: color-mix(in srgb, var(--foreground) 10%, var(--background));
+    /* Flat fills stand in for borders, a step darker on hover. */
+    --surface: color-mix(in srgb, var(--foreground) 5%, var(--background));
+    --surface-2: color-mix(in srgb, var(--foreground) 9%, var(--background));
+    --surface-3: color-mix(in srgb, var(--foreground) 14%, var(--background));
+    --accent: light-dark(#2f55d4, #9db8ff);
+    /* Status, not decoration: only a dead address or a retired entry is
+       tinted, so the colour always means the same thing. */
+    --warn-bg: light-dark(#f7e8ce, #3a2b12);
+    --warn-fg: light-dark(#7a4f0e, #f2c27a);
+    --step--2: 0.75rem;
+    --step--1: 0.875rem;
+    --step-0: 0.9375rem;
+    --step-1: 1.125rem;
+    --step-2: 1.75rem;
+    --step-3: 2.5rem;
+    --radius: 0.75rem;
   }
   body {
     margin: 0;
     background: var(--background);
     color: var(--foreground);
-    font: 16px/1.5 system-ui, sans-serif;
+    font: var(--step-0) / 1.5 var(--font-sans);
   }
   /* Flat links: no colour of their own, marked by a hairline underline that
      firms up on hover. `color: inherit` is what makes one rule work
@@ -86,30 +115,35 @@ const documentTitle =
      cascade origin, so the blue and the purple both go. */
   a {
     color: inherit;
-    text-decoration: underline;
-    text-decoration-color: var(--link-line);
-    text-decoration-thickness: 1px;
+    text-decoration: underline 1px var(--link-line);
     text-underline-offset: 3px;
   }
   a:hover {
     text-decoration-color: var(--foreground);
   }
   /* Not optional: with colour gone, this is all a keyboard user has left. */
-  a:focus-visible {
-    outline: 1px solid var(--foreground);
+  :focus-visible {
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
-    text-decoration-color: var(--foreground);
+  }
+  code,
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    /* [tenant]-my.sharepoint.com must not blow out a fixed-width cell */
+    overflow-wrap: anywhere;
   }
   main {
-    max-width: 70ch;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-  main.wide {
-    /* Wide enough that no current address wraps and the card grid still holds
-       four columns; measured against the longest host in the dataset
+    /* One column for every page, so the left edge never jumps between them.
+       Wide enough that no current address wraps in a table and the card grid
+       holds three columns; measured against the longest host in the dataset
        (m365.cloud.microsoft/launch/sharepoint). */
-    max-width: 140ch;
+    max-width: 65rem;
+    margin: 0 auto;
+    padding: 4.5rem 1.5rem 4rem;
+  }
+  main p {
+    max-width: 45rem;
   }
   ul {
     list-style: none;
@@ -117,263 +151,194 @@ const documentTitle =
     display: grid;
     gap: 0.35rem;
   }
-  small {
-    color: var(--muted);
-  }
   h1 {
-    font-size: 1.5rem;
-    margin: 0 0 0.25rem;
+    font-size: var(--step-3);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin: 0 0 0.5rem;
   }
-  .crumbs {
-    color: var(--muted);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
+  h2 {
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin: 0 0 0.5rem;
   }
   .lede {
     color: var(--muted);
-    margin: 0 0 1.5rem;
+    font-size: var(--step-1);
+    margin: 0 0 1.75rem;
   }
   .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
     color: var(--muted);
-    font-size: 0.875rem;
-    margin-top: 2rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--rule);
+    font-size: var(--step--1);
+    margin-top: 3rem;
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .secondary {
+    display: block;
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+  .group {
+    margin-top: 2.5rem;
   }
 
   .table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9375rem;
   }
   .table th,
   .table td {
     text-align: left;
-    vertical-align: top;
-    padding: 0.45rem 0.75rem 0.45rem 0;
+    vertical-align: baseline;
+    padding: 0.625rem 1.5rem 0.625rem 0;
     border-bottom: 1px solid var(--rule);
   }
-  .table th:last-child,
-  .table td:last-child {
-    padding-right: 0;
+  /* The inset lets the hover fill reach past the text without the text
+     moving off the column edge. */
+  .table :is(th, td):first-child {
+    padding-left: 0.5rem;
+  }
+  .table :is(th, td):last-child {
+    padding-right: 0.5rem;
+  }
+  /* A headerless table (the introspect facts) still opens on a rule. */
+  .table:not(:has(thead)) {
+    border-top: 1px solid var(--rule);
   }
   .table thead th {
     position: sticky;
     top: 0;
     background: var(--background);
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-    border-bottom-color: var(--foreground);
-  }
-  .table code {
-    font-size: 0.875em;
-    /* [tenant]-my.sharepoint.com must not blow out a fixed-width cell */
-    overflow-wrap: anywhere;
-  }
-  /* Deliberately no line-through: struck small monospace is unreadable, and
-     nothing depends on it - a retired row carries the `retired` chip beside
-     its name, and the deprecated table's column header reads "Was". */
-  .table .dead {
+    font-weight: 500;
+    font-size: var(--step--1);
     color: var(--muted);
   }
-  .column-notes {
+  .table tbody th {
+    font-weight: 400;
     color: var(--muted);
+    width: 10rem;
   }
-  .column-retired {
-    color: var(--muted);
-    font-size: 0.875em;
+  .table tbody tr:hover {
+    background: var(--surface);
   }
-  .stack {
-    display: block;
-  }
-  .secondary {
-    display: block;
-    color: var(--muted);
-    font-size: 0.875em;
+  .table td.muted {
+    font-size: var(--step--1);
   }
 
+  /* A static pill (a tag, where an address was found) reads muted; a pill
+     that is a link reads at full strength, in the mono face of an address. */
   .chip {
     display: inline-block;
-    font-size: 0.75rem;
-    line-height: 1.5;
-    padding: 0 0.35em;
-    margin-right: 0.3em;
-    border: 1px solid var(--rule);
-    border-radius: 2px;
+    font-size: var(--step--2);
+    line-height: 1.375rem;
+    padding: 0 0.5625rem;
+    border-radius: 999px;
+    background: var(--surface-2);
     color: var(--muted);
     text-decoration: none;
     white-space: nowrap;
-  }
-  /* The bordered pill is its own affordance, so chips opt out of the
-     underline; full-strength text is what separates a link chip from the
-     static `retired` marker. */
-  .chip {
-    text-decoration: none;
+    vertical-align: 0.1em;
   }
   a.chip {
     color: var(--foreground);
-    border-color: var(--link-line);
+    font-family: var(--font-mono);
   }
   a.chip:hover {
-    border-color: var(--foreground);
+    background: var(--surface-3);
   }
-
-  .filter {
-    position: relative;
-    margin-bottom: 1rem;
-  }
-  .filter input {
-    width: 100%;
-    box-sizing: border-box;
-    font: inherit;
-    color: inherit;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--rule);
-    padding: 0.4rem 4rem 0.4rem 0;
-  }
-  .filter input:focus {
-    outline: none;
-    border-bottom-color: var(--foreground);
-  }
-  .filter .count {
-    position: absolute;
-    right: 0;
-    top: 0.4rem;
-    color: var(--muted);
-    font-size: 0.875rem;
-  }
-
-  .group h2 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--muted);
+  .chip--warn {
+    background: var(--warn-bg);
+    color: var(--warn-fg);
     font-weight: 600;
-    margin: 2rem 0 0.25rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--rule);
   }
-  .group-note {
-    color: var(--muted);
-    font-size: 0.875rem;
-    margin: 0.5rem 0 0;
-  }
+
   .cards {
-    display: grid;
     /* The floor, not the container width, is what stops addresses wrapping:
        auto-fill spends extra width on more columns, not wider ones. min()
        clamps it on narrow phones so a card can never overflow the screen. */
-    grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
-    gap: 0.5rem;
-    margin: 0.75rem 0 0;
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+    gap: 0.625rem;
+    margin: 0;
   }
   .card {
     /* Column flex so the address can sit at the bottom: grid rows stretch to
-       the tallest tile, and without this a one-line blurb leaves its address
-       stranded mid-tile while its neighbour's sits lower. */
+       the tallest card, and without this a one-line blurb leaves its address
+       stranded mid-card while its neighbour's sits lower. */
     display: flex;
     flex-direction: column;
     height: 100%;
     box-sizing: border-box;
-    padding: 0.75rem;
-    border: 1px solid var(--rule);
-    color: inherit;
-    /* The whole tile is the target, so the global link underline is
-       suppressed here and re-applied to the address below - the address
-       still reads as the link, and nothing else on the tile pretends to. */
+    padding: 1rem 1.125rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    /* A linked card is one target; the fill that deepens on hover and the
+       arrow that appears are what mark it, so no underline anywhere on it. */
     text-decoration: none;
   }
-  .card:hover {
-    border-color: var(--foreground);
+  a.card:hover {
+    background: var(--surface-2);
   }
   .card .name {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
     font-weight: 600;
   }
+  .card .go {
+    color: var(--accent);
+    font-size: var(--step--1);
+    font-weight: 400;
+    opacity: 0;
+  }
+  .card:is(:hover, :focus-visible) .go {
+    opacity: 1;
+  }
   .card .blurb {
-    display: block;
     color: var(--muted);
-    font-size: 0.9375rem;
+    font-size: var(--step--1);
   }
   .card .host {
-    display: block;
     margin-top: auto;
-    padding-top: 0.5rem;
+    padding-top: 0.75rem;
     color: var(--muted);
-    font-size: 0.8125rem;
-    text-decoration: underline;
-    text-decoration-color: var(--link-line);
-    text-underline-offset: 3px;
-    overflow-wrap: anywhere;
-  }
-  .card:hover .host {
-    text-decoration-color: var(--foreground);
-  }
-  .card--lead {
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-  }
-  .card--lead .name {
-    font-size: 1.375rem;
-  }
-  .card--lead .blurb {
-    font-size: 1rem;
+    font-size: var(--step--2);
   }
 
   @media (min-width: 40.0625rem) {
     /* Fixed layout is what actually keeps the columns aligned: without it the
-       longest description dictates the column width for every row. Widths live
-       here so that below the breakpoint - where columns are shed - the table
-       reflows to fill the screen instead of holding empty tracks open. */
+       longest description dictates the column width for every row. Each table
+       sets its widths on its <col>s as --w; below the breakpoint - where
+       columns are shed - they're ignored and the table reflows to fill the
+       screen instead of holding empty tracks open. */
     .table {
       table-layout: fixed;
     }
-    .table--dump col:nth-child(1) {
-      width: 26%;
-    }
-    .table--dump col:nth-child(2) {
-      width: 32%;
-    }
-    .table--dump col:nth-child(3) {
-      width: 12%;
-    }
-    .table--provider col:nth-child(1) {
-      width: 24%;
-    }
-    .table--provider col:nth-child(2) {
-      width: 30%;
-    }
-    .table--deprecated col:nth-child(1) {
-      width: 30%;
-    }
-    .table--deprecated col:nth-child(2) {
-      width: 28%;
-    }
-    .table--deprecated col:nth-child(3) {
-      width: 12%;
-    }
-    .table--links col:nth-child(1) {
-      width: 32%;
-    }
-    .table--links col:nth-child(2) {
-      width: 44%;
+    .table col {
+      width: var(--w, auto);
     }
   }
 
   @media (max-width: 40rem) {
-    /* shed columns rather than scroll sideways - the table stays a table, so
-       it stays navigable for assistive tech. */
-    .table .column-notes,
-    .table .column-retired,
-    .table .column-provider {
+    main {
+      padding: 2rem 1rem 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    /* Shed columns rather than scroll sideways - the table stays a table, so
+       it stays navigable for assistive tech. Header and cells both carry it. */
+    .shed {
       display: none;
     }
-    .group h2 {
-      margin-top: 1.5rem;
+    .table tbody th {
+      width: 6.5rem;
     }
   }
 </style>

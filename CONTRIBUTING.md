@@ -148,9 +148,9 @@ data/entries/*.json          the index dataset (authored)
 data/redirects/*.json        the shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - one {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
-src/lib/                     entries, redirects, curated, views, introspect, reserved, types (generated)
+src/lib/                     entries, redirects, curated, views, introspect, format, reserved, types (generated)
 src/components/              EntryTable, DeprecationTable, LinkTable, CuratedGroups, TableFilter, AddressFacts
-src/pages/index/             dump + [...path] views (HTML, server-rendered) and .json twins
+src/pages/index/             [...path] renders every /index view, the dump too (HTML, server-rendered), + .json twins
 src/pages/introspect/        [...link] lookup over both datasets (server-rendered) and its .json twin
 src/pages/sitemap.xml.ts     index-only sitemap
 ```

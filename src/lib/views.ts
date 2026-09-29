@@ -1,14 +1,9 @@
 import {
   type CuratedPageDoc,
-  curatedPages,
   curatedPagesFor,
   findCuratedPage,
 } from "@/lib/curated";
-import type {
-  CuratedGroup,
-  CuratedItem,
-  CuratedPage,
-} from "@/lib/curated-types";
+import type { CuratedItem, CuratedPage } from "@/lib/curated-types";
 import { entries } from "@/lib/entries";
 import { type ShortLink, shortLinks } from "@/lib/redirects";
 import { RESERVED_VIEW } from "@/lib/reserved";
@@ -22,6 +17,14 @@ const PROVIDERS = new Set(entries.map((entry) => entry.provider));
 
 export const primaryAddress = (entry: Entry): string | undefined =>
   entry.current?.[0]?.url;
+
+/** The newest `last_verified` in a list - a page's "verified" date. */
+export const lastVerified = (list: Entry[]): string | undefined =>
+  list
+    .map((entry) => entry.last_verified)
+    .filter(Boolean)
+    .sort()
+    .pop();
 
 export interface Collection {
   slug: string;
@@ -108,6 +111,8 @@ const deprecatedSet = (list: Entry[]) =>
 
 export interface ResolvedItem {
   href: string;
+  /** `href` without its scheme - the bare form addresses are printed in. */
+  url: string;
   label: string;
   blurb?: string | undefined;
   entry?: Entry | undefined;
@@ -147,12 +152,18 @@ function resolveItem(item: CuratedItem): ResolvedItem | undefined {
     if (!entry || !url) return undefined;
     return {
       href: `https://${url}`,
+      url,
       label: item.label ?? entry.name,
       blurb: item.blurb,
       entry,
     };
   }
-  return { href: `https://${item.url}`, label: item.name, blurb: item.blurb };
+  return {
+    href: `https://${item.url}`,
+    url: item.url,
+    label: item.name,
+    blurb: item.blurb,
+  };
 }
 
 function resolveCurated(page: CuratedPageDoc): ResolvedView {
@@ -343,6 +354,3 @@ export const envelopeFor = (path: string, view: ResolvedView) =>
   view.kind === "links"
     ? buildLinkEnvelope(path, view.links)
     : buildEnvelope(path, view.entries, envelopeExtra(view));
-
-export type { CuratedGroup, CuratedItem, CuratedPageDoc };
-export { curatedPages, curatedPagesFor };
