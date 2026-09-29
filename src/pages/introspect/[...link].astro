@@ -2,7 +2,12 @@
 import AddressFacts from "@/components/AddressFacts.astro";
 import Host from "@/components/Host.astro";
 import Layout, { type Crumb } from "@/layouts/Layout.astro";
-import { forDisplay, introspectPathname, type Where } from "@/lib/introspect";
+import {
+  forDisplay,
+  introspectPathname,
+  WHERE_LABEL,
+  type Where,
+} from "@/lib/introspect";
 
 // Unbounded input, so this is server-rendered rather than prerendered.
 export const prerender = false;
@@ -30,6 +35,19 @@ const WHERE_LEDE: Record<Where, string> = {
 
 const title =
   result.kind === "empty" ? "Introspect a link" : `${shown} - introspect`;
+
+// An address lookup names where the link was found beside the heading, and a
+// former address also gets a Was -> Now at summary: the dead address muted and
+// unlinked, its live successor beside it - what it became, else the entry's own
+// live address, else its successor's.
+const addressHit = result.kind === "address" ? result.hit : undefined;
+const wasDead = addressHit?.match.where === "history";
+const nowAt =
+  addressHit && wasDead
+    ? (addressHit.match.became ??
+      addressHit.entry.primary ??
+      addressHit.entry.successor?.primary)
+    : undefined;
 
 const description =
   result.kind === "empty"
@@ -86,7 +104,14 @@ const description =
       </>
     ) : (
       <>
-        <h1><Host url={shown} /></h1>
+        <div class="title-row">
+          <h1><Host url={shown} /></h1>
+          {addressHit && (
+            <span class:list={['chip', { 'chip--warn': wasDead }]}>
+              {WHERE_LABEL[addressHit.match.where]}
+            </span>
+          )}
+        </div>
 
         {result.via === 'www-stripped' && (
           <p class="secondary">
@@ -171,6 +196,21 @@ const description =
               <strong>{result.hit.entry.entry.name}</strong>
               {result.hit.entry.retired && ', which is retired'}.
             </p>
+            {nowAt && (
+              <div class="moved">
+                <div>
+                  <span class="moved-label">Was</span>
+                  <Host url={result.hit.match.url} class="dead" />
+                </div>
+                <span class="moved-arrow" aria-hidden="true">→</span>
+                <div>
+                  <span class="moved-label">Now at</span>
+                  <a href={`https://${nowAt}`}>
+                    <Host url={nowAt} />
+                  </a>
+                </div>
+              </div>
+            )}
             <AddressFacts hit={result.hit} />
             {result.otherHits.length > 0 && (
               <div class="group">
@@ -216,7 +256,7 @@ const description =
                         {hit.entry.entry.name}
                       </a>
                       {hit.match.where === 'history' && (
-                        <> <span class="chip">former</span></>
+                        <> <span class="chip chip--warn">former</span></>
                       )}
                     </td>
                   </tr>

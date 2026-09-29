@@ -1,6 +1,6 @@
 ---
 import Host from "@/components/Host.astro";
-import type { AddressHit, Where } from "@/lib/introspect";
+import { type AddressHit, WHERE_LABEL } from "@/lib/introspect";
 
 interface Props {
   hit: AddressHit;
@@ -8,13 +8,6 @@ interface Props {
 const { hit } = Astro.props;
 const { match, entry: facts } = hit;
 const { entry } = facts;
-
-const WHERE_LABEL: Record<Where, string> = {
-  current: "current address",
-  history: "former address",
-  aka_ms: "aka.ms pointer",
-  alternate: "alternate address",
-};
 
 // A former address is shown but not linked, matching DeprecationTable: it may no
 // longer resolve, and offering it as a link invites the exact dead click this
@@ -38,7 +31,9 @@ const tags = entry.tags ?? [];
           )
         }
         <span class="secondary">
-          <span class="chip">{WHERE_LABEL[match.where]}</span>
+          <span class:list={['chip', { 'chip--warn': !linkable }]}>
+            {WHERE_LABEL[match.where]}
+          </span>
           {match.environment && <span class="chip">{match.environment}</span>}
           {match.label}
         </span>
@@ -48,7 +43,7 @@ const tags = entry.tags ?? [];
       <th scope="row">Service</th>
       <td>
         <a href={`/index/${entry.provider}#entry-${entry.id}`}>{entry.name}</a>
-        {facts.retired && <> <span class="chip">retired</span></>}
+        {facts.retired && <> <span class="chip chip--warn">retired</span></>}
         {entry.description && <span class="secondary">{entry.description}</span>}
       </td>
     </tr>

@@ -7,6 +7,7 @@ import TableFilter from "@/components/TableFilter.astro";
 import Layout, { type Crumb } from "@/layouts/Layout.astro";
 import {
   deprecationRows,
+  providerNav,
   type ResolvedView,
   resolveViewByPath,
 } from "@/lib/views";
@@ -42,16 +43,59 @@ const lastVerified = view.entries
   .sort()
   .pop();
 const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
+
+// Every view of one provider, so its pages can be switched between in place.
+// The first segment is not always a provider - /index/deprecated and
+// /index/links land here too - so the tabs key off the nav, not the segment.
+// The provider is already in the breadcrumb and the tabs, so the heading drops
+// the "microsoft: " prefix the title carries; the <title> keeps it.
+const nav = providerNav().find((group) => group.provider === provider);
+const tabs = nav
+  ? [
+      { label: "Everything", href: `/index/${nav.provider}`, slug: undefined },
+      ...nav.collections.map((collection) => ({
+        label: collection.title,
+        href: `/index/${nav.provider}/${collection.slug}`,
+        slug: collection.slug,
+      })),
+      {
+        label: "deprecated",
+        href: `/index/${nav.provider}/deprecated`,
+        slug: "deprecated",
+      },
+    ]
+  : [];
+const heading =
+  nav && view.title.startsWith(`${nav.provider}: `)
+    ? view.title.slice(nav.provider.length + 2)
+    : view.title;
+const count =
+  view.kind === "entries"
+    ? ` · ${view.entries.length} ${view.entries.length === 1 ? "entry" : "entries"}`
+    : "";
 ---
 
 <Layout
   title={view.title}
   description={view.description}
-  width="wide"
   crumbs={crumbs}
 >
-  <h1>{view.title}</h1>
-  <p class="lede">{view.description}</p>
+  <h1>{heading}</h1>
+  <p class="lede">{view.description}{count}</p>
+  {
+    tabs.length > 0 && (
+      <nav aria-label={`${nav?.provider} views`} class="tabs">
+        {tabs.map((tab) => (
+          <a
+            href={tab.href}
+            aria-current={tab.slug === subview ? 'page' : undefined}
+          >
+            {tab.label}
+          </a>
+        ))}
+      </nav>
+    )
+  }
 
   {
     view.kind === 'curated' ? (

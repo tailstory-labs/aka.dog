@@ -41,7 +41,7 @@ const searchKey = (row: DeprecationRow) =>
                 <Host url={row.became} />
               </a>
             ) : (
-              <span class="chip">retired</span>
+              <span class="chip chip--warn">retired</span>
             )}
           </td>
           <td class="column-retired">{row.until ?? ''}</td>

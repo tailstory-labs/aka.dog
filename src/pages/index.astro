@@ -1,54 +1,187 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { providerNav } from "@/lib/views";
+import { entries } from "@/lib/entries";
+import { shortLinks } from "@/lib/redirects";
+import { deprecationRows, providerNav } from "@/lib/views";
 
 const navigation = providerNav();
+
+const plural = (count: number, one: string, many: string) =>
+  count === 1 ? one : many;
+// Counted from the data, never written down: each is what the page it links
+// to lists.
+const formerAddresses = deprecationRows(entries).filter(
+  (row) => row.url,
+).length;
+const entriesPer = (provider: string) =>
+  entries.filter((entry) => entry.provider === provider).length;
 ---
 
 <Layout
   title="aka.dog"
   description="A derived reference index of vendor cloud and service endpoints across namespaces (and a link shortener)."
 >
-  <h1>aka.dog</h1>
-  <p>
-    A small reference index of where vendors' services actually live - current endpoints, their old
-    hosts, and what moved where, organized by namespace. Entries are the source of truth; every page
-    is a derived view.
+  <a href="/" class="wordmark" aria-current="page">aka.dog</a>
+  <h1 class="statement">Where vendors’ services actually live.</h1>
+  <p class="lede">
+    Current endpoints, their old hosts, and what moved where, organized by namespace. Entries are the
+    source of truth; every page is a derived view.
   </p>
-  <p>
-    Start at the <a href="/index">full index</a>, browse the <a href="/index/deprecated">deprecated</a> list,
-    or jump to a namespace below. Append <code>.json</code> to any of these for the machine-readable
-    view.
+
+  <p class="examples">
+    <span><a href="/introspect">Introspect</a> any link, like</span>
+    <a class="chip" href="/introspect/office.com">office.com</a>
+    <a class="chip" href="/introspect/aka.ms/copilot">aka.ms/copilot</a>
+    <a class="chip" href="/introspect/shenanigans/resume">shenanigans/resume</a>
   </p>
-  <p>
-    Got a URL and want to know what's tracked about it?
-    <a href="/introspect">Introspect</a> it - any index address or short link, straight in the
-    path - try <a href="/introspect/office.com"><code>office.com</code></a>.
-  </p>
-  <p>
-    aka.dog is a shortener too - <code>aka.dog/&#123;who&#125;/&#123;slug&#125;</code> <code>302</code>s
-    onward. See <a href="/index/links">every short link it serves</a>.
-  </p>
-  <ul>
-    {
-      navigation.map((providerGroup) => (
-        <li>
-          <a href={`/index/${providerGroup.provider}`}>{providerGroup.provider}</a>
-          {providerGroup.collections.length ? (
-            <small>
-              {' - '}
-              {providerGroup.collections.map((collection, index) => (
-                <>
-                  {index > 0 ? ', ' : ''}
-                  <a href={`/index/${providerGroup.provider}/${collection.slug}`}>
-                    {collection.title}
-                  </a>
-                </>
-              ))}
-            </small>
-          ) : null}
-        </li>
-      ))
-    }
+
+  <ul class="stats">
+    <li>
+      <a class="card" href="/index">
+        <span class="figure">{entries.length}</span>
+        <span class="name">{plural(entries.length, 'entry', 'entries')}</span>
+        <span class="blurb">The full index, one row per service</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="/index/deprecated">
+        <span class="figure">{formerAddresses}</span>
+        <span class="name">{plural(formerAddresses, 'former address', 'former addresses')}</span>
+        <span class="blurb">Old hosts, and what each one became</span>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="/index/links">
+        <span class="figure">{shortLinks.length}</span>
+        <span class="name">{plural(shortLinks.length, 'short link', 'short links')}</span>
+        <span class="blurb"><code>aka.dog/&#123;who&#125;/&#123;slug&#125;</code> 302s onward</span>
+      </a>
+    </li>
   </ul>
+
+  <section class="namespaces">
+    <h2>Namespaces</h2>
+    <ul>
+      {
+        navigation.map((providerGroup) => (
+          <li>
+            <a class="provider" href={`/index/${providerGroup.provider}`}>
+              {providerGroup.provider}
+            </a>
+            <span class="views">
+              {providerGroup.collections.map((collection) => (
+                <a href={`/index/${providerGroup.provider}/${collection.slug}`}>
+                  {collection.title}
+                </a>
+              ))}
+              <a href={`/index/${providerGroup.provider}/deprecated`}>deprecated</a>
+            </span>
+            <span class="count">{entriesPer(providerGroup.provider)}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <p class="meta">Append <code>.json</code> to any page for the machine-readable view.</p>
 </Layout>
+
+<style>
+  .wordmark {
+    font-weight: 700;
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  .statement {
+    max-width: 45rem;
+    font-size: 2.75rem;
+    margin: 1.25rem 0 1rem;
+  }
+  .lede {
+    font-size: 1.125rem;
+  }
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    margin: 2.25rem 0 0;
+    max-width: none;
+  }
+  .examples span {
+    color: var(--muted);
+    font-size: 0.875rem;
+    margin-right: 0.25rem;
+  }
+  .examples span a {
+    color: var(--foreground);
+  }
+  .examples .chip {
+    font-size: 0.8125rem;
+    line-height: 1.75rem;
+    padding: 0 0.6875rem;
+  }
+  .stats {
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: 0.625rem;
+    margin: 3.5rem 0 0;
+  }
+  .stats .card {
+    padding: 1.25rem 1.375rem;
+  }
+  .figure {
+    font-size: 2.125rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .stats .name {
+    font-weight: 500;
+  }
+  .namespaces {
+    margin-top: 3.5rem;
+  }
+  .namespaces h2 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 0.5rem;
+  }
+  .namespaces ul {
+    gap: 0;
+    margin: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .namespaces li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 1.5rem;
+    row-gap: 0.25rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .provider {
+    flex: 0 0 11rem;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .views {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1.25rem;
+    color: var(--muted);
+  }
+  .count {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  @media (max-width: 40rem) {
+    .statement {
+      font-size: 2.25rem;
+    }
+  }
+</style>

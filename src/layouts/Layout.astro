@@ -1,4 +1,6 @@
 ---
+import { Font } from "astro:assets";
+
 export interface Crumb {
   label: string;
   href?: string | undefined;
@@ -8,16 +10,9 @@ interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
-  width?: "prose" | "wide";
   crumbs?: Crumb[];
 }
-const {
-  title,
-  description = "",
-  noindex = false,
-  width = "prose",
-  crumbs = [],
-} = Astro.props;
+const { title, description = "", noindex = false, crumbs = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const SITE_NAME = "aka.dog";
 const documentTitle =
@@ -36,9 +31,11 @@ const documentTitle =
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
     <meta name="generator" content={Astro.generator} />
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
   </head>
   <body>
-    <main class={width === 'wide' ? 'wide' : undefined}>
+    <main>
       {
         crumbs.length > 0 && (
           <nav aria-label="Breadcrumb" class="crumbs">
@@ -63,21 +60,35 @@ const documentTitle =
 <style is:global>
   :root {
     color-scheme: light dark;
-    --foreground: light-dark(#1a1a1a, #e8e8e8);
-    --background: light-dark(#fff, #111);
-    --muted: light-dark(#666, #999);
-    --rule: light-dark(#e5e5e5, #2a2a2a);
+    --foreground: light-dark(#16161a, #ededef);
+    --background: light-dark(#fbfbfa, #0e0e10);
+    --muted: light-dark(#62626b, #9b9ba4);
+    --rule: light-dark(#e6e6e3, #25252a);
     /* Deliberately stronger than --rule. A table hairline wants to disappear;
        a link underline has to be seen, since it is now the only thing marking
        a link. ~2.5:1 against the background in both themes, against 1.3:1 if
-       --rule were reused, while staying far quieter than the text at ~17:1. */
+       --rule were reused, while staying far quieter than the text. */
     --link-line: light-dark(#a4a4a4, #545454);
+    /* Flat fills stand in for borders: a card, the filter and a pill are a
+       shade off the page, never outlined. */
+    --surface: light-dark(#f1f1ef, #18181b);
+    --surface-hover: light-dark(#e8e8e5, #202024);
+    --lead: light-dark(#eaeae6, #1f1f24);
+    --lead-hover: light-dark(#e1e1dc, #26262c);
+    --row-hover: light-dark(#f5f5f3, #141417);
+    --pill: light-dark(#ecece9, #232328);
+    --pill-hover: light-dark(#e0e0dc, #2e2e34);
+    /* Status, not decoration: only a dead address or a retired entry is
+       tinted, so the colour always means the same thing. */
+    --warn-bg: light-dark(#f7e8ce, #3a2b12);
+    --warn-fg: light-dark(#7a4f0e, #f2c27a);
+    --accent: light-dark(#2f55d4, #9db8ff);
   }
   body {
     margin: 0;
     background: var(--background);
     color: var(--foreground);
-    font: 16px/1.5 system-ui, sans-serif;
+    font: 15px/1.5 var(--font-sans);
   }
   /* Flat links: no colour of their own, marked by a hairline underline that
      firms up on hover. `color: inherit` is what makes one rule work
@@ -95,21 +106,27 @@ const documentTitle =
     text-decoration-color: var(--foreground);
   }
   /* Not optional: with colour gone, this is all a keyboard user has left. */
-  a:focus-visible {
-    outline: 1px solid var(--foreground);
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
-    text-decoration-color: var(--foreground);
+  }
+  code,
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
   }
   main {
-    max-width: 70ch;
+    /* One column for every page, so the left edge never jumps between them.
+       Wide enough that no current address wraps in a table and the card grid
+       still holds three columns; measured against the longest host in the
+       dataset (m365.cloud.microsoft/launch/sharepoint). */
+    max-width: 65rem;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 4.5rem 1.5rem 4rem;
   }
-  main.wide {
-    /* Wide enough that no current address wraps and the card grid still holds
-       four columns; measured against the longest host in the dataset
-       (m365.cloud.microsoft/launch/sharepoint). */
-    max-width: 140ch;
+  main p {
+    max-width: 45rem;
   }
   ul {
     list-style: none;
@@ -121,24 +138,92 @@ const documentTitle =
     color: var(--muted);
   }
   h1 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin: 0 0 0.5rem;
+  }
+  h1 code {
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  .title-row h1 {
+    margin: 0;
+  }
+  .moved {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 1.5rem;
+    padding: 1.375rem 1.625rem;
+    border-radius: 12px;
+    background: var(--surface);
+    margin: 0 0 2.5rem;
+  }
+  .moved-label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+  .moved code {
+    font-size: 1.25rem;
+    overflow-wrap: anywhere;
+  }
+  .moved-arrow {
+    color: var(--accent);
     font-size: 1.5rem;
-    margin: 0 0 0.25rem;
   }
   .crumbs {
     color: var(--muted);
     font-size: 0.875rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.4rem;
+  }
+  /* The first crumb is the site itself - the one way home now that there is
+     no header. */
+  .crumbs > a:first-child {
+    color: var(--foreground);
+    font-weight: 600;
   }
   .lede {
     color: var(--muted);
-    margin: 0 0 1.5rem;
+    font-size: 1.0625rem;
+    margin: 0 0 1.75rem;
   }
   .meta {
     color: var(--muted);
     font-size: 0.875rem;
-    margin-top: 2rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--rule);
+    margin-top: 3rem;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: -0.25rem 0 1.75rem;
+    font-size: 0.875rem;
+  }
+  .tabs a {
+    padding: 0.375rem 0.75rem;
+    border-radius: 7px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .tabs a:hover {
+    color: var(--foreground);
+  }
+  .tabs a[aria-current="page"] {
+    background: var(--surface);
+    color: var(--foreground);
+    font-weight: 500;
   }
 
   .table {
@@ -149,24 +234,43 @@ const documentTitle =
   .table th,
   .table td {
     text-align: left;
-    vertical-align: top;
-    padding: 0.45rem 0.75rem 0.45rem 0;
+    vertical-align: baseline;
+    padding: 0.625rem 1.5rem 0.625rem 0;
     border-bottom: 1px solid var(--rule);
+  }
+  /* The inset lets the hover fill reach past the text without the text
+     moving off the column edge. */
+  .table th:first-child,
+  .table td:first-child {
+    padding-left: 0.5rem;
   }
   .table th:last-child,
   .table td:last-child {
-    padding-right: 0;
+    padding-right: 0.5rem;
   }
   .table thead th {
     position: sticky;
     top: 0;
     background: var(--background);
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-weight: 500;
+    font-size: 0.8125rem;
     color: var(--muted);
-    border-bottom-color: var(--foreground);
+  }
+  /* A headerless table (the introspect facts) still opens on a rule. */
+  .table:not(:has(thead)) {
+    border-top: 1px solid var(--rule);
+  }
+  .table tbody th {
+    font-weight: 400;
+    color: var(--muted);
+    width: 10rem;
+  }
+  .table tbody tr:hover {
+    background: var(--row-hover);
+  }
+  .table--dump td:first-child,
+  .table--provider td:first-child {
+    font-weight: 500;
   }
   .table code {
     font-size: 0.875em;
@@ -174,13 +278,14 @@ const documentTitle =
     overflow-wrap: anywhere;
   }
   /* Deliberately no line-through: struck small monospace is unreadable, and
-     nothing depends on it - a retired row carries the `retired` chip beside
+     nothing depends on it - a retired row carries the `retired` pill beside
      its name, and the deprecated table's column header reads "Was". */
-  .table .dead {
+  .dead {
     color: var(--muted);
   }
   .column-notes {
     color: var(--muted);
+    font-size: 0.9375em;
   }
   .column-retired {
     color: var(--muted);
@@ -192,136 +297,180 @@ const documentTitle =
   .secondary {
     display: block;
     color: var(--muted);
-    font-size: 0.875em;
+    font-size: 0.9375em;
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.3rem;
   }
 
+  /* A static pill (a tag, where an address was found) reads muted; a pill
+     that is a link reads at full strength, in the mono face of an address. */
   .chip {
     display: inline-block;
     font-size: 0.75rem;
-    line-height: 1.5;
-    padding: 0 0.35em;
-    margin-right: 0.3em;
-    border: 1px solid var(--rule);
-    border-radius: 2px;
+    line-height: 1.375rem;
+    padding: 0 0.5625rem;
+    border-radius: 999px;
+    background: var(--pill);
     color: var(--muted);
     text-decoration: none;
     white-space: nowrap;
-  }
-  /* The bordered pill is its own affordance, so chips opt out of the
-     underline; full-strength text is what separates a link chip from the
-     static `retired` marker. */
-  .chip {
-    text-decoration: none;
+    vertical-align: 0.1em;
   }
   a.chip {
     color: var(--foreground);
-    border-color: var(--link-line);
+    font-family: var(--font-mono);
   }
   a.chip:hover {
-    border-color: var(--foreground);
+    background: var(--pill-hover);
+  }
+  .chip--warn {
+    background: var(--warn-bg);
+    color: var(--warn-fg);
+    font-weight: 600;
   }
 
   .filter {
     position: relative;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
   .filter input {
     width: 100%;
     box-sizing: border-box;
     font: inherit;
     color: inherit;
-    background: transparent;
+    background: var(--surface);
     border: 0;
-    border-bottom: 1px solid var(--rule);
-    padding: 0.4rem 4rem 0.4rem 0;
+    border-radius: 10px;
+    padding: 0.75rem 5rem 0.75rem 1rem;
   }
-  .filter input:focus {
-    outline: none;
-    border-bottom-color: var(--foreground);
+  .filter input::placeholder {
+    color: var(--muted);
   }
   .filter .count {
     position: absolute;
-    right: 0;
-    top: 0.4rem;
+    right: 1rem;
+    top: 0.8rem;
     color: var(--muted);
-    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
   }
 
+  .group {
+    margin-top: 2.5rem;
+  }
   .group h2 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--muted);
+    font-size: 0.9375rem;
     font-weight: 600;
-    margin: 2rem 0 0.25rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--rule);
+    margin: 0 0 0.5rem;
   }
   .group-note {
     color: var(--muted);
-    font-size: 0.875rem;
-    margin: 0.5rem 0 0;
+    margin: 0 0 0.75rem;
+  }
+  .group-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .group-head > * {
+    margin: 0;
   }
   .cards {
     display: grid;
     /* The floor, not the container width, is what stops addresses wrapping:
        auto-fill spends extra width on more columns, not wider ones. min()
        clamps it on narrow phones so a card can never overflow the screen. */
-    grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
-    gap: 0.5rem;
-    margin: 0.75rem 0 0;
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+    gap: 0.625rem;
+    margin: 0;
   }
   .card {
     /* Column flex so the address can sit at the bottom: grid rows stretch to
-       the tallest tile, and without this a one-line blurb leaves its address
-       stranded mid-tile while its neighbour's sits lower. */
+       the tallest card, and without this a one-line blurb leaves its address
+       stranded mid-card while its neighbour's sits lower. */
     display: flex;
     flex-direction: column;
     height: 100%;
     box-sizing: border-box;
-    padding: 0.75rem;
-    border: 1px solid var(--rule);
+    padding: 1rem 1.125rem;
+    border-radius: 12px;
+    background: var(--surface);
     color: inherit;
-    /* The whole tile is the target, so the global link underline is
-       suppressed here and re-applied to the address below - the address
-       still reads as the link, and nothing else on the tile pretends to. */
+    /* The whole card is the target; the fill that deepens on hover and the
+       arrow that appears are what mark it, so no underline anywhere on it. */
     text-decoration: none;
   }
   .card:hover {
-    border-color: var(--foreground);
+    background: var(--surface-hover);
   }
   .card .name {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
     font-weight: 600;
+  }
+  .card .go {
+    color: var(--accent);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    opacity: 0;
+  }
+  .card:hover .go,
+  .card:focus-visible .go {
+    opacity: 1;
   }
   .card .blurb {
     display: block;
     color: var(--muted);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
   }
   .card .host {
     display: block;
     margin-top: auto;
-    padding-top: 0.5rem;
+    padding-top: 0.75rem;
     color: var(--muted);
-    font-size: 0.8125rem;
-    text-decoration: underline;
-    text-decoration-color: var(--link-line);
-    text-underline-offset: 3px;
+    font-size: 0.75rem;
     overflow-wrap: anywhere;
   }
-  .card:hover .host {
-    text-decoration-color: var(--foreground);
-  }
   .card--lead {
-    padding: 1rem;
-    margin-bottom: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: 1.5rem;
+    padding: 1.625rem 1.75rem;
+    border-radius: 14px;
+    background: var(--lead);
+  }
+  .card--lead:hover {
+    background: var(--lead-hover);
   }
   .card--lead .name {
-    font-size: 1.375rem;
+    display: block;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
   .card--lead .blurb {
     font-size: 1rem;
+  }
+  .card--lead .host {
+    margin: 0;
+    padding: 0;
+    font-size: 0.875rem;
+  }
+  .card--lead .host code {
+    font-size: inherit;
+  }
+  /* The lead is the one card whose arrow always shows. */
+  .card--lead .host .go {
+    opacity: 1;
   }
 
   @media (min-width: 40.0625rem) {
@@ -333,25 +482,25 @@ const documentTitle =
       table-layout: fixed;
     }
     .table--dump col:nth-child(1) {
-      width: 26%;
+      width: 22%;
     }
     .table--dump col:nth-child(2) {
-      width: 32%;
+      width: 31%;
     }
     .table--dump col:nth-child(3) {
-      width: 12%;
+      width: 11%;
     }
     .table--provider col:nth-child(1) {
-      width: 24%;
+      width: 22%;
     }
     .table--provider col:nth-child(2) {
-      width: 30%;
+      width: 32%;
     }
     .table--deprecated col:nth-child(1) {
       width: 30%;
     }
     .table--deprecated col:nth-child(2) {
-      width: 28%;
+      width: 30%;
     }
     .table--deprecated col:nth-child(3) {
       width: 12%;
@@ -365,6 +514,12 @@ const documentTitle =
   }
 
   @media (max-width: 40rem) {
+    main {
+      padding: 2rem 1rem 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+    }
     /* shed columns rather than scroll sideways - the table stays a table, so
        it stays navigable for assistive tech. */
     .table .column-notes,
@@ -372,8 +527,26 @@ const documentTitle =
     .table .column-provider {
       display: none;
     }
-    .group h2 {
-      margin-top: 1.5rem;
+    .table tbody th {
+      width: 6.5rem;
+    }
+    .group {
+      margin-top: 2rem;
+    }
+    .card--lead {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .card--lead .host {
+      margin-top: 0.75rem;
+    }
+    .moved {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 0.75rem;
+    }
+    .moved-arrow {
+      display: none;
     }
   }
 </style>

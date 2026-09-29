@@ -13,7 +13,7 @@ const offer = missed.startsWith("/introspect")
   : `/introspect${missed}`;
 ---
 
-<Layout title="Not found" noindex>
+<Layout title="Not found" noindex crumbs={[{ label: "aka.dog", href: "/" }]}>
   <h1>404 - not found</h1>
   <p>No redirect or page matches this URL. Try the <a href="/index">index</a>.</p>
   {

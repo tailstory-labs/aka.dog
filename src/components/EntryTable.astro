@@ -67,7 +67,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
           <tr id={`entry-${entry.id}`} data-search={searchKey(entry)}>
             <td>
               <span>{entry.name}</span>
-              {!primary && <> <span class="chip">retired</span></>}
+              {!primary && <> <span class="chip chip--warn">retired</span></>}
             </td>
             <td>
               {current.map((address) => (
@@ -92,7 +92,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
                 </span>
               )}
               {pointers.length > 0 && (
-                <span class="secondary">
+                <span class="pills">
                   {pointers.map((pointer) => (
                     <a
                       class="chip"
