@@ -1,6 +1,6 @@
-import { bindings, defineWorker } from "wrangler/experimental-config";
+import { bindings, defineConfig, defineWorker } from "@cloudflare/config";
 
-export default defineWorker({
+const worker = defineWorker({
   name: "aka-dog",
   compatibilityDate: "2026-06-01",
   compatibilityFlags: [],
@@ -31,3 +31,5 @@ export default defineWorker({
     },
   },
 });
+
+export default defineConfig({ worker });
