@@ -106,7 +106,8 @@ for index addresses and one for redirects. The forms ask for the evidence a main
 Deployment uses Wrangler's experimental TypeScript config (`--x-new-config`) - there is **no
 `wrangler.jsonc`**:
 
-- **`cloudflare.config.ts`** (`defineWorker`) - runtime settings: name, compatibility date, custom
+- **`cloudflare.config.ts`** (`defineConfig({ worker })` and `defineWorker`, from the
+  `@cloudflare/config` package) - runtime settings: name, compatibility date, custom
   `domains`, the `ASSETS`/`SESSION`/`IMAGES` bindings, `assets.htmlHandling`, and observability.
   aka.dog uses the `@astrojs/cloudflare` **server** adapter, so `entrypoint` points at the worker
   the adapter emits at `dist/server/entry.mjs` - `astro build` must run first (the `deploy`/`cloudflare:dev`
