@@ -21,16 +21,16 @@
     "deploy": "npm run build && wrangler deploy --x-new-config"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.4.0",
-    "astro": "^7.3.6"
+    "@astrojs/cloudflare": "^14.4.2",
+    "astro": "^7.4.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
-    "@cloudflare/config": "^0.26.0",
+    "@biomejs/biome": "2.6.2",
+    "@cloudflare/config": "^0.27.0",
     "ajv": "^8.20.0",
     "json-schema-to-typescript": "^16.0.0",
     "typescript": "^7.0.2",
-    "wrangler": "^4.148.0"
+    "wrangler": "^4.151.3"
   },
   "overrides": {
     "miniflare": {
