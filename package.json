@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.0",
-    "astro": "^7.3.6"
+    "astro": "^7.4.12"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
