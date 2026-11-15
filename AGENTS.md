@@ -9,10 +9,10 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
 
 1. **Redirect shortener** - `aka.dog/{who}/{slug}` -> `302`, resolved in the Worker from
    `data/redirects/*.json`, and listed at `/index/links`.
-2. **Derived reference index** - `aka.dog/index/*` views are *queries* over `data/entries/*.json`
+2. **Derived reference index** - `aka.dog/index/*` views are _queries_ over `data/entries/*.json`
    (the dump, per-provider, `deprecated` and `cloud-microsoft` views), plus **curated pages**
    assembled from `data/curated/{provider}/{slug}.json` (today: `microsoft/end-user`), plus
-   `/index/links`, the one view whose rows come from the *other* dataset. Author data, never view
+   `/index/links`, the one view whose rows come from the _other_ dataset. Author data, never view
    output.
 
 ## Commands
