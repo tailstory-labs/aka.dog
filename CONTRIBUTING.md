@@ -6,7 +6,7 @@ Assets**:
 1. **A redirect shortener** - `aka.dog/{who}/{slug}` -> `302` to an external URL, resolved in the
    Worker from build-embedded JSON (`data/redirects/*.json`). Every link it serves is listed at
    `/index/links`.
-2. **A derived reference index** - `aka.dog/index/*` pages that are *queries* (views) over a
+2. **A derived reference index** - `aka.dog/index/*` pages that are _queries_ (views) over a
    hand-authored entry dataset (`data/entries/*.json`), plus **curated pages** assembled from a
    second dataset (`data/curated/{provider}/{slug}.json`). You author data; the pages are derived
    from it - never hand-written. A curated page supplies ordering, grouping and audience-specific
@@ -41,15 +41,15 @@ Request -> Cloudflare
 
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Astro dev server (runs `generate:types` first) |
-| `npm run build` | `validate` + `generate:types`, then `astro build` (the build gate) |
-| `npm run validate` | ajv + semantic checks over `data/entries/*.json`, `data/curated/**/*.json` and `data/redirects/*.json` |
-| `npm run generate:types` | regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from the schemas |
-| `npm run preview` | preview the production build locally |
-| `npm run cloudflare:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`) |
-| `npm run deploy` | `build` then `wrangler deploy --x-new-config` |
+| Command                  | What it does                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `npm run dev`            | Astro dev server (runs `generate:types` first)                                                         |
+| `npm run build`          | `validate` + `generate:types`, then `astro build` (the build gate)                                     |
+| `npm run validate`       | ajv + semantic checks over `data/entries/*.json`, `data/curated/**/*.json` and `data/redirects/*.json` |
+| `npm run generate:types` | regenerate `src/lib/types.ts` and `src/lib/curated-types.ts` from the schemas                          |
+| `npm run preview`        | preview the production build locally                                                                   |
+| `npm run cloudflare:dev` | `build` then run the real Worker locally (`wrangler dev --x-new-config`)                               |
+| `npm run deploy`         | `build` then `wrangler deploy --x-new-config`                                                          |
 
 To exercise the real Worker locally (redirects, negotiation): `npm run cloudflare:dev`.
 
@@ -80,7 +80,7 @@ to format and fix locally; CI runs `biome ci .` on every push to `main` and ever
   address is the lookup itself - elsewhere a retired entry shows the `retired` chip and an em dash,
   and the page links to the deprecated view.
 - **A focused collection page**: add a record to `COLLECTIONS` in `src/lib/views.ts` (a slug +
-  title + description + predicate). No entry changes. This is the right tool when the page *is* a
+  title + description + predicate). No entry changes. This is the right tool when the page _is_ a
   query - "every `*.cloud.microsoft` host" is a fact about the entries.
 - **A hand-curated page**: add `data/curated/{provider}/{slug}.json` - the directory is the
   provider and the filename is the view slug, so `/index/{provider}/{slug}` starts serving. Use
@@ -126,6 +126,7 @@ The repo is build-ready; deploying needs a Cloudflare account:
    exists on your Cloudflare account the deploy attaches it.
 
 Notes:
+
 - The `@astrojs/cloudflare` adapter requires the **`SESSION` KV namespace** and **`IMAGES`**
   bindings (declared in `cloudflare.config.ts`). They're unused here; Cloudflare can auto-provision
   the KV namespace on deploy.
