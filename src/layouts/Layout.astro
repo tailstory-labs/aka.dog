@@ -55,7 +55,12 @@ const nav = [
           ))
         }
       </nav>
-      <code class="build">{__GIT_COMMIT_HASH__}</code>
+      <a
+        class="build"
+        href={`https://github.com/tailstory/aka.dog/commit/${__GIT_COMMIT_HASH__}`}
+      >
+        <code>{__GIT_COMMIT_HASH__}</code>
+      </a>
     </header>
     <main>
       <slot />
@@ -102,6 +107,9 @@ const nav = [
   .build {
     color: var(--muted);
     font-size: var(--step--2);
+  }
+  .build:hover {
+    color: var(--foreground);
   }
 </style>
 
