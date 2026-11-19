@@ -5,10 +5,8 @@ interface Props {
   title: string;
   description?: string;
   noindex?: boolean;
-  /** This page's JSON twin, linked from the footer. */
-  json?: string | undefined;
 }
-const { title, description = "", noindex = false, json } = Astro.props;
+const { title, description = "", noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const SITE_NAME = "aka.dog";
 const documentTitle =
@@ -19,15 +17,7 @@ const nav = [
   {
     label: "All links",
     href: "/index",
-    current:
-      path.startsWith("/index") &&
-      !path.endsWith("/deprecated") &&
-      path !== "/index/links",
-  },
-  {
-    label: "Moved",
-    href: "/index/deprecated",
-    current: path.endsWith("/deprecated"),
+    current: path.startsWith("/index"),
   },
   {
     label: "Look up",
@@ -65,16 +55,11 @@ const nav = [
           ))
         }
       </nav>
+      <code class="build">{__GIT_COMMIT_HASH__}</code>
     </header>
     <main>
       <slot />
     </main>
-    <footer class="site">
-      <a href="/index/links">Short links</a>
-      {json && <a href={json}>JSON</a>}
-      <a href="https://github.com/tailstory/aka.dog/issues/new/choose">Report a link</a>
-      <a class="by" href="https://tailstory.dev">Tailstory</a>
-    </footer>
   </body>
 </html>
 
@@ -99,7 +84,6 @@ const nav = [
   nav {
     display: flex;
     gap: 0.25rem;
-    margin-right: -0.75rem;
   }
   nav a {
     padding: 0.375rem 0.75rem;
@@ -115,18 +99,9 @@ const nav = [
     background: var(--surface-2);
     color: var(--foreground);
   }
-  footer.site {
-    margin-top: 2rem;
-    padding-block: 1.5rem 2.5rem;
-    border-top: 1px solid var(--rule);
+  .build {
     color: var(--muted);
-    font-size: var(--step--1);
-  }
-  footer.site a:hover {
-    color: var(--foreground);
-  }
-  .by {
-    margin-left: auto;
+    font-size: var(--step--2);
   }
 </style>
 
@@ -213,6 +188,9 @@ const nav = [
     max-width: 40rem;
   }
   .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
     color: var(--muted);
     font-size: var(--step--1);
     margin-top: 2rem;
