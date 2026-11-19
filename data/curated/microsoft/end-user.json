@@ -1,6 +1,6 @@
 {
-  "title": "end-user surfaces",
-  "description": "Endpoints an end user reaches directly, grouped by task",
+  "title": "Everyday apps",
+  "description": "The Microsoft 365 links most people need",
   "lead": {
     "entry": "myaccount",
     "label": "My Account",
@@ -9,7 +9,6 @@
   "groups": [
     {
       "title": "Your account",
-      "note": "Everything about you rather than your work",
       "items": [
         {
           "entry": "myapps",
@@ -67,7 +66,7 @@
     },
     {
       "title": "Everything else",
-      "note": "Which of these you get depends on your licence",
+      "note": "Depends on your licence",
       "items": [
         { "entry": "loop", "label": "Loop", "blurb": "Shared workspaces" },
         {

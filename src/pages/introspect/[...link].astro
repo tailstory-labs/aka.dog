@@ -1,7 +1,8 @@
 ---
 import AddressFacts from "@/components/AddressFacts.astro";
 import Host from "@/components/Host.astro";
-import Layout, { type Crumb } from "@/layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
+import { entries } from "@/lib/entries";
 import { counted } from "@/lib/format";
 import {
   forDisplay,
@@ -13,6 +14,13 @@ import {
 // Unbounded input, so this is server-rendered rather than prerendered.
 export const prerender = false;
 
+// The look-up form posts here as ?link=, which works without scripts.
+const asked = Astro.url.searchParams.get("link")?.trim();
+if (asked)
+  return Astro.redirect(
+    `/introspect/${asked.replace(/^https?:\/\//i, "").replace(/^\/+|\/+$/g, "")}`,
+  );
+
 const result = introspectPathname(Astro.url.pathname);
 // Set the status but still render the page: an unknown link deserves a helpful
 // body, which is exactly what index/[...path].astro's bare `new Response("Not
@@ -20,23 +28,16 @@ const result = introspectPathname(Astro.url.pathname);
 if (result.kind === "unknown") Astro.response.status = 404;
 
 const shown = forDisplay(result.link);
-const crumbs: Crumb[] = [
-  { label: "aka.dog", href: "/" },
-  ...(result.kind === "empty"
-    ? [{ label: "introspect" }]
-    : [{ label: "introspect", href: "/introspect" }, { label: shown }]),
-];
 const jsonHref = `${Astro.url.pathname.replace(/\.json$/, "")}.json`;
 
 const WHERE_LEDE: Record<Where, string> = {
-  current: "a current address of",
-  history: "a former address of",
-  aka_ms: "an aka.ms pointer to",
-  alternate: "an alternate address of",
+  current: "Current address of",
+  history: "Old address of",
+  aka_ms: "Shortcut to",
+  alternate: "Also works for",
 };
 
-const title =
-  result.kind === "empty" ? "Introspect a link" : `${shown} - introspect`;
+const title = result.kind === "empty" ? "Look up a link" : shown;
 
 // An address lookup names where the link was found beside the heading, and a
 // former address also gets a Was -> Now at summary: the dead address muted and
@@ -44,69 +45,66 @@ const title =
 // live address, else its successor's.
 const addressHit = result.kind === "address" ? result.hit : undefined;
 const wasDead = addressHit?.match.where === "history";
+// An address can move more than once, so follow it to where it rests today.
+const latest = (url: string | undefined): string | undefined => {
+  let at = url;
+  for (let hop = 0; at && hop < 8; hop++) {
+    const next = entries
+      .flatMap((entry) => entry.history ?? [])
+      .find((past) => past.url === at)?.became;
+    if (!next) break;
+    at = next;
+  }
+  return at;
+};
 const nowAt =
   addressHit && wasDead
-    ? (addressHit.match.became ??
+    ? (latest(addressHit.match.became) ??
       addressHit.entry.primary ??
       addressHit.entry.successor?.primary)
     : undefined;
 
 const description =
   result.kind === "empty"
-    ? "Look up any aka.dog short link or tracked index address and see what's known about it."
-    : `What aka.dog knows about ${shown}.`;
+    ? "Paste a link to see where it goes now."
+    : `Where ${shown} goes now.`;
 ---
 
 <Layout
   title={title}
   description={description}
-  crumbs={crumbs}
+  json={jsonHref}
   noindex={result.kind !== 'empty'}
 >
   {
     result.kind === 'empty' ? (
       <>
-        <h1>Introspect a link</h1>
-        <p class="lede">
-          Put a link in the path and this page reports everything the index and the
-          shortener know about it.
-        </p>
-        <p>Two forms are accepted:</p>
-        <ul>
-          <li>
-            An <strong>index address</strong> - a host, with or without a path or
-            scheme:{' '}
-            <a href="/introspect/office.com">
-              <code>/introspect/office.com</code>
-            </a>{' '}
-            or{' '}
-            <a href="/introspect/aka.ms/copilot">
-              <code>/introspect/aka.ms/copilot</code>
-            </a>
-            .
-          </li>
-          <li>
-            A <strong>short link</strong> - the{' '}
-            <code>{'{who}/{slug}'}</code> a redirect is served at:{' '}
-            <a href="/introspect/shenanigans/resume">
-              <code>/introspect/shenanigans/resume</code>
-            </a>
-            .
-          </li>
-        </ul>
-        <p>
-          Append <code>.json</code>, or send{' '}
-          <code>Accept: application/json</code>, for the machine-readable answer.
-        </p>
-        <p class="meta">
-          <a href="/index">index</a>
-          <a href="/index/deprecated">deprecated</a>
+        <h1>Look up a link</h1>
+        <form class="lookup" action="/introspect">
+          <input
+            class="field"
+            name="link"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="office.com"
+            aria-label="Link"
+            required
+          />
+          <button type="submit">Look up</button>
+        </form>
+        <p class="examples">
+          <span class="muted">Try</span>
+          <a class="chip" href="/introspect/office.com">office.com</a>
+          <a class="chip" href="/introspect/aka.ms/copilot">aka.ms/copilot</a>
+          <a class="chip" href="/introspect/outlook.office.com">outlook.office.com</a>
         </p>
       </>
     ) : (
       <>
         <div class="title-row">
           <h1><Host url={shown} /></h1>
+          {result.kind === 'redirect' && <span class="chip">short link</span>}
           {addressHit && (
             <span class:list={['chip', { 'chip--warn': wasDead }]}>
               {WHERE_LABEL[addressHit.match.where]}
@@ -123,67 +121,42 @@ const description =
 
         {result.kind === 'redirect' && (
           <>
-            <p class="lede">
-              A short link in the <code>{result.namespace}</code> namespace. It
-              redirects to <a href={result.target}>{result.target}</a>.
-            </p>
-            <table class="table">
-              <tbody>
-                <tr>
-                  <th scope="row">Namespace</th>
-                  <td>{result.namespace}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Slug</th>
-                  <td><code>{result.slug}</code></td>
-                </tr>
-                <tr>
-                  <th scope="row">Redirects to</th>
-                  <td>
-                    <a href={result.target}>
-                      {result.targetLink ? (
-                        <Host url={result.targetLink} />
-                      ) : (
-                        <code>{result.target}</code>
-                      )}
-                    </a>
-                    <span class="secondary">302</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="card moved">
+              <div>
+                <span class="label">Short link</span>
+                <Host url={`aka.dog/${result.link}`} />
+              </div>
+              <span class="arrow" aria-hidden="true">→</span>
+              <div>
+                <span class="label">Goes to</span>
+                <a href={result.target}>
+                  {result.targetLink ? (
+                    <Host url={result.targetLink} />
+                  ) : (
+                    <code>{result.target}</code>
+                  )}
+                </a>
+              </div>
+            </div>
 
             {result.targetIsSelf && result.targetLink && (
               <p>
-                That target is an aka.dog URL.{' '}
                 <a href={`/introspect/${result.targetLink.replace(/^[^/]*\/?/, '')}`}>
-                  Introspect it too
+                  Look that one up
                 </a>
-                .
               </p>
             )}
 
-            {result.targetHit ? (
+            {result.targetHit && (
               <div class="group">
                 <h2>Where it lands</h2>
                 <AddressFacts hit={result.targetHit} />
               </div>
-            ) : (
-              !result.targetIsSelf && (
-                <p class="secondary">
-                  The index does not track the destination, so there is nothing
-                  more to say about where it goes.
-                </p>
-              )
             )}
 
             {result.alsoIndexed && (
               <div class="group">
-                <h2>Also a tracked address</h2>
-                <p class="muted">
-                  The same string is an address in the index, independent of the
-                  redirect above.
-                </p>
+                <h2>Also an address</h2>
                 <AddressFacts hit={result.alsoIndexed} />
               </div>
             )}
@@ -195,7 +168,7 @@ const description =
             <p class="lede">
               {WHERE_LEDE[result.hit.match.where]}{' '}
               <strong>{result.hit.entry.entry.name}</strong>
-              {result.hit.entry.retired && ', which is retired'}.
+              {result.hit.entry.retired && ' (retired)'}
             </p>
             {nowAt && (
               <div class="card moved">
@@ -212,13 +185,10 @@ const description =
                 </div>
               </div>
             )}
-            <AddressFacts hit={result.hit} />
+            <AddressFacts hit={result.hit} hideAddress />
             {result.otherHits.length > 0 && (
               <div class="group">
-                <h2>Also known as</h2>
-                <p class="muted">
-                  This address appears under more than one entry.
-                </p>
+                <h2>Also used by</h2>
                 {result.otherHits.map((hit) => (
                   <AddressFacts hit={hit} />
                 ))}
@@ -230,15 +200,15 @@ const description =
         {result.kind === 'host' && (
           <>
             <p class="lede">
-              Nothing tracked at this exact address, but{' '}
-              {counted('address', 'addresses', result.addresses.length)} under{' '}
-              <code>{result.host}</code> {result.addresses.length === 1 ? 'is' : 'are'}.
+              No exact match. {counted('address', 'addresses', result.addresses.length)}{' '}
+              under <code>{result.host}</code>:
             </p>
+            <div class="table-card">
             <table class="table">
               <thead>
                 <tr>
                   <th scope="col">Address</th>
-                  <th scope="col">Service</th>
+                  <th scope="col">App</th>
                 </tr>
               </thead>
               <tbody>
@@ -257,62 +227,86 @@ const description =
                         {hit.entry.entry.name}
                       </a>
                       {hit.match.where === 'history' && (
-                        <> <span class="chip chip--warn">former</span></>
+                        <> <span class="chip chip--warn">old</span></>
                       )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            </div>
           </>
         )}
 
         {result.kind === 'unknown' && (
           <>
-            <p class="lede">Nothing known about this link.</p>
-            <p>
-              Introspection answers over two datasets only: the index of tracked
-              addresses and the aka.dog shortener. A miss here does not mean the
-              URL is dead - just that nothing here tracks it.
-            </p>
-            <p>
-              Browse the <a href="/index">full index</a> or the{' '}
-              <a href="/index/deprecated">deprecated</a> list, or{' '}
+            <p class="lede">Not on the list. It may still work.</p>
+            <p class="actions">
+              <a href="/index">All links</a>
               <a href="https://github.com/tailstory/aka.dog/issues/new/choose">
-                report an address worth tracking
+                Report it
               </a>
-              .
             </p>
           </>
         )}
 
-        <p class="meta">
-          {result.input !== result.link && (
-            <span>Read as <code>{shown}</code></span>
-          )}
-          <a href={jsonHref}>JSON</a>
-          <a href="/introspect">introspect another</a>
-          <a href="/index">index</a>
-        </p>
+        {result.input !== result.link && (
+          <p class="meta">
+            Read as <code>{shown}</code>
+          </p>
+        )}
       </>
     )
   }
 </Layout>
 
 <style>
+  .lookup {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 36rem;
+  }
+  .lookup .field {
+    font-family: var(--font-mono);
+  }
+  .lookup button {
+    font: inherit;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 0 1.25rem;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--foreground);
+    color: var(--background);
+    cursor: pointer;
+  }
+  .examples,
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--step--1);
+  }
+  .actions {
+    gap: 0.5rem 1.5rem;
+    font-size: inherit;
+    font-weight: 500;
+  }
   .title-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     column-gap: 0.875rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
   }
   .title-row h1 {
     margin: 0;
   }
   .title-row :global(code) {
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 500;
+    letter-spacing: -0.03em;
   }
   /* Was -> Now at: a card, laid out as two addresses and an arrow. */
   .moved {
@@ -321,7 +315,8 @@ const description =
     align-items: center;
     column-gap: 1.5rem;
     padding: 1.375rem 1.625rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
+    height: auto;
   }
   .moved :global(code) {
     font-size: var(--step-1);

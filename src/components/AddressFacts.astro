@@ -4,8 +4,10 @@ import { type AddressHit, WHERE_LABEL } from "@/lib/introspect";
 
 interface Props {
   hit: AddressHit;
+  /** Drop the address row where the page heading already is that address. */
+  hideAddress?: boolean;
 }
-const { hit } = Astro.props;
+const { hit, hideAddress = false } = Astro.props;
 const { match, entry: facts } = hit;
 const { entry } = facts;
 
@@ -13,34 +15,38 @@ const { entry } = facts;
 // longer resolve, and offering it as a link invites the exact dead click this
 // page exists to prevent.
 const linkable = match.where !== "history";
-const tags = entry.tags ?? [];
 ---
 
+<div class="table-card">
 <table class="table">
   <tbody>
+    {
+      !hideAddress && (
+        <tr>
+          <th scope="row">Address</th>
+          <td>
+            {
+              linkable ? (
+                <a href={`https://${match.url}`}>
+                  <Host url={match.url} />
+                </a>
+              ) : (
+                <Host url={match.url} class="muted" />
+              )
+            }
+            <span class="secondary">
+              <span class:list={['chip', { 'chip--warn': !linkable }]}>
+                {WHERE_LABEL[match.where]}
+              </span>
+              {match.environment && <span class="chip">{match.environment}</span>}
+              {match.label}
+            </span>
+          </td>
+        </tr>
+      )
+    }
     <tr>
-      <th scope="row">Address</th>
-      <td>
-        {
-          linkable ? (
-            <a href={`https://${match.url}`}>
-              <Host url={match.url} />
-            </a>
-          ) : (
-            <Host url={match.url} class="muted" />
-          )
-        }
-        <span class="secondary">
-          <span class:list={['chip', { 'chip--warn': !linkable }]}>
-            {WHERE_LABEL[match.where]}
-          </span>
-          {match.environment && <span class="chip">{match.environment}</span>}
-          {match.label}
-        </span>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">Service</th>
+      <th scope="row">App</th>
       <td>
         <a href={`/index/${entry.provider}#entry-${entry.id}`}>{entry.name}</a>
         {facts.retired && <> <span class="chip chip--warn">retired</span></>}
@@ -62,7 +68,7 @@ const tags = entry.tags ?? [];
     {
       match.became && (
         <tr>
-          <th scope="row">Became</th>
+          <th scope="row">Moved to</th>
           <td>
             <a href={`https://${match.became}`}>
               <Host url={match.became} />
@@ -77,7 +83,7 @@ const tags = entry.tags ?? [];
     {
       facts.successor && (
         <tr>
-          <th scope="row">Superseded by</th>
+          <th scope="row">Replaced by</th>
           <td>
             {facts.successor.primary ? (
               <a href={`https://${facts.successor.primary}`}>
@@ -123,37 +129,13 @@ const tags = entry.tags ?? [];
       )
     }
     {
-      tags.length > 0 && (
-        <tr>
-          <th scope="row">Tags</th>
-          <td>
-            {tags.map((tag) => (
-              <span class="chip">{tag}</span>
-            ))}
-          </td>
-        </tr>
-      )
-    }
-    {
       (match.verified ?? entry.last_verified) && (
         <tr>
-          <th scope="row">Last verified</th>
+          <th scope="row">Checked</th>
           <td>{match.verified ?? entry.last_verified}</td>
         </tr>
       )
     }
-    <tr>
-      <th scope="row">Listed on</th>
-      <td>
-        {
-          facts.views.map((view, index) => (
-            <>
-              {index > 0 ? ', ' : ''}
-              <a href={view.href}>{view.label}</a>
-            </>
-          ))
-        }
-      </td>
-    </tr>
   </tbody>
 </table>
+</div>

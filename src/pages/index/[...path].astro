@@ -4,8 +4,8 @@ import DeprecationTable from "@/components/DeprecationTable.astro";
 import EntryTable from "@/components/EntryTable.astro";
 import LinkTable from "@/components/LinkTable.astro";
 import TableFilter from "@/components/TableFilter.astro";
-import Layout, { type Crumb } from "@/layouts/Layout.astro";
-import { counted } from "@/lib/format";
+import Layout from "@/layouts/Layout.astro";
+import { counted, providerName } from "@/lib/format";
 import {
   deprecationRows,
   lastVerified,
@@ -28,17 +28,6 @@ try {
 const view = resolved;
 
 const [provider, subview] = segments;
-const crumbs: Crumb[] = [
-  { label: "aka.dog", href: "/" },
-  { label: "index", href: segments.length ? "/index" : undefined },
-];
-if (provider)
-  crumbs.push(
-    subview
-      ? { label: provider, href: `/index/${provider}` }
-      : { label: provider },
-  );
-if (subview) crumbs.push({ label: subview });
 
 const verified = lastVerified(view.entries);
 const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
@@ -46,14 +35,14 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
 // Every view of one provider, so its pages can be switched between in place.
 // The first segment is not always a provider - /index/deprecated and
 // /index/links land here too - so the tabs key off the nav, not the segment.
-// The provider is already in the breadcrumb and the tabs, so the heading drops
-// the "microsoft: " prefix the title carries; the <title> keeps it.
+// The tabs already name the provider, so the heading drops the "Microsoft: "
+// prefix the title carries; the <title> keeps it.
 const nav = providerNav().find((group) => group.provider === provider);
 const tabs = nav
   ? [
-      { label: "Everything", slug: "" },
+      { label: "All", slug: "" },
       ...nav.collections.map(({ slug, title }) => ({ label: title, slug })),
-      { label: "deprecated", slug: "deprecated" },
+      { label: "Moved", slug: "deprecated" },
     ].map(({ label, slug }) => ({
       label,
       href: slug ? `/index/${nav.provider}/${slug}` : `/index/${nav.provider}`,
@@ -61,17 +50,13 @@ const tabs = nav
     }))
   : [];
 const heading =
-  nav && view.title.startsWith(`${nav.provider}: `)
-    ? view.title.slice(nav.provider.length + 2)
-    : view.title;
+  nav && subview ? view.title.slice(nav.provider.length + 2) : view.title;
+const jsonHref = `${Astro.url.pathname}.json`;
 ---
 
-<Layout title={view.title} description={view.description} crumbs={crumbs}>
+<Layout title={view.title} description={view.description} json={jsonHref}>
+  {nav && subview && <p class="eyebrow">{providerName(nav.provider)}</p>}
   <h1>{heading}</h1>
-  <p class="lede">
-    {view.description}
-    {view.kind === 'entries' && <> · {counted('entry', 'entries', view.entries.length)}</>}
-  </p>
   {
     nav && (
       <nav aria-label={`${nav.provider} views`} class="tabs">
@@ -89,71 +74,58 @@ const heading =
       <CuratedGroups lead={view.lead} groups={view.groups} />
     ) : view.kind === 'deprecated' ? (
       <>
-        <TableFilter label="Filter addresses" />
+        <TableFilter label={`Search ${counted('old address', 'old addresses', rows.length)}`} />
         <DeprecationTable rows={rows} />
       </>
     ) : view.kind === 'links' ? (
       view.links.length === 0 ? (
-        <p>Nothing here yet</p>
+        <p class="muted">Nothing here yet</p>
       ) : (
         <>
-          <TableFilter label="Filter short links" />
+          <TableFilter label="Search short links" />
           <LinkTable links={view.links} />
         </>
       )
     ) : view.entries.length === 0 ? (
-      <p>Nothing here yet</p>
+      <p class="muted">Nothing here yet</p>
     ) : (
       <>
-        <TableFilter label="Filter entries" />
+        <TableFilter label={`Search ${counted('link', 'links', view.entries.length)}`} />
         <EntryTable entries={view.entries} showProvider={!provider} />
       </>
     )
   }
 
-  <p class="meta">
-    {verified && <span>Addresses last verified {verified}</span>}
-    <a href={`${Astro.url.pathname}.json`}>JSON</a>
-    {
-      view.kind === 'curated' && (
-        <a href={`/index/${provider}`}>every {provider} address</a>
-      )
-    }
-    {
-      /* Dead addresses are only listed on the deprecated view now, so every
-         other view points at it rather than reprinting one. The links view is
-         the exception: a short link is not an address and has no history, so
-         there is nothing for it to point at. */
-      view.kind !== 'deprecated' &&
-        view.kind !== 'links' && (
-          <a href={provider ? `/index/${provider}/deprecated` : '/index/deprecated'}>
-            deprecated addresses
-          </a>
-        )
-    }
-  </p>
+  {verified && <p class="meta">Checked {verified}</p>}
 </Layout>
 
 <style>
+  .eyebrow {
+    margin: 0 0 0.25rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
   .tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
-    margin: -0.25rem 0 1.75rem;
+    margin: 0 0 1.5rem;
     font-size: var(--step--1);
   }
   .tabs a {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.5rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
     color: var(--muted);
+    font-weight: 500;
     text-decoration: none;
   }
   .tabs a:hover {
     color: var(--foreground);
   }
   .tabs a[aria-current="page"] {
-    background: var(--surface);
-    color: var(--foreground);
-    font-weight: 500;
+    background: var(--foreground);
+    border-color: var(--foreground);
+    color: var(--background);
   }
 </style>

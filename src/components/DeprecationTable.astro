@@ -13,6 +13,7 @@ const searchKey = (row: DeprecationRow) =>
     .toLowerCase();
 ---
 
+<div class="table-card">
 <table class="table" id="index-table">
   <colgroup>
     <col style="--w: 30%" />
@@ -22,10 +23,10 @@ const searchKey = (row: DeprecationRow) =>
   </colgroup>
   <thead>
     <tr>
-      <th scope="col">Was</th>
-      <th scope="col">Became</th>
-      <th scope="col" class="shed">Retired</th>
-      <th scope="col" class="shed">Service</th>
+      <th scope="col">Old address</th>
+      <th scope="col">Now</th>
+      <th scope="col" class="shed">Until</th>
+      <th scope="col" class="shed">App</th>
     </tr>
   </thead>
   <tbody>
@@ -35,7 +36,7 @@ const searchKey = (row: DeprecationRow) =>
           <td>
             {/* Muted and unlinked, deliberately not struck through: struck
                 small monospace is unreadable, and the column header already
-                says "Was". */}
+                says it is old. */}
             {row.url ? <Host url={row.url} class="muted" /> : <span>&#8212;</span>}
           </td>
           <td>
@@ -57,7 +58,8 @@ const searchKey = (row: DeprecationRow) =>
       ))
     }
     <tr id="filter-empty" hidden>
-      <td colspan="4">No matches.</td>
+      <td colspan="4">No match</td>
     </tr>
   </tbody>
 </table>
+</div>

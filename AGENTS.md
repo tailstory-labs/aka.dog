@@ -45,8 +45,8 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   it is not `entry.description` and must never fall back to it.
 - **Dead addresses belong to the deprecated views.** `/index/deprecated` and
   `/index/{provider}/deprecated` are the only pages that print a `history` URL; every other view
-  shows a retired entry as its name, the `retired` chip and an em dash, and links to the deprecated
-  view from the meta line. Past addresses do stay in the entry table's `data-search` key (searching
+  shows a retired entry as its name, the `retired` chip and an em dash, and the Moved tab leads to the
+  deprecated view. Past addresses do stay in the entry table's `data-search` key (searching
   an old host still finds the entry that replaced it) and in the JSON envelopes, which remain the
   whole dataset. `/introspect/{link}` is the one other page that prints one, because there the dead
   address **is** the question asked - and it prints it the deprecated view's way: muted, unlinked,
@@ -57,7 +57,7 @@ Two parallel systems on one domain (Astro 7 + Cloudflare Workers Static Assets):
   `/introspect/{link}` is the page that asks both systems about one string. `links` is a reserved
   view slug like `deprecated`, so no provider, collection or curated page can shadow it; it is
   **not** reserved at the domain root, so `aka.dog/links/{slug}` remains a usable namespace.
-- A curated page's `title` is stored **bare** (`"end-user surfaces"`); the resolver prefixes
+- A curated page's `title` is stored **bare** (`"Everyday apps"`); the resolver prefixes
   the provider, exactly as it does for a COLLECTION, so the same string serves both the
   page heading and the homepage nav label.
 - **A curated page shadows a same-slug collection.** `data/curated/microsoft/end-user.json` is why
@@ -99,7 +99,7 @@ data/redirects/*.json        shortener dataset (authored)
 data/curated/{provider}/     curated pages (authored) - {slug}.json per page
 src/fetch.ts                 redirect resolver + Accept negotiation + Astro fallback
 src/lib/                     entries, redirects, curated, views, introspect, format, reserved, types (generated)
-src/components/              EntryTable, DeprecationTable, LinkTable, CuratedGroups, TableFilter, AddressFacts
+src/components/              EntryTable, DeprecationTable, LinkTable, CuratedGroups, TableFilter, HomeSearch, AddressFacts
 src/pages/index/             [...path] renders every /index view (the dump too) + .json twins
 src/pages/introspect/        per-link lookup over both datasets, and its .json twin
 ```

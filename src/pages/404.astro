@@ -6,21 +6,32 @@ import Layout from "@/layouts/Layout.astro";
 // is deliberately unset, or redirects break), so this changes which branch of
 // the pipeline runs, not whether the Worker wakes.
 const missed = Astro.url.pathname;
-// Never offer to introspect an introspect URL: a trailing-slash miss on
+// Never offer to look up a look-up URL: a trailing-slash miss on
 // /introspect/office.com/ would otherwise link /introspect/introspect/office.com/.
 const offer = missed.startsWith("/introspect")
   ? undefined
   : `/introspect${missed}`;
 ---
 
-<Layout title="Not found" noindex crumbs={[{ label: "aka.dog", href: "/" }]}>
-  <h1>404 - not found</h1>
-  <p>No redirect or page matches this URL. Try the <a href="/index">index</a>.</p>
-  {
-    offer && (
-      <p>
-        Or see <a href={offer}>what aka.dog knows about <code>{missed}</code></a>.
-      </p>
-    )
-  }
+<Layout title="Not found" noindex>
+  <h1>Nothing here</h1>
+  <p class="actions">
+    <a href="/">Home</a>
+    {
+      offer && (
+        <a href={offer}>
+          Look up <code>{missed.slice(1)}</code>
+        </a>
+      )
+    }
+  </p>
 </Layout>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-weight: 500;
+  }
+</style>

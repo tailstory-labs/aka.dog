@@ -27,7 +27,7 @@ const { lead, groups } = Astro.props;
     <section class="group">
       <div class="head">
         <h2>{group.title}</h2>
-        {group.note && <p class="muted">{group.note}</p>}
+        {group.note && <p class="note">{group.note}</p>}
       </div>
       <ul class="cards">
         {group.items.map((item) => (
@@ -53,12 +53,15 @@ const { lead, groups } = Astro.props;
     flex-wrap: wrap;
     align-items: baseline;
     column-gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.875rem;
   }
   .head > * {
     margin: 0;
   }
-  /* The lead is the one card set larger, with its arrow always showing. */
+  .note {
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
   .lead {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -67,9 +70,8 @@ const { lead, groups } = Astro.props;
     padding: 1.625rem 1.75rem;
   }
   .lead .name {
-    font-size: var(--step-2);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    font: 800 var(--step-2) / 1.2 var(--font-display);
+    letter-spacing: -0.03em;
   }
   .lead .blurb {
     display: block;
@@ -81,9 +83,6 @@ const { lead, groups } = Astro.props;
   }
   .lead .host :global(code) {
     font-size: inherit;
-  }
-  .lead .go {
-    opacity: 1;
   }
   @media (max-width: 40rem) {
     .lead {
