@@ -6,6 +6,9 @@ export default defineConfig({
   output: "server",
   trailingSlash: "never",
   adapter: cloudflare(),
+  // No page uses sessions, and the adapter's default SESSION KV binding has no
+  // namespace on preview deploys.
+  session: false,
   // Downloaded at build time and served from /_astro/fonts, so a page view
   // never calls out to Google.
   fonts: [
