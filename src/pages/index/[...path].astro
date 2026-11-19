@@ -38,36 +38,41 @@ const rows = view.kind === "deprecated" ? deprecationRows(view.entries) : [];
 // The tabs already name the provider, so the heading drops the "Microsoft: "
 // prefix the title carries; the <title> keeps it.
 const nav = providerNav().find((group) => group.provider === provider);
-const tabs = nav
-  ? [
-      { label: "All", slug: "" },
-      ...nav.collections.map(({ slug, title }) => ({ label: title, slug })),
-      { label: "Moved", slug: "deprecated" },
-    ].map(({ label, slug }) => ({
-      label,
-      href: slug ? `/index/${nav.provider}/${slug}` : `/index/${nav.provider}`,
-      current: slug === (subview ?? ""),
-    }))
-  : [];
+const tabs = (
+  nav
+    ? [
+        { label: "All", slug: "" },
+        ...nav.collections.map(({ slug, title }) => ({ label: title, slug })),
+        { label: "Moved", slug: "deprecated" },
+      ].map(({ label, slug }) => ({
+        label,
+        href: slug
+          ? `/index/${nav.provider}/${slug}`
+          : `/index/${nav.provider}`,
+      }))
+    : [
+        { label: "All", href: "/index" },
+        { label: "Moved", href: "/index/deprecated" },
+        { label: "Short links", href: "/index/links" },
+      ]
+).map((tab) => ({ ...tab, current: tab.href === Astro.url.pathname }));
 const heading =
   nav && subview ? view.title.slice(nav.provider.length + 2) : view.title;
 const jsonHref = `${Astro.url.pathname}.json`;
 ---
 
-<Layout title={view.title} description={view.description} json={jsonHref}>
+<Layout title={view.title} description={view.description}>
   {nav && subview && <p class="eyebrow">{providerName(nav.provider)}</p>}
   <h1>{heading}</h1>
-  {
-    nav && (
-      <nav aria-label={`${nav.provider} views`} class="tabs">
-        {tabs.map((tab) => (
-          <a href={tab.href} aria-current={tab.current ? 'page' : undefined}>
-            {tab.label}
-          </a>
-        ))}
-      </nav>
-    )
-  }
+  <nav aria-label="Views" class="tabs">
+    {
+      tabs.map((tab) => (
+        <a href={tab.href} aria-current={tab.current ? "page" : undefined}>
+          {tab.label}
+        </a>
+      ))
+    }
+  </nav>
 
   {
     view.kind === 'curated' ? (
@@ -96,7 +101,11 @@ const jsonHref = `${Astro.url.pathname}.json`;
     )
   }
 
-  {verified && <p class="meta">Checked {verified}</p>}
+  <p class="meta">
+    {verified && <span>Checked {verified}</span>}
+    <a href={jsonHref}>JSON</a>
+    <a href="https://github.com/tailstory/aka.dog/issues/new/choose">Report a link</a>
+  </p>
 </Layout>
 
 <style>

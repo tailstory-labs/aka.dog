@@ -1,38 +1,45 @@
 ---
-import CuratedGroups from "@/components/CuratedGroups.astro";
 import HomeSearch from "@/components/HomeSearch.astro";
 import Layout from "@/layouts/Layout.astro";
-import { curatedPages } from "@/lib/curated";
+import { curatedPagesFor } from "@/lib/curated";
 import { entries } from "@/lib/entries";
 import { counted, providerName } from "@/lib/format";
-import { deprecationRows, resolveViewByPath } from "@/lib/views";
+import { providers, resolveViewByPath } from "@/lib/views";
 
 const examples = ["outlook", "password reset", "office.com"];
+const NAMED = 6;
 
-// Each provider's curated pages, in full: the home page is the links people
-// came for, not a menu of pages that hold them.
-const sections = curatedPages.flatMap((page) => {
-  const view = resolveViewByPath([page.provider, page.slug]);
-  if (view.kind !== "curated") return [];
-  const scoped = entries.filter((entry) => entry.provider === page.provider);
-  return [
-    {
-      provider: page.provider,
-      view,
-      all: scoped.length,
-      moved: deprecationRows(scoped).filter((row) => row.url).length,
-    },
-  ];
+// One card per vendor. It names the apps people come for: the vendor's curated
+// page when it has one, else its first entries.
+const vendors = providers().map((provider) => {
+  const scoped = entries.filter((entry) => entry.provider === provider);
+  const [curated] = curatedPagesFor(provider);
+  const view = curated && resolveViewByPath([provider, curated.slug]);
+  const names =
+    view?.kind === "curated"
+      ? [
+          ...(view.lead ? [view.lead] : []),
+          ...view.groups.flatMap((group) => group.items),
+        ].map((item) => item.label)
+      : scoped.map((entry) => entry.name);
+  return {
+    provider,
+    href: curated ? `/index/${provider}/${curated.slug}` : `/index/${provider}`,
+    names: names.slice(0, NAMED),
+    size: scoped.length,
+  };
 });
 ---
 
 <Layout
   title="aka.dog"
-  description="Current addresses for Microsoft 365 apps, and where the old ones went."
+  description="Current addresses for the apps you use at work, and where the old ones went."
 >
   <section class="hero">
     <h1>Where did that link&nbsp;go?</h1>
-    <p class="lede">Current Microsoft 365 addresses, and where the old ones went.</p>
+    <p class="lede">
+      Current addresses for the apps you use at work, and where the old ones went.
+    </p>
     <HomeSearch />
     <p class="examples">
       <span class="muted">Try</span>
@@ -46,21 +53,22 @@ const sections = curatedPages.flatMap((page) => {
     </p>
   </section>
 
-  {
-    sections.map(({ provider, view, all, moved }) => (
-      <section class="provider">
-        <CuratedGroups lead={view.lead} groups={view.groups} />
-        <p class="rest">
-          <a href={`/index/${provider}`}>
-            All {counted("link", "links", all)} for {providerName(provider)}
+  <ul class="vendors">
+    {
+      vendors.map(({ provider, href, names, size }) => (
+        <li>
+          <a class="card vendor" href={href}>
+            <span class="name">
+              {providerName(provider)}
+              <span class="go" aria-hidden="true">→</span>
+            </span>
+            <span class="apps">{names.join(", ")}</span>
+            <span class="size">{counted("link", "links", size)}</span>
           </a>
-          <a href={`/index/${provider}/deprecated`}>
-            {counted("moved address", "moved addresses", moved)}
-          </a>
-        </p>
-      </section>
-    ))
-  }
+        </li>
+      ))
+    }
+  </ul>
 </Layout>
 
 <script>
@@ -103,14 +111,29 @@ const sections = curatedPages.flatMap((page) => {
   .examples .chip:hover {
     background: var(--surface-3);
   }
-  .provider {
-    margin-top: 3rem;
+  .vendors {
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+    gap: 0.875rem;
+    margin: 3rem 0 0;
   }
-  .rest {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    margin: 2.5rem 0 0;
-    font-weight: 500;
+  .vendor {
+    gap: 0.625rem;
+    padding: 1.375rem 1.5rem;
+  }
+  .vendor .name {
+    font: 800 var(--step-2) / 1.1 var(--font-display);
+    letter-spacing: -0.035em;
+  }
+  .vendor .go {
+    font: 400 1.25rem var(--font-sans);
+  }
+  .apps {
+    color: var(--muted);
+  }
+  .size {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    color: var(--muted);
+    font-size: var(--step--1);
   }
 </style>

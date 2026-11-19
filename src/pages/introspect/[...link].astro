@@ -73,7 +73,6 @@ const description =
 <Layout
   title={title}
   description={description}
-  json={jsonHref}
   noindex={result.kind !== 'empty'}
 >
   {
@@ -250,11 +249,14 @@ const description =
           </>
         )}
 
-        {result.input !== result.link && (
-          <p class="meta">
-            Read as <code>{shown}</code>
-          </p>
-        )}
+        <p class="meta">
+          {result.input !== result.link && (
+            <span>
+              Read as <code>{shown}</code>
+            </span>
+          )}
+          <a href={jsonHref}>JSON</a>
+        </p>
       </>
     )
   }
