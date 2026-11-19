@@ -24,10 +24,10 @@ export type Where = "current" | "history" | "aka_ms" | "alternate";
 
 /** How each place reads as a label, beside an address or a page title. */
 export const WHERE_LABEL: Record<Where, string> = {
-  current: "current address",
-  history: "former address",
-  aka_ms: "aka.ms pointer",
-  alternate: "alternate address",
+  current: "current",
+  history: "old address",
+  aka_ms: "shortcut",
+  alternate: "also works",
 };
 
 const RANK: Record<Where, number> = {

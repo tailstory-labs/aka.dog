@@ -5,6 +5,7 @@ import {
 } from "@/lib/curated";
 import type { CuratedItem, CuratedPage } from "@/lib/curated-types";
 import { entries } from "@/lib/entries";
+import { providerName } from "@/lib/format";
 import { type ShortLink, shortLinks } from "@/lib/redirects";
 import { RESERVED_VIEW } from "@/lib/reserved";
 import type { Entry } from "@/lib/types";
@@ -26,6 +27,23 @@ export const lastVerified = (list: Entry[]): string | undefined =>
     .sort()
     .pop();
 
+/**
+ * What a filter box matches an entry on. Past addresses are in it even where no
+ * cell prints one, so an old host still finds the entry that replaced it.
+ */
+export const entrySearchKey = (entry: Entry): string =>
+  [
+    entry.name,
+    entry.provider,
+    entry.description ?? "",
+    ...(entry.current ?? []).map((address) => address.url),
+    ...(entry.history ?? []).map((address) => address.url),
+    ...(entry.aka_ms ?? []).map((pointer) => pointer.url),
+    ...(entry.tags ?? []),
+  ]
+    .join(" ")
+    .toLowerCase();
+
 export interface Collection {
   slug: string;
   title: string;
@@ -36,8 +54,8 @@ export interface Collection {
 const ALL_COLLECTIONS: Collection[] = [
   {
     slug: "cloud-microsoft",
-    title: "cloud.microsoft endpoints",
-    description: "Current *.cloud.microsoft hosts",
+    title: "cloud.microsoft",
+    description: "Apps that have moved to cloud.microsoft",
     match: (entry) =>
       (entry.current ?? []).some((address) =>
         /\.cloud\.microsoft$/.test(host(address.url)),
@@ -45,8 +63,8 @@ const ALL_COLLECTIONS: Collection[] = [
   },
   {
     slug: "end-user",
-    title: "End-user surfaces",
-    description: "Endpoints users hit directly, like myapps and mygroups",
+    title: "Everyday apps",
+    description: "The links most people need",
     match: (entry) => (entry.tags ?? []).includes("end-user"),
   },
 ];
@@ -191,10 +209,10 @@ function resolveCurated(page: CuratedPageDoc): ResolvedView {
 
   return {
     kind: "curated",
-    // The stored title is bare ("end-user surfaces") so the homepage nav can
+    // The stored title is bare ("Everyday apps") so the homepage nav can
     // use it as-is; the provider prefix is composed here, the same way a
     // COLLECTION title is at the bottom of resolveViewByPath.
-    title: `${page.provider}: ${page.title}`,
+    title: `${providerName(page.provider)}: ${page.title}`,
     description: page.description,
     lead,
     groups,
@@ -206,16 +224,16 @@ function resolveCurated(page: CuratedPageDoc): ResolvedView {
 export function resolveViewByPath(segments: string[]): ResolvedView {
   if (segments.length === 0)
     return {
-      title: "aka.dog index",
-      description: "Everything tracked here",
+      title: "All links",
+      description: "Every current address, in one list",
       kind: "entries",
       entries,
     };
 
   if (segments.length === 1 && segments[0] === "deprecated")
     return {
-      title: "Deprecated",
-      description: "Link histories across all providers",
+      title: "Moved",
+      description: "Old addresses, and where each one went",
       kind: "deprecated",
       entries: deprecatedSet(entries),
     };
@@ -225,7 +243,7 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   if (segments.length === 1 && segments[0] === "links")
     return {
       title: "Short links",
-      description: "Every aka.dog/{who}/{slug} short link this site serves",
+      description: "Every aka.dog short link",
       kind: "links",
       entries: [],
       links: shortLinks,
@@ -245,16 +263,16 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
 
   if (!view)
     return {
-      title: provider,
-      description: `Everything under ${provider}`,
+      title: providerName(provider),
+      description: `Every current ${providerName(provider)} address`,
       kind: "entries",
       entries: scopedEntries,
     };
 
   if (view === "deprecated")
     return {
-      title: `${provider}: deprecated`,
-      description: `Link histories for ${provider}`,
+      title: `${providerName(provider)}: Moved`,
+      description: `Old ${providerName(provider)} addresses, and where each one went`,
       kind: "deprecated",
       entries: deprecatedSet(scopedEntries),
     };
@@ -267,7 +285,7 @@ export function resolveViewByPath(segments: string[]): ResolvedView {
   const collection = COLLECTIONS.find((candidate) => candidate.slug === view);
   if (collection)
     return {
-      title: `${provider}: ${collection.title}`,
+      title: `${providerName(provider)}: ${collection.title}`,
       description: collection.description,
       kind: "entries",
       entries: scopedEntries.filter(collection.match),

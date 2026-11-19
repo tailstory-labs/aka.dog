@@ -18,6 +18,7 @@ const searchKey = (link: ShortLink) =>
   [link.namespace, link.slug, link.path, link.target].join(" ").toLowerCase();
 ---
 
+<div class="table-card">
 <table class="table" id="index-table">
   <colgroup>
     <col style="--w: 32%" />
@@ -28,7 +29,7 @@ const searchKey = (link: ShortLink) =>
     <tr>
       <th scope="col">Short link</th>
       <th scope="col">Goes to</th>
-      <th scope="col" class="shed">Details</th>
+      <th scope="col" class="shed"></th>
     </tr>
   </thead>
   <tbody>
@@ -47,13 +48,14 @@ const searchKey = (link: ShortLink) =>
             </a>
           </td>
           <td class="muted shed">
-            <a href={`/introspect/${link.path}`}>introspect</a>
+            <a href={`/introspect/${link.path}`}>Details</a>
           </td>
         </tr>
       ))
     }
     <tr id="filter-empty" hidden>
-      <td colspan="3">No matches.</td>
+      <td colspan="3">No match</td>
     </tr>
   </tbody>
 </table>
+</div>

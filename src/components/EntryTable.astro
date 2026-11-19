@@ -1,7 +1,8 @@
 ---
 import Host from "@/components/Host.astro";
+import { providerName } from "@/lib/format";
 import type { Entry } from "@/lib/types";
-import { entriesById } from "@/lib/views";
+import { entriesById, entrySearchKey } from "@/lib/views";
 
 interface Props {
   entries: Entry[];
@@ -15,25 +16,10 @@ const { entries, showProvider = false } = Astro.props;
 const successorOf = (entry: Entry) =>
   entry.superseded_by ? entriesById.get(entry.superseded_by) : undefined;
 
-// Past addresses stay in the search key even though no cell prints one: a
-// reader who only remembers the old host still lands on the entry that
-// replaced it, and the key is never rendered.
-const searchKey = (entry: Entry) =>
-  [
-    entry.name,
-    entry.provider,
-    entry.description ?? "",
-    ...(entry.current ?? []).map((address) => address.url),
-    ...(entry.history ?? []).map((address) => address.url),
-    ...(entry.aka_ms ?? []).map((pointer) => pointer.url),
-    ...(entry.tags ?? []),
-  ]
-    .join(" ")
-    .toLowerCase();
-
 const columns = 2 + (showProvider ? 1 : 0) + 1;
 ---
 
+<div class="table-card">
 <table class="table" id="index-table">
   <colgroup>
     <col style="--w: 22%" />
@@ -45,8 +31,8 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
     <tr>
       <th scope="col">Name</th>
       <th scope="col">Address</th>
-      {showProvider && <th scope="col" class="shed">Provider</th>}
-      <th scope="col" class="shed">What it is</th>
+      {showProvider && <th scope="col" class="shed">From</th>}
+      <th scope="col" class="shed">About</th>
     </tr>
   </thead>
   <tbody>
@@ -63,7 +49,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
         const nothingLive =
           current.length === 0 && !successor && pointers.length === 0;
         return (
-          <tr id={`entry-${entry.id}`} data-search={searchKey(entry)}>
+          <tr id={`entry-${entry.id}`} data-search={entrySearchKey(entry)}>
             <td class="name">
               <span>{entry.name}</span>
               {!primary && <> <span class="chip chip--warn">retired</span></>}
@@ -106,7 +92,7 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
             </td>
             {showProvider && (
               <td class="shed">
-                <a href={`/index/${entry.provider}`}>{entry.provider}</a>
+                <a href={`/index/${entry.provider}`}>{providerName(entry.provider)}</a>
               </td>
             )}
             <td class="muted shed">{entry.description}</td>
@@ -115,10 +101,11 @@ const columns = 2 + (showProvider ? 1 : 0) + 1;
       })
     }
     <tr id="filter-empty" hidden>
-      <td colspan={columns}>No matches.</td>
+      <td colspan={columns}>No match</td>
     </tr>
   </tbody>
 </table>
+</div>
 
 <style>
   .name {

@@ -1,0 +1,193 @@
+---
+import Peek from "@/assets/bailey-peek.svg";
+import Host from "@/components/Host.astro";
+import { entries } from "@/lib/entries";
+import { entriesById, entrySearchKey, primaryAddress } from "@/lib/views";
+
+const results = entries.map((entry) => {
+  const successor = entry.superseded_by
+    ? entriesById.get(entry.superseded_by)
+    : undefined;
+  const own = primaryAddress(entry);
+  const url = own ?? (successor && primaryAddress(successor));
+  return {
+    entry,
+    url,
+    // A retired service with a live replacement names it; one without is gone.
+    status: own ? undefined : successor ? `now ${successor.name}` : "retired",
+    was: (entry.history ?? []).map((address) => address.url),
+  };
+});
+---
+
+<form class="search" action="/index" role="search">
+  <Peek class="peek" aria-hidden="true" />
+  <input
+    class="field"
+    id="home-search"
+    name="query"
+    type="search"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="Search an app, or paste an old link"
+    aria-label="Search an app, or paste an old link"
+    aria-controls="home-results"
+  />
+  <ul class="results" id="home-results" hidden>
+    {
+      results.map(({ entry, url, status, was }) => (
+        <li
+          data-search={entrySearchKey(entry)}
+          data-urls={[url ?? "", ...was].join(" ").toLowerCase()}
+          hidden
+        >
+          <a href={url ? `https://${url}` : `/index/${entry.provider}#entry-${entry.id}`}>
+            <span class="name">
+              {entry.name}
+              {status && <span class="chip chip--warn">{status}</span>}
+              {was.map((old) => (
+                <span class="chip was" data-url={old.toLowerCase()} hidden>
+                  was {old}
+                </span>
+              ))}
+            </span>
+            {url && <Host url={url} class="host" />}
+          </a>
+        </li>
+      ))
+    }
+    <li class="more" id="home-more" hidden><a href="/index">All matches</a></li>
+    <li class="none" id="home-none" hidden>No match</li>
+  </ul>
+</form>
+
+<script>
+  import { normalizeQuery } from "@/lib/query";
+
+  const input = document.getElementById("home-search") as HTMLInputElement | null;
+  const list = document.getElementById("home-results");
+  const more = document.getElementById("home-more");
+  const none = document.getElementById("home-none");
+  const LIMIT = 6;
+
+  if (input && list && more && none) {
+    const rows = [...list.querySelectorAll<HTMLLIElement>("li[data-search]")];
+    const moreLink = more.querySelector("a");
+
+    const apply = () => {
+      const terms = normalizeQuery(input.value);
+      const hits = rows.filter(
+        (row) =>
+          terms.length > 0 &&
+          terms.every((term) => (row.dataset.search ?? "").includes(term)),
+      );
+      // A pasted address that is exactly one we know goes first.
+      const exact = (row: HTMLLIElement) =>
+        (row.dataset.urls ?? "")
+          .split(" ")
+          .some((word) => terms.includes(word));
+      const shown = new Set(
+        [...hits.filter(exact), ...hits.filter((row) => !exact(row))].slice(
+          0,
+          LIMIT,
+        ),
+      );
+      for (const row of rows) {
+        row.hidden = !shown.has(row);
+        row.style.order = exact(row) ? "-1" : "";
+        // Say which old address matched, so a pasted dead link explains itself.
+        for (const was of row.querySelectorAll<HTMLElement>(".was"))
+          was.hidden = !terms.some(
+            (term) => term.includes(".") && (was.dataset.url ?? "").includes(term),
+          );
+      }
+      list.hidden = terms.length === 0;
+      none.hidden = hits.length > 0;
+      more.hidden = hits.length <= LIMIT;
+      if (moreLink) {
+        moreLink.textContent = `All ${hits.length} matches`;
+        moreLink.href = `/index?query=${encodeURIComponent(input.value)}`;
+      }
+    };
+
+    input.addEventListener("input", apply);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        input.value = "";
+        apply();
+      }
+    });
+    addEventListener("keydown", (event) => {
+      if (event.key === "/" && document.activeElement !== input) {
+        event.preventDefault();
+        input.focus();
+      }
+    });
+    apply();
+  }
+</script>
+
+<style>
+  .search {
+    position: relative;
+    max-width: 40rem;
+  }
+  /* Bailey sits on the field's top edge, which is the ledge the art asks for. */
+  .peek {
+    position: absolute;
+    right: 1.5rem;
+    bottom: calc(100% - 3.5px);
+    width: 8.5rem;
+    height: auto;
+    pointer-events: none;
+  }
+  .field {
+    font-size: var(--step-1);
+    padding: 1rem 1.25rem;
+    box-shadow: 0 3px 0 var(--foreground);
+  }
+  .results {
+    margin: 0.625rem 0 0;
+    gap: 0;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: clip;
+  }
+  .results li {
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: -1px;
+  }
+  .results a,
+  .none {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.125rem 1rem;
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+  }
+  .results a:is(:hover, :focus-visible) {
+    background: var(--surface);
+  }
+  .name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.5rem;
+    font-weight: 600;
+  }
+  .host,
+  .none,
+  .more a {
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+  @media (max-width: 40rem) {
+    .peek {
+      width: 6rem;
+      right: 1rem;
+    }
+  }
+</style>
