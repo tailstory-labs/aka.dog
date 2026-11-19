@@ -109,7 +109,14 @@ const description =
               {WHERE_LABEL[addressHit.match.where]}
             </span>
           )}
+          <a class="json" href={jsonHref}>JSON</a>
         </div>
+
+        {result.input !== result.link && (
+          <p class="secondary">
+            Read as <code>{shown}</code>
+          </p>
+        )}
 
         {result.via === 'www-stripped' && (
           <p class="secondary">
@@ -248,15 +255,6 @@ const description =
             </p>
           </>
         )}
-
-        <p class="meta">
-          {result.input !== result.link && (
-            <span>
-              Read as <code>{shown}</code>
-            </span>
-          )}
-          <a href={jsonHref}>JSON</a>
-        </p>
       </>
     )
   }
@@ -301,6 +299,11 @@ const description =
     align-items: center;
     column-gap: 0.875rem;
     margin-bottom: 1.25rem;
+  }
+  .json {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: var(--step--1);
   }
   .title-row h1 {
     margin: 0;
