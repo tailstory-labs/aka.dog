@@ -16,3 +16,7 @@ is put to both.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for architecture, commands, how to add data, and deployment.<br>
 Working with an AI coding agent? See [AGENTS.md](AGENTS.md).
+
+## License
+
+Copyright 2026 Tailstory. [Apache 2.0](LICENSE).
